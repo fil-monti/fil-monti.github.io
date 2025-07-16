@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Research
-subtitle: What is cooler than modeling evolution?
+subtitle: Modeling Evolution
 ---
 ## <span style="color:#025196;">Research Interests</span> 
 ### <span style="color:#4393C3;">Methodology</span>
