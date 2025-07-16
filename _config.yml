@@ -282,6 +282,7 @@ exclude:
   - README.md
   - screenshot.png
   - docs/
+  - vendor/ # This is the crucial line for your current error
 
 plugins:
   - jekyll-paginate
