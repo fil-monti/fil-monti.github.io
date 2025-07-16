@@ -14,7 +14,7 @@ subtitle: Modeling Evolution
 [//]: # (- Markov Chain Monte Carlo &#40;MCMC&#41; methods and HMC)
 
 ### <span style="color:#4393C3;">Areas of Application</span> 
-- **Phylogenetics and related**: phylogenetics, phylogeography, phylodynamics, and coalescent theory.
+- **Evolutionary processes**: phylogenetics, phylogeography, phylodynamics, and coalescent theory.
 - **Epidemiology and Infectious Diseases**: modeling the spread of infectious diseases and
   identifying the factors driving viral evolution.
 
