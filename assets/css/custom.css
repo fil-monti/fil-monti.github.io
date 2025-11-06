@@ -11,14 +11,14 @@ body {
 
 
 .paper-entry{margin:18px 0 26px 0;}
-.paper-title{margin:0 0 4px 0; font-weight:600;}
+.paper-title{margin:0 0 2px 0; font-weight:600;}
 .paper-title a{text-decoration:none;}
 .paper-title a:hover{text-decoration:underline;}
 
-.paper-authors{margin:0 0 2px 0;}
+.paper-authors{margin:0 0 0px 0;}
 .paper-meta{margin:0 0 6px 0; color:#444;}
 
-.paper-links{margin:6px 0 4px 0;}
+.paper-links{margin:6px 0 2px 0;}
 .paper-badge{
     display:inline-block; margin-right:6px; padding:2px 8px;
     border-radius:12px; font-size:0.85em; text-decoration:none;
