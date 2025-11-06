@@ -1,44 +1,33 @@
-<!-- _includes/paper.html -->
-<article class="paper-entry{% if include.highlight %} paper-highlight{% endif %}">
-    <!-- Title (linked if any link provided) -->
-    <h3 class="paper-title">
-        {% assign primary_link = include.link | default: include.pdf | default: include.arxiv | default: include.doi %}
-        {% if primary_link %}
-        <a href="{{ primary_link }}" rel="noopener">{{ include.title }}</a>
-        {% else %}
-        {{ include.title }}
+<div class="paper-entry">
+    <div class="paper-title"><strong>{{ include.title }}</strong> (<strong>{{ include.year }}</strong>)</div>
+    <div class="paper-authors">{{ include.authors }}</div>
+
+    <div class="paper-status">
+        <em>{{ include.status }}</em>
+        {% if include.arxiv or include.pdf or include.code or include.project %}
+           <!-- the dash -->
+        <span class="paper-links">
+      {% if include.arxiv %}
+        <a href="{{ include.arxiv }}" target="_blank">arXiv</a>
+      {% endif %}
+      {% if include.pdf %}
+        <a href="{{ include.pdf }}" target="_blank">PDF</a>
+      {% endif %}
+      {% if include.code %}
+        <a href="{{ include.code }}" target="_blank">Code</a>
+      {% endif %}
+      {% if include.project %}
+        <a href="{{ include.project }}" target="_blank">Project</a>
+      {% endif %}
+    </span>
         {% endif %}
-    </h3>
-
-    <!-- Authors -->
-    <p class="paper-authors">
-        {{ include.authors | markdownify | strip }}
-    </p>
-
-    <!-- Meta line: venue / status / year -->
-    <p class="paper-meta">
-        {% if include.venue %}{{ include.venue }}{% if include.year %} ({{ include.year }}){% endif %}{% elsif include.year %}{{ include.year }}{% endif %}
-        {% if include.status %} &mdash; <em>{{ include.status }}</em>{% endif %}
-    </p>
-
-    <!-- Badges / quick links -->
-    {% if include.arxiv or include.doi or include.pdf or include.code or include.link %}
-    <p class="paper-links">
-        {% if include.arxiv %}<a class="paper-badge" href="{{ include.arxiv }}">arXiv</a>{% endif %}
-        {% if include.doi %}<a class="paper-badge" href="https://doi.org/{{ include.doi }}">DOI</a>{% endif %}
-        {% if include.pdf %}<a class="paper-badge" href="{{ include.pdf }}">PDF</a>{% endif %}
-        {% if include.code %}<a class="paper-badge" href="{{ include.code }}">Code</a>{% endif %}
-        {% if include.link %}<a class="paper-badge" href="{{ include.link }}">Project</a>{% endif %}
-    </p>
-    {% endif %}
-
-    <!-- Collapsible abstract -->
-    {% if include.abstract %}
-    <details class="paper-abstract" {% if include.open %}open{% endif %}>
-        <summary><b>{{ include.label | default: "Show Abstract ▾" }}</b></summary>
-        <div class="paper-abstract-body">
-            {{ include.abstract | markdownify }}
-        </div>
-    </details>
-    {% endif %}
-</article>
+    </div>
+<!--    {% if include.abstract %}-->
+<!--    <details class="abstract-block">-->
+<!--        <summary>Show Abstract</summary>-->
+<!--        <div class="abstract-text">-->
+<!--            {{ include.abstract | markdownify }}-->
+<!--        </div>-->
+<!--    </details>-->
+<!--    {% endif %}-->
+</div>
