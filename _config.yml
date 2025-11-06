@@ -24,14 +24,18 @@ author: Filippo Monti
 ###############################################
 
 navbar-links:
-  Home: "/index.html"
-  Research: "/myresearch"
-  Teaching: "/myteaching"
-  Software: "/software"
-  CV: "/cv"
+  Home: "/"
+  Research: "/myresearch/"
+  Teaching: "/myteaching/"
+  Software: "/software/"
+  CV: "/cv/"
 #  Fun Trees: "/cooltrees"
 
 
+custom_css:
+  - "/assets/css/custom.css"
+
+timezone: "America/Los_Angeles"
 ################
 # --- Logo --- #
 ################

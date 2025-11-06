@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Teaching
+permalink: /myteaching/
 ---
 
 [//]: # (## Teaching Experience)

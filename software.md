@@ -1,7 +1,8 @@
 ---
 layout: page
 title: Software
-subtitle: 
+subtitle:
+permalink: /software/
 ---
 
 [//]: # (# <span style="color:#025196;">Software</span>)
