@@ -4,26 +4,6 @@ title: Research
 subtitle: Modeling Evolution
 ---
 
-[//]: # (<style>)
-
-[//]: # (@import url&#40;'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Crimson+Pro:wght@400;500;600&display=swap'&#41;;)
-
-[//]: # ()
-[//]: # (h1, h2, h3 {)
-
-[//]: # (  font-family: 'Inter', sans-serif;)
-
-[//]: # (})
-
-[//]: # ()
-[//]: # (body {)
-
-[//]: # (  font-family: 'Crimson Pro', serif;)
-
-[//]: # (})
-
-[//]: # (</style>)
-
 ## Research Interests
 My research develops Bayesian and stochastic-process models to understand how biological and epidemiological systems evolve over time. I work at the intersection of computational statistics, probability theory, and evolutionary biology.
 
