@@ -7,3 +7,29 @@ h1, h2, h3 {
 body {
     font-family: 'Crimson Pro', serif;
 }
+
+
+
+.paper-entry{margin:18px 0 26px 0;}
+.paper-title{margin:0 0 4px 0; font-weight:600;}
+.paper-title a{text-decoration:none;}
+.paper-title a:hover{text-decoration:underline;}
+
+.paper-authors{margin:0 0 2px 0;}
+.paper-meta{margin:0 0 6px 0; color:#444;}
+
+.paper-links{margin:6px 0 4px 0;}
+.paper-badge{
+    display:inline-block; margin-right:6px; padding:2px 8px;
+    border-radius:12px; font-size:0.85em; text-decoration:none;
+    background:#eef3f8; color:#025196;
+}
+.paper-badge:hover{background:#dde8f4;}
+
+details.paper-abstract{margin-top:6px;}
+details.paper-abstract summary{
+    cursor:pointer; color:#025196; list-style:none; font-size:0.95em;
+}
+details.paper-abstract summary:hover{text-decoration:underline;}
+.paper-abstract-body{margin-top:6px;}
+.paper-highlight{background:#fffdf2; border-left:4px solid #FFD100; padding-left:10px;}
