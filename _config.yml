@@ -11,7 +11,11 @@
 
 # Name of website
 title: Filippo Monti
-
+url: "https://fil-monti.github.io" 
+baseurl: "" 
+plugins:
+  - jekyll-paginate
+  - jekyll-sitemap
 # Your name to show in the footer
 author: Filippo Monti
 
@@ -96,7 +100,7 @@ share-links-active:
 # How to display the link to your website in the footer
 # Remove this if you don't want a link in the footer
 url-pretty: "fil-monti.github.io"
-url: "https://fil-monti.github.io" 
+
 # Excerpt word length - Truncate the excerpt of each post on the feed page to the specified number of words
 excerpt_length: 50
 
@@ -284,9 +288,6 @@ exclude:
   - docs/
   - vendor/ # This is the crucial line for your current error
 
-plugins:
-  - jekyll-paginate
-  - jekyll-sitemap
 
 # Beautiful Jekyll / Dean Attali
 # 2fc73a3a967e97599c9763d05e564189
