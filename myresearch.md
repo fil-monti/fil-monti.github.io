@@ -4,12 +4,36 @@ title: Research
 subtitle: Modeling Evolution
 ---
 
+[//]: # (<style>)
+
+[//]: # (@import url&#40;'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Crimson+Pro:wght@400;500;600&display=swap'&#41;;)
+
+[//]: # ()
+[//]: # (h1, h2, h3 {)
+
+[//]: # (  font-family: 'Inter', sans-serif;)
+
+[//]: # (})
+
+[//]: # ()
+[//]: # (body {)
+
+[//]: # (  font-family: 'Crimson Pro', serif;)
+
+[//]: # (})
+
+[//]: # (</style>)
+
 ## Research Interests
+My research develops Bayesian and stochastic-process models to understand how biological and epidemiological systems evolve over time. I work at the intersection of computational statistics, probability theory, and evolutionary biology.
+
 
 ### Methodology
 - **Bayesian Statistics** — hierarchical and nonparametric modeling, probabilistic inference, and prior construction.
 - **Computational Statistics** — algorithmic development for high-dimensional models, Markov chain Monte Carlo (MCMC) and Hamiltonian Monte Carlo (HMC).
 - **Applied Probability and Mathematical Biology** — continuous-time Markov chains (CTMCs) and diffusion models.
+
+[//]: # (<hr style="margin:40px 0; border:none; border-top:1px solid #ddd;">)
 
 ### Areas of Application
 - **Evolutionary Processes** — phylogenetics, phylogeography, phylodynamics, and coalescent theory.

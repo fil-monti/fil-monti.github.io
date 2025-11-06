@@ -6,8 +6,7 @@ title: Teaching
 ## Teaching Experience
 
 ### University of California, Los Angeles (UCLA)
-**Department of Biostatistics**
-
+[//]: # (**Department of Biostatistics**)
 **Teaching Assistant**
 
 - **Biostat 250A – Linear Models (Ph.D. Level)**  
@@ -16,7 +15,9 @@ title: Teaching
 - **Biostat 100A / 100B – Introduction to Biostatistics**  
   *Fall 2022 – Summer 2024*
 
-Responsibilities include leading weekly discussion sections, grading assignments, and providing individualized support to graduate and undergraduate students.
+Responsibilities include leading weekly discussion sections and  grading assignments.
+
+[//]: # (and providing individualized support to graduate and undergraduate students.)
 
 ---
 
@@ -25,8 +26,9 @@ Responsibilities include leading weekly discussion sections, grading assignments
 *Summer 2024*
 
 Delivered lectures and hands-on sessions on
-[*Bayesian Phylogenetics and Infectious Diseases*](https://abs24.imati.cnr.it/),  
-an advanced workshop for postgraduate students and early-career researchers. Topics covered included MCMC inference, model design, and implementation of hierarchical Bayesian models for infectious disease dynamics.
+[*Bayesian Phylogenetics and Infectious Diseases*](https://abs24.imati.cnr.it/), an advanced workshop for postgraduate students and early-career researchers. 
+
+[//]: # (Topics covered included MCMC inference, model design, and implementation of hierarchical Bayesian models for infectious disease dynamics.)
 
 [//]: # (---)
 
