@@ -30,17 +30,17 @@ A novel Bayesian framework for learning CTMC transition rates as flexible stocha
 *Manuscript under review.*
 
  **Non-Linear Drivers of Population Dynamics: A Nonparametric Coalescent Approach**       
-**Monti, F.**, Faria, N. R., Shapiro, B., Ji, X., Lemey, P., Kraemer, M., and Suchard, M. A. 
+**Monti, F.**, Faria, N. R., Shapiro, B., Ji, X., Lemey, P., Kraemer, M., and Suchard, M. A.   
 Developing a coalescent-based model that infers population size trajectories driven by nonlinear, time-varying covariates.  
 *Manuscript in preparation.*
 
 **Dependencies Between Stochastic Processes Over Trees**   
-**Monti, F.** and Suchard, M. A.
+**Monti, F.** and Suchard, M. A.  
 Modeling evolution of continuous and discrete traits dependent on underlying partially observed stochastic processes.  
 *Manuscript in preparation.*
 
 **Scalable and Flexible Ornstein–Uhlenbeck Processes Over Trees**   
-**Monti, F.**, Holbrook, A., and Suchard, M. A.
+**Monti, F.**, Holbrook, A., and Suchard, M. A.  
 Extending Ornstein–Uhlenbeck diffusions to large phylogenies via scalable Hamiltonian Monte Carlo inference.  
 *Manuscript in preparation.*
 
