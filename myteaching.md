@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Teaching
+title: TEACHING
 permalink: /myteaching/
 header:
   compact: true           # adds .header--compact (tight spacing)
@@ -9,12 +9,37 @@ header:
   force_no_img: false     # ignore cover-img even if set (set to true to force no-image)
 ---
 
+<div style="margin-top: 3rem;"></div>
+<h3 class="subsection-title">University of California, Los Angeles (UCLA)</h3>
+
+<p class="teaching-role">Teaching Assistant</p>
+
+[//]: # (- **Biostat 250A – Linear Models &#40;Ph.D. Level&#41;** <span class="dot"> </span> <span class="date">Fall 2025</span>)
+
+[//]: # (- **Biostat 100A / 100B – Introduction to Biostatistics** - Fall 2022 – Summer 2024)
+
+
+<ul class="teaching-list">
+  <li>
+    <span class="course"><strong>Biostat 250A – Linear Models (Ph.D. Level)</strong></span>
+    <span class="separator"></span>
+    <span class="date">Fall 2025</span>
+  </li>
+  <li>
+    <span class="course"><strong>Biostat 100A / 100B – Introduction to Biostatistics</strong></span>
+    <span class="separator"></span>
+    <span class="date">Fall 2022 – Summer 2024</span>
+  </li>
+</ul>
+
 <div style="margin-top: 2.5rem;"></div>
 
 [//]: # (## Teaching Experience)
 [//]: # (### Applied Bayesian Statistics School — Villa Grumello, Como &#40;Italy&#41;)
-<h2 class="subsection-title">Applied Bayesian Statistics School — Villa Grumello, Como (Italy)</h2>
-*Co-lecturer*, with Prof. Marc Suchard (UCLA)
+<h3 class="subsection-title">Applied Bayesian Statistics School — Villa Grumello, Como (Italy)</h3>
+
+[//]: # (*Co-lecturer*, with Prof. Marc Suchard &#40;UCLA&#41;)
+<p class="teaching-role">Co-lecturer, with Prof. Marc Suchard (UCLA)</p>
 
 [//]: # (- **Bayesian Phylogenetics and Infectious Diseases** - Summer 2024)
 <ul class="teaching-list">
@@ -35,28 +60,9 @@ header:
 [//]: # (Delivered lectures and hands-on sessions on)
 
 [//]: # ([*Bayesian Phylogenetics and Infectious Diseases*]&#40;https://abs24.imati.cnr.it/&#41;.)
-<div style="margin-top: 2rem;"></div>
-
-<h2 class="subsection-title">University of California, Los Angeles (UCLA)</h2>
-*Teaching Assistant*
-
-[//]: # (- **Biostat 250A – Linear Models &#40;Ph.D. Level&#41;** <span class="dot"> </span> <span class="date">Fall 2025</span>)
-
-[//]: # (- **Biostat 100A / 100B – Introduction to Biostatistics** - Fall 2022 – Summer 2024)
 
 
-<ul class="teaching-list">
-  <li>
-    <span class="course"><strong>Biostat 250A – Linear Models (Ph.D. Level)</strong></span>
-    <span class="separator"></span>
-    <span class="date">Fall 2025</span>
-  </li>
-  <li>
-    <span class="course"><strong>Biostat 100A / 100B – Introduction to Biostatistics</strong></span>
-    <span class="separator"></span>
-    <span class="date">Fall 2022 – Summer 2024</span>
-  </li>
-</ul>
+
 
 
 
