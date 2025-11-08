@@ -107,3 +107,40 @@ body.homepage .profile-pic {
     border: 3px solid #fff;   /* optional white border */
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* subtle shadow */
 }
+
+
+/* Responsive layout for mobile devices */
+@media (max-width: 768px) {
+    .about-section {
+        flex-direction: column;    /* stack vertically on mobile */
+        align-items: center;       /* center the photo */
+        gap: 1.5rem;               /* reduce gap slightly */
+    }
+
+    .about-photo {
+        width: 200px;              /* slightly smaller on mobile */
+        height: 200px;
+        margin-top: 0;
+    }
+
+    .about-text {
+        text-align: left;          /* keep text left-aligned */
+        font-size: 1rem;           /* slightly smaller text */
+    }
+
+    .about-text h3 {
+        text-align: center;        /* center the "About me" heading */
+    }
+}
+
+/* Even smaller phones */
+@media (max-width: 480px) {
+    .about-photo {
+        width: 180px;
+        height: 180px;
+    }
+
+    .about-text {
+        font-size: 0.95rem;
+    }
+}
