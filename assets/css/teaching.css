@@ -23,7 +23,10 @@
     float: right;
     color: #555;
     font-style: italic;
-    white-space: nowrap;
+    /*max-width: 45%;*/
+    /*text-align: right;*/
+    /*margin-left: 1rem;*/
+     /*white-space: nowrap;*/
 }
 
 /* contain the float so the li height is correct */

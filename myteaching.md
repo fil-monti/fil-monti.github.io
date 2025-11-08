@@ -23,13 +23,11 @@ header:
 <ul class="teaching-list">
   <li>
     <span class="course"><strong>Biostat 250A – Linear Models (Ph.D. Level)</strong></span>
-    <span class="separator"></span>
     <span class="date">Fall 2025</span>
   </li>
   <li>
     <span class="course"><strong>Biostat 100A / 100B – Introduction to Biostatistics</strong></span>
-    <span class="separator"></span>
-    <span class="date">Fall 2022 – Summer 2024</span>
+    <span class="date">Fall 2022 -<wbr> Summer 2024</span>
   </li>
 </ul>
 
@@ -46,10 +44,10 @@ header:
 <ul class="teaching-list">
   <li>
     <span class="course"><strong>Bayesian Phylogenetics and Infectious Diseases</strong></span>
-    <span class="separator"></span>
     <span class="date">Summer 2024</span>
   </li>
 </ul>
+
 [//]: # (<div class="teaching-line">)
 
 [//]: # (  <span class="course">Bayesian Phylogenetics and Infectious Diseases</span>)
