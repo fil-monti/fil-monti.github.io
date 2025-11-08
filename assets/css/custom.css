@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Crimson+Pro:wght@400;500;600&display=swap');
 @import url("./teaching.css");
 @import url("research.css");
-/*@import url("./headerCompact.css");*/
+@import url("./headerCompact.css");
 @import url("./homepage.css");
 h1, h2, h3 {
     font-family: 'Inter', sans-serif;
@@ -224,3 +224,42 @@ footer {
 /* Non-hero pages keep normal offset below navbar */
 .header-section .intro-header:not(.big-img),
 .header-section .no-img { margin-top: 3.1875rem; }
+
+
+/*.cv-download {*/
+/*    display: inline-block;*/
+/*    padding: 0.6rem 1.2rem;*/
+/*    border: 2px solid #025196;*/
+/*    color: #025196;*/
+/*    text-decoration: none;*/
+/*    border-radius: 4px;*/
+/*    font-weight: 600;*/
+/*    font-size: 1rem;*/
+/*    transition: all 0.3s ease;*/
+/*    margin: 1rem 0;*/
+/*}*/
+
+/*.cv-download:hover {*/
+/*    background-color: #025196;*/
+/*    color: white !important;*/
+/*    text-decoration: none;*/
+/*}*/
+
+.cv-download {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    border: 2px solid #025196;
+    color: #025196;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 1.3rem;  /* increased from 1rem */
+    transition: all 0.3s ease;
+    margin: 1rem 0;
+}
+
+.cv-download:hover {
+    background-color: #025196;
+    color: white !important;
+    text-decoration: none;
+}

@@ -1,6 +1,6 @@
 ---
 layout: page
-title: RESEARCH
+title: Research
 subtitle: MODELING EVOLUTION
 permalink: /myresearch/
 header:

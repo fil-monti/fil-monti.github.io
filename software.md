@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Software
-subtitle:
+subtitle: THE BEAUTY AND THE BEAST
 permalink: /software/
 header:
   compact: true           # adds .header--compact (tight spacing)

@@ -1,6 +1,7 @@
 ---
 layout: page
-title: TEACHING
+title: Teaching
+subtitle: Courses & Workshops
 permalink: /myteaching/
 header:
   compact: true           # adds .header--compact (tight spacing)

@@ -1,13 +1,14 @@
 /* Compact header variant (applies only when page.header.compact == true) */
 .header--compact .intro-header {
-    padding: 0rem 0 0rem !important;
+    padding: 0rem 0 1.5rem !important;  /* Add some bottom padding */
     margin-bottom: 0rem !important;
+    font-family: 'Inter', sans-serif;  /* Correct - matches your h1/h2/h3 */
 }
 
 .header--compact .intro-header hr.small {
     max-width: 3rem;
     height: 1px;
-    margin: 0rem auto 0.3rem;
+    margin: 0.5rem auto 0.8rem;  /* More space around the line */
     border: 0;
     background: #ccc;
     opacity: 0.7;
@@ -15,17 +16,20 @@
 }
 
 .header--compact .page-heading h1 {
-    font-size: clamp(1.8rem, 4vw, 2.4rem) !important;
-    line-height: 1.12 !important;
-    font-weight: 700 !important;
-    margin: 0 0 0.2rem 0 !important;
-    letter-spacing: -0.02em;
+    font-size: clamp(2.5rem, 6vw, 3.6rem);
+    font-weight: 700;  /* Match your h2.section-title weight */
+    letter-spacing: -0.01em;  /* Match your h2 letter-spacing */
+    font-family: 'Inter', sans-serif;
+    margin: 0 0 0.5rem 0 !important;
 }
 
 .header--compact .page-subheading {
     display: block;
-    font-size: 1.05rem !important;
+    font-size: 1.15rem !important;  /* Slightly larger */
     font-weight: 400 !important;
-    color: #333 !important;
-    margin: 0 0 0rem 0 !important;
+    color: #555 !important;  /* Slightly lighter for hierarchy */
+    font-family: 'Inter', sans-serif;
+    text-transform: uppercase;  /* Makes it feel more like a subtitle */
+    letter-spacing: 0.1em;  /* Spreads out the subtitle nicely */
+    margin-top: 0.3rem !important;
 }

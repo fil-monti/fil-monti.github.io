@@ -1,6 +1,7 @@
 ---
 layout: page
-title: Curriculum Vitae
+title: CV
+subtitle: CURRICULUM VITAE
 permalink: /cv/
 header:
   compact: true           # adds .header--compact (tight spacing)
@@ -9,7 +10,10 @@ header:
   force_no_img: false     # ignore cover-img even if set (set to true to force no-image)
 ---
 
-[⬇️ Download CV (PDF)](/assets/cv/FilippoMonti_CV.pdf)
+[//]: # ([⬇️ Download CV &#40;PDF&#41;]&#40;/assets/cv/FilippoMonti_CV.pdf&#41;)
+<a href="/assets/cv/FilippoMonti_CV.pdf" class="cv-download" download>
+📄 Download CV (PDF)
+</a>
 
 <!-- Inline viewer (falls back to the download link on mobile) -->
 <object data="/assets/cv/FilippoMonti_CV.pdf"
