@@ -115,7 +115,7 @@
     color: #222;             /* slightly softer than pure black */
     margin-top: 8px;         /* small spacing below summary */
     max-width: 75ch;         /* optional: keeps paragraphs comfortably wide */
-    text-align: justify;
+    text-align: left;
     text-justify: inter-word;
 }
 
@@ -140,10 +140,9 @@
 }
 
 .research-columns li {
-    text-align: justify;
+    text-align: left;
     text-justify: inter-word;
 }
-
 
 /* --- Make inline & display math match surrounding text size --- */
 

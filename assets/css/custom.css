@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Crimson+Pro:wght@400;500;600&display=swap');
 @import url("./teaching.css");
-@import url("./papers.css");
-@import url("./headerCompact.css");
+@import url("research.css");
+/*@import url("./headerCompact.css");*/
 @import url("./homepage.css");
 h1, h2, h3 {
     font-family: 'Inter', sans-serif;
