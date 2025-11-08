@@ -208,5 +208,5 @@ footer {
 
 
 html {
-    font-size: clamp(0.75rem, 1vw + 0.6rem, 1.05rem);
+    font-size: clamp(0.55rem, 1vw + 0.6rem, 1.05rem);
 }

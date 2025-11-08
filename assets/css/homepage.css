@@ -54,17 +54,33 @@
     }
 }
 
-/* Very narrow screens — stack vertically */
 @media (max-width: 520px) {
     .about-section {
-        flex-direction: column;
-        align-items: center;
-        text-align: left;
+        align-items: flex-start;  /* keep top-aligned */
+        gap: 1.5rem;
     }
 
     .about-photo {
-        width: 140px;
-        height: 140px;
-        margin-bottom: 1rem;
+        width: 150px;
+        height: 150px;
+    }
+
+    .about-text {
+        font-size: 1rem;
     }
 }
+
+/* Very narrow screens — stack vertically */
+/*@media (max-width: 520px) {*/
+/*    .about-section {*/
+/*        flex-direction: column;*/
+/*        align-items: center;*/
+/*        text-align: left;*/
+/*    }*/
+
+/*    .about-photo {*/
+/*        width: 140px;*/
+/*        height: 140px;*/
+/*        margin-bottom: 1rem;*/
+/*    }*/
+/*}*/
