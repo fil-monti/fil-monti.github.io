@@ -1,19 +1,22 @@
 /*Paper entry styling --- */
+.paper-entry {
+    font-size: 1.3rem;
+}
 .paper-title {
-    font-size: 1.1rem; /* smaller than default */
+    /*font-size: 1.3rem; !* smaller than default *!*/
     font-weight: 600;
     color: #025196; /* use your site’s blue instead of orange */
-    margin-bottom: 2px;
+    margin: 0 0 2px 0;
 }
 
 .paper-authors {
     margin: 0;
-    font-size: 0.96rem;
+    /*font-size: 1.3rem;*/
 }
 
 .paper-status {
     margin: 2px 0 0 0;
-    font-size: 0.9rem;
+    /*font-size: 1.3rem;*/
 }
 
 .paper-links {
@@ -52,10 +55,8 @@
     margin: 2px 0;
 }
 
-/* Title/authors/status sizing (keep if you like) */
-.paper-title   { font-size: 1.1rem; font-weight: 600; color:#025196; margin: 0 0 2px 0; }
-.paper-authors { margin: 0; font-size: 0.96rem; }
-.paper-status  { margin: 2px 0 0 0; font-size: 0.9rem; }
+
+
 
 .paper-links { display: inline; margin-left: 6px; }
 .paper-links a { margin-right: 4px; text-decoration: none; color: #FDB338; }
@@ -79,7 +80,7 @@
 .abstract-block summary {
     font-family: 'Inter', sans-serif;
     font-weight: 400;
-    font-size: 0.65rem;
+    font-size: 1rem;
     color: #025196;               /* same as your site’s link color */
     cursor: pointer;
     list-style: none;             /* remove default arrow */
@@ -94,7 +95,7 @@
 
 .abstract-block summary::after {
     content: " ▾";                /* add custom arrow */
-    font-size: 0.8rem;
+    font-size: 1rem;
     color: #025196;
     transition: transform 0.2s ease;
 }
@@ -109,9 +110,32 @@
 /*    color: #222;*/
 /*}*/
 .abstract-block p {
-    font-size: 0.8rem;      /* smaller than body text — adjust as you like */
+    font-size: 1.2rem;      /* smaller than body text — adjust as you like */
     line-height: 1.45;       /* good readability */
     color: #222;             /* slightly softer than pure black */
     margin-top: 8px;         /* small spacing below summary */
     max-width: 75ch;         /* optional: keeps paragraphs comfortably wide */
+    text-align: justify;
+    text-justify: inter-word;
 }
+
+mjx-container {                       /* both inline and display */
+    font-size: 1em !important;          /* inherit from parent text size */
+    line-height: inherit;
+}
+mjx-container[display="true"] {       /* display equations spacing */
+    margin: 0.8em 0;
+}
+
+/* KaTeX (if you use it) */
+.katex {
+    font-size: 1.05rem !important;          /* inherit from parent */
+    line-height: inherit;
+}
+.katex-display {
+    margin: 0.8em 0;
+}
+
+
+
+
