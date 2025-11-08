@@ -139,7 +139,7 @@ navbar-border-col: "#025196"
 page-col: "#FFFFFF"
 text-col: "#010000"
 link-col: "#FDB338"
-hover-col: "#FDB338"
+#hover-col: "#B3D7FF"
 footer-col: "#025196"
 footer-text-col: "#FFFFFF"
 footer-link-col: "#FDB338"
@@ -255,7 +255,7 @@ date_format: "%B %-d, %Y"
 #################################################################################
 
 # Output options (more information on Jekyll's site)
-timezone: "America/Toronto"
+timezone: "America/Los Angeles"
 markdown: kramdown
 highlighter: rouge
 permalink: /:year-:month-:day-:title/
