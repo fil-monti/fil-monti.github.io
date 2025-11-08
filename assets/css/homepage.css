@@ -1,0 +1,109 @@
+.about-section {
+    display: flex;
+    align-items: stretch;     /* ensures both elements take same height */
+    gap: 2rem;                /* space between image and text */
+}
+
+/*.about-photo {*/
+/*    height: auto;*/
+/*    width: 270px;             !* or any fixed width you like *!*/
+/*    object-fit: cover;        !* avoids distortion *!*/
+/*    border-radius: 10px;*/
+/*    !*height: 100%;*!*/
+/*    max-height: none;*/
+/*}*/
+/*.about-photo {*/
+/*    width: 250px;              !* or any size that fits your layout *!*/
+/*    height: 250px;             !* must match width for a circle *!*/
+/*    border-radius: 50%;        !* makes it circular *!*/
+/*    object-fit: cover;         !* ensures image fills circle nicely *!*/
+/*    !*border: 3px solid #fff;    !* optional white border like homepage *!*!*/
+/*    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); !* subtle shadow *!*/
+/*}*/
+.about-photo {
+    width: 270px;           /* pick a size that fits your layout */
+    height: 270px;          /* must exactly match width */
+    border-radius: 50%;     /* perfect circle */
+    object-fit: cover;      /* ensures face fills the circle */
+    flex-shrink: 0;         /* prevent flexbox from squashing it */
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+    margin-top:0.8rem;
+}
+
+.about-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;  /* vertically center text if image is taller */
+    line-height: 1.6;
+    font-size: 1.05rem;
+}
+
+
+/* ============================= */
+/*  HOME PAGE EXCLUSIVE STYLING  */
+/* ============================= */
+/* Center the title/subtitle vertically inside the hero */
+body.homepage .header-section .intro-header {
+    position: relative;
+    display: flex;
+    align-items: center;       /* centers vertically */
+    justify-content: center;   /* centers horizontally */
+    flex-direction: column;
+    padding: 0 !important;     /* remove extra padding */
+    min-height: 90vh;          /* make it tall enough to fill screen */
+    background-position: center center;
+    background-size: cover;
+    margin-bottom: 3rem !important;
+}
+
+/* Ensure overlay still works */
+body.homepage .big-img::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.25);
+    z-index: 1;
+}
+
+/* Make sure text appears above overlay */
+body.homepage .page-heading {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+body.homepage .intro-header .page-heading h1 {
+    font-size: clamp(2.8rem, 6vw, 3.8rem);
+    font-weight: 800;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    margin-bottom: 0.4rem;
+    letter-spacing: -0.03em;
+}
+
+body.homepage .intro-header .page-subheading {
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+}
+
+body.homepage .post-meta {
+    display: none !important;
+}
+
+body.homepage .profile-pic-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.2rem;
+    margin-bottom: 1.8rem;
+}
+
+body.homepage .profile-pic {
+    width: 160px;             /* adjust size as you like */
+    height: 160px;
+    border-radius: 50%;       /* makes it circular */
+    object-fit: cover;        /* ensures it fills the circle nicely */
+    border: 3px solid #fff;   /* optional white border */
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* subtle shadow */
+}

@@ -392,66 +392,73 @@ img {
 
 /* --- Footer --- */
 
+
 footer {
-  padding: 1.875rem 0;
-  border-top: 1px #EAEAEA solid;
-  margin-top: 3.125rem;
-  font-size: 0.875rem;
-  background-color: {{ site.footer-col | default: "#EAEAEA" }};
-  {% if site.footer-img %}
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-top: 1px #EAEAEA solid;
+    margin-top: 3.125rem;
+    font-size: 0.9rem;
+    background-color: {{ site.footer-col | default: "#EAEAEA" }};
+{% if site.footer-img %}
     background-image: url({{ site.footer-img | relative_url }});
     background-attachment: fixed;
-  {% endif %}
+{% endif %}
 }
 
-footer p.text-muted {
-  color: {{ site.footer-text-col | default: "#777777" }} !important;
+footer p.text-muted,
+footer p {
+    color: {{ site.footer-text-col | default: "#777777" }} !important;
+    margin: 0;
+    text-align: center;
+    font-size: 0.85rem;
 }
 
 footer a {
-  color: {{ site.footer-link-col | default: "#404040" }};
+    color: {{ site.footer-link-col | default: "#404040" }};
 }
 
 footer a:hover,
 footer a:focus {
-  color: {{ site.footer-hover-col | default: "#0085A1" }};
+    color: {{ site.footer-hover-col | default: "#0085A1" }};
 }
 
 footer .list-inline {
-  margin: 0;
-  padding: 0;
-  margin-bottom: 1.875rem;
-}
-footer .copyright {
-  font-family: 'Roboto', sans-serif;
-  text-align: center;
-  margin-bottom: 0;
-  margin-top: 0;
-}
-footer .theme-by {
-  text-align: center;
-  margin: 0.625rem 0 0;
-}
-footer .footer-custom-content {
-  text-align: center;
-  margin-bottom: 0.9375rem;
-  font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    margin-bottom: 1rem;
 }
 
-@media (min-width: 768px) {
-  footer {
-    padding: 3.125rem 0;
-  }
-  footer .footer-links {
-    font-size: 1.125rem;
-  }
-  footer .copyright {
-    font-size: 1rem;
-  }
-  footer .footer-custom-content {
-    font-size: 1rem;
-  }
+footer .list-inline-item a {
+    width: 2rem;        /* smaller circle (default is likely 3.75rem or 4rem) */
+    height: 2rem;
+    font-size: 1rem;  /* smaller icon inside */
+    line-height: 1rem;  /* centers icon vertically */
 }
+
+footer .copyright,
+footer .theme-by,
+footer .footer-custom-content {
+    font-family: 'Roboto', sans-serif;
+    text-align: center;
+    margin: 0.625rem 0 0;
+    font-size: 0.85rem;
+}
+
+/*@media (min-width: 768px) {*/
+/*  footer {*/
+/*    padding: 3.125rem 0;*/
+/*  }*/
+/*  footer .footer-links {*/
+/*    font-size: 1.125rem;*/
+/*  }*/
+/*  footer .copyright {*/
+/*    font-size: 1rem;*/
+/*  }*/
+/*  footer .footer-custom-content {*/
+/*    font-size: 1rem;*/
+/*  }*/
+/*}*/
 
 /* --- Post preview (feed) --- */
 

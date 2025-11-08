@@ -2,6 +2,7 @@
 @import url("./teaching.css");
 @import url("./papers.css");
 @import url("./headerCompact.css");
+@import url("./homepage.css");
 h1, h2, h3 {
     font-family: 'Inter', sans-serif;
 }
@@ -10,59 +11,60 @@ body {
     font-family: 'Crimson Pro', serif;
 }
 
-.page-header .page-title,
-header.page-header .page-title,
-h1.page-title {
-    font-size: clamp(1.8rem, 4vw, 2.4rem) !important;
-    line-height: 1.1 !important;
-    margin-bottom: 0.35rem !important;
-    letter-spacing: -0.02em;
-    text-align: center;
-}
+
+/*.page-header .page-title,*/
+/*header.page-header .page-title,*/
+/*h1.page-title {*/
+/*    font-size: clamp(1.8rem, 4vw, 2.4rem) !important;*/
+/*    line-height: 1.1 !important;*/
+/*    margin-bottom: 0.35rem !important;*/
+/*    letter-spacing: -0.02em;*/
+/*    text-align: center;*/
+/*}*/
 
 /* Beautiful Jekyll: shrink page hero */
-.page-header {           /* the whole hero block */
-    padding: 1.2rem 0 !important;     /* was large; tighten vertically */
-    margin-bottom: 1.6rem !important; /* less gap before body */
-}
+/*.page-header {           !* the whole hero block *!*/
+/*    padding: 1.2rem 0 !important;     !* was large; tighten vertically *!*/
+/*    margin-bottom: 1.6rem !important; !* less gap before body *!*/
+/*}*/
 
-.page-header .page-title, h1.page-title {
-    font-size: clamp(1.8rem, 4vw, 2.4rem) !important;
-    line-height: 1.12 !important;
-    margin: 0 0 0.4rem 0 !important;
-    font-weight: 700 !important;
-    letter-spacing: -0.02em;
-    text-align: center;
-}
+/*.page-header .page-title, h1.page-title {*/
+/*    font-size: clamp(1.8rem, 4vw, 2.4rem) !important;*/
+/*    line-height: 1.12 !important;*/
+/*    margin: 0 0 0.4rem 0 !important;*/
+/*    font-weight: 700 !important;*/
+/*    letter-spacing: -0.02em;*/
+/*    text-align: center;*/
+/*}*/
 
-.page-header .page-subtitle, h2.page-subtitle {
-    font-size: 1.05rem !important;
-    margin: 0 0 1.2rem 0 !important;
-    font-weight: 400 !important;
-    color: #333 !important;
-}
+/*.page-header .page-subtitle, h2.page-subtitle {*/
+/*    font-size: 1.05rem !important;*/
+/*    margin: 0 0 1.2rem 0 !important;*/
+/*    font-weight: 400 !important;*/
+/*    color: #333 !important;*/
+/*}*/
 
-.page-header .page-subtitle,
-h2.page-subtitle {
-    font-size: 1.05rem !important;
-    margin-top: 0 !important;
-    margin-bottom: 1.6rem !important;
-    font-weight: 400;
-    color: #333;
-}
-h2.subsection-title + p,
-h2.subsection-title + ul,
-h2.subsection-title + div,
-h2.subsection-title + ol {
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-}
+/*.page-header .page-subtitle,*/
+/*h2.page-subtitle {*/
+/*    font-size: 1.05rem !important;*/
+/*    margin-top: 0 !important;*/
+/*    margin-bottom: 1.6rem !important;*/
+/*    font-weight: 400;*/
+/*    color: #333;*/
+/*}*/
+/*h2.subsection-title + p,*/
+/*h2.subsection-title + ul,*/
+/*h2.subsection-title + div,*/
+/*h2.subsection-title + ol {*/
+/*    margin-top: 0 !important;*/
+/*    margin-bottom: 0 !important;*/
+/*}*/
 
 
 /* Most themes add big padding around the hero container */
-.page-header {
-    padding: 1.2rem 0 1.2rem !important;  /* reduce vertical space */
-}
+/*.page-header {*/
+/*    padding: 1.2rem 0 1.2rem !important;  !* reduce vertical space *!*/
+/*}*/
 
 
 
@@ -162,15 +164,9 @@ body > main {
 footer {
     flex-shrink: 0;
 }
-
-
-
-
 .container-md {
     max-width: 1400px;
 }
-
-
 
 /* Make the top blue navbar thinner */
 .navbar,
@@ -198,14 +194,33 @@ footer {
 }
 
 /* Ensure hero image sits flush with the navbar */
-.intro-header,
-.page-header {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
+/*.intro-header,*/
+/*.page-header {*/
+/*    margin-top: 0 !important;*/
+/*    padding-top: 0 !important;*/
+/*}*/
+/* Keep navbar flush with content (no white line) */
+.navbar-custom { margin-bottom: 0 !important; border-bottom: none !important; }
+
+/* ✅ Home/hero pages only: remove the top gap */
+/*.header-section.has-img .intro-header.big-img {*/
+/*    margin-top: 3.5rem !important;*/
+/*    padding-top: 4rem !important;*/
+/*}*/
+
+/* ✅ All other pages: restore the usual spacing below the navbar */
+.header-section .intro-header:not(.big-img),
+.header-section .no-img,
+.page-header:not(.big-img) {
+    margin-top: 6rem !important;   /* or 5rem if you prefer the larger default */
+    /* padding-top can stay as-is */
 }
 
 
+/* Remove white gap only where there’s a big hero */
+.navbar-custom { margin-bottom: 0; border-bottom: none; }
+.header-section.has-img .intro-header.big-img { margin-top: 0; }   /* no !important */
 
-
-
-
+/* Non-hero pages keep normal offset below navbar */
+.header-section .intro-header:not(.big-img),
+.header-section .no-img { margin-top: 3.1875rem; }
