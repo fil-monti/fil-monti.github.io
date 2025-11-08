@@ -11,65 +11,7 @@ body {
     font-family: 'Crimson Pro', serif;
 }
 
-
-/*.page-header .page-title,*/
-/*header.page-header .page-title,*/
-/*h1.page-title {*/
-/*    font-size: clamp(1.8rem, 4vw, 2.4rem) !important;*/
-/*    line-height: 1.1 !important;*/
-/*    margin-bottom: 0.35rem !important;*/
-/*    letter-spacing: -0.02em;*/
-/*    text-align: center;*/
-/*}*/
-
-/* Beautiful Jekyll: shrink page hero */
-/*.page-header {           !* the whole hero block *!*/
-/*    padding: 1.2rem 0 !important;     !* was large; tighten vertically *!*/
-/*    margin-bottom: 1.6rem !important; !* less gap before body *!*/
-/*}*/
-
-/*.page-header .page-title, h1.page-title {*/
-/*    font-size: clamp(1.8rem, 4vw, 2.4rem) !important;*/
-/*    line-height: 1.12 !important;*/
-/*    margin: 0 0 0.4rem 0 !important;*/
-/*    font-weight: 700 !important;*/
-/*    letter-spacing: -0.02em;*/
-/*    text-align: center;*/
-/*}*/
-
-/*.page-header .page-subtitle, h2.page-subtitle {*/
-/*    font-size: 1.05rem !important;*/
-/*    margin: 0 0 1.2rem 0 !important;*/
-/*    font-weight: 400 !important;*/
-/*    color: #333 !important;*/
-/*}*/
-
-/*.page-header .page-subtitle,*/
-/*h2.page-subtitle {*/
-/*    font-size: 1.05rem !important;*/
-/*    margin-top: 0 !important;*/
-/*    margin-bottom: 1.6rem !important;*/
-/*    font-weight: 400;*/
-/*    color: #333;*/
-/*}*/
-/*h2.subsection-title + p,*/
-/*h2.subsection-title + ul,*/
-/*h2.subsection-title + div,*/
-/*h2.subsection-title + ol {*/
-/*    margin-top: 0 !important;*/
-/*    margin-bottom: 0 !important;*/
-/*}*/
-
-
-/* Most themes add big padding around the hero container */
-/*.page-header {*/
-/*    padding: 1.2rem 0 1.2rem !important;  !* reduce vertical space *!*/
-/*}*/
-
-
-
 /*****************************************************************/
-
 /* --- Projects section and sub-section: just the title look --- */
 h2 {
     font-size: 1.4rem;
@@ -262,4 +204,9 @@ footer {
     background-color: #025196;
     color: white !important;
     text-decoration: none;
+}
+
+
+html {
+    font-size: clamp(0.75rem, 1vw + 0.6rem, 1.05rem);
 }

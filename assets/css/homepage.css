@@ -1,192 +1,70 @@
 .about-section {
     display: flex;
-    align-items: stretch;     /* ensures both elements take same height */
+    align-items: center;      /* center vertically on large screens */
+    justify-content: center;  /* horizontally center the whole section */
     gap: 2rem;                /* space between image and text */
+    flex-wrap: nowrap;
 }
 
-/*.about-photo {*/
-/*    height: auto;*/
-/*    width: 270px;             !* or any fixed width you like *!*/
-/*    object-fit: cover;        !* avoids distortion *!*/
-/*    border-radius: 10px;*/
-/*    !*height: 100%;*!*/
-/*    max-height: none;*/
-/*}*/
-/*.about-photo {*/
-/*    width: 250px;              !* or any size that fits your layout *!*/
-/*    height: 250px;             !* must match width for a circle *!*/
-/*    border-radius: 50%;        !* makes it circular *!*/
-/*    object-fit: cover;         !* ensures image fills circle nicely *!*/
-/*    !*border: 3px solid #fff;    !* optional white border like homepage *!*!*/
-/*    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); !* subtle shadow *!*/
-/*}*/
 .about-photo {
-    width: 270px;           /* pick a size that fits your layout */
-    height: 270px;          /* must exactly match width */
-    border-radius: 50%;     /* perfect circle */
-    object-fit: cover;      /* ensures face fills the circle */
-    flex-shrink: 0;         /* prevent flexbox from squashing it */
+    width: 270px;
+    height: 270px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
-    margin-top:0.8rem;
+    margin: 0;
+    transition: width 0.3s, height 0.3s;
 }
 
 .about-text {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;  /* vertically center text if image is taller */
+    flex: 1;
     line-height: 1.6;
     font-size: 1.05rem;
 }
 
+/* ========== RESPONSIVE BEHAVIOR ========== */
 
-/* ============================= */
-/*  HOME PAGE EXCLUSIVE STYLING  */
-/* ============================= */
-/* Center the title/subtitle vertically inside the hero */
-body.homepage .header-section .intro-header {
-    position: relative;
-    display: flex;
-    align-items: center;       /* centers vertically */
-    justify-content: center;   /* centers horizontally */
-    flex-direction: column;
-    padding: 0 !important;     /* remove extra padding */
-    min-height: 90vh;          /* make it tall enough to fill screen */
-    background-position: center center;
-    background-size: cover;
-    margin-bottom: 3rem !important;
+/* Medium screens — shrink photo but keep side-by-side and top-align */
+@media (max-width: 992px) {
+    .about-section {
+        align-items: flex-start;  /* top-align photo with text */
+    }
+
+    .about-photo {
+        width: 220px;
+        height: 220px;
+    }
 }
 
-/* Ensure overlay still works */
-body.homepage .big-img::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.25);
-    z-index: 1;
-}
-
-/* Make sure text appears above overlay */
-body.homepage .page-heading {
-    position: relative;
-    z-index: 2;
-    text-align: center;
-}
-
-body.homepage .intro-header .page-heading h1 {
-    font-size: clamp(2.8rem, 6vw, 3.8rem);
-    font-weight: 800;
-    color: #fff;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
-    margin-bottom: 0.4rem;
-    letter-spacing: -0.03em;
-}
-
-body.homepage .intro-header .page-subheading {
-    font-size: 1.3rem;
-    font-weight: 400;
-    color: #fff;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
-}
-
-body.homepage .post-meta {
-    display: none !important;
-}
-
-body.homepage .profile-pic-wrapper {
-    display: flex;
-    justify-content: center;
-    margin-top: 1.2rem;
-    margin-bottom: 1.8rem;
-}
-
-body.homepage .profile-pic {
-    width: 160px;             /* adjust size as you like */
-    height: 160px;
-    border-radius: 50%;       /* makes it circular */
-    object-fit: cover;        /* ensures it fills the circle nicely */
-    border: 3px solid #fff;   /* optional white border */
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* subtle shadow */
-}
-
-
-/* Responsive layout for mobile devices */
+/* Smaller screens — smaller photo, still side-by-side and top-aligned */
 @media (max-width: 768px) {
     .about-section {
-        flex-direction: column;    /* stack vertically on mobile */
-        align-items: center;       /* center the photo */
-        gap: 1.5rem;               /* reduce gap slightly */
-    }
-
-    .about-photo {
-        width: 200px;              /* slightly smaller on mobile */
-        height: 200px;
-        margin-top: 0;
-    }
-
-    .about-text {
-        text-align: left;          /* keep text left-aligned */
-        font-size: 1rem;           /* slightly smaller text */
-    }
-
-    .about-text h3 {
-        text-align: center;        /* center the "About me" heading */
-    }
-}
-
-/* Even smaller phones */
-@media (max-width: 480px) {
-    .about-photo {
-        width: 180px;
-        height: 180px;
-    }
-
-    .about-text {
-        font-size: 0.95rem;
-    }
-}
-
-
-/* Homepage about section - keep side-by-side layout */
-body.homepage .about-section {
-    display: flex;
-    align-items: flex-start;
-    gap: 2rem;
-}
-
-body.homepage .about-photo {
-    width: 180px;          /* smaller size for homepage */
-    height: 180px;
-    flex-shrink: 0;
-}
-
-/* Override mobile stacking for homepage only */
-@media (max-width: 768px) {
-    body.homepage .about-section {
-        flex-direction: row;     /* keep horizontal on mobile */
+        align-items: flex-start;  /* keep top-aligned */
         gap: 1.5rem;
     }
 
-    body.homepage .about-photo {
-        width: 120px;            /* even smaller on mobile */
-        height: 120px;
+    .about-photo {
+        width: 200px;
+        height: 200px;
     }
 
-    body.homepage .about-text {
-        font-size: 0.95rem;
+    .about-text {
+        font-size: 1rem;
     }
 }
 
-@media (max-width: 480px) {
-    body.homepage .about-section {
-        gap: 1rem;
+/* Very narrow screens — stack vertically */
+@media (max-width: 520px) {
+    .about-section {
+        flex-direction: column;
+        align-items: center;
+        text-align: left;
     }
 
-    body.homepage .about-photo {
-        width: 100px;            /* tiny on small phones */
-        height: 100px;
-    }
-
-    body.homepage .about-text {
-        font-size: 0.9rem;
+    .about-photo {
+        width: 140px;
+        height: 140px;
+        margin-bottom: 1rem;
     }
 }
