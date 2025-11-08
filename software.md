@@ -22,7 +22,8 @@ header:
             </center>
         </td>
         <td>
-           <strong>BEAST X</strong> is a (free) cross-platform program for Bayesian analysis of molecular sequences using MCMC. Most of my projects include contributions to the software source code, which is publicly available.
+           <strong>BEAST X</strong> is a (free) cross-platform program for Bayesian analysis of molecular sequences using MCMC. 
+            Most of my projects include contributions to this software source code, which is publicly available.
         </td>
         <td>
             <a href="https://github.com/beast-dev/beast-mcmc" target="_blank">Github</a>
