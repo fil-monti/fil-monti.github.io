@@ -38,7 +38,14 @@ year="2025+"
 arxiv="http://arxiv.org/abs/2511.03954"
 status="Manuscript under review"
 code="https://github.com/suchard-group/NonParametricModelingofCTMCs/blob/f5e29b8f3ec9cb7dfbe190f0c85c59f8780ea3ad/README.md#L4"
-abstract="We develop GP-based priors on CTMC transition rates to capture covariate and temporal dependence. Efficient inference is obtained via matrix–exponential likelihood structure; applications to large phylogenies demonstrate scalability."
+abstract="Inferring the infinitesimal rates of continuous-time Markov chains (CTMCs) is a central challenge in many scientific domains. 
+This task is hindered by three factors: quadratic growth in the number of rates as the CTMC state space expands, strong dependencies among rates, and incomplete information for many transitions.
+We introduce a new Bayesian framework that flexibly models the CTMC rates by incorporating covariates through Gaussian processes (GPs). 
+This approach improves inference by integrating new information and contributes to the understanding of the CTMC stochastic behavior by shedding light on potential external drivers. 
+Unlike previous approaches limited to linear covariate effects, our method captures complex non-linear relationships, enabling fuller use of covariate information and more accurate characterization of their influence.
+To perform efficient inference, we employ a scalable Hamiltonian Monte Carlo (HMC) sampler.
+We address the prohibitive cost of computing the exact likelihood gradient by integrating the HMC trajectories with a scalable gradient approximation, reducing the computational complexity from ${\cal O}(K^5)$ to ${\cal O}(K^2)$, where $K$ is the number of CTMC states.
+Finally, we demonstrate our method on Bayesian phylogeography inference---a domain where CTMCs are central---showing effectiveness on both synthetic and real datasets."
 %}
 
 {% include paper.html
