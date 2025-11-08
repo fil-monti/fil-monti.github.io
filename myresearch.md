@@ -3,26 +3,31 @@ layout: page
 title: Research
 subtitle: Modeling Evolution
 permalink: /myresearch/
+header:
+  compact: true           # adds .header--compact (tight spacing)
+  subtitle_style: 'span'  # 'span' (with <hr>) or 'h2'
+  show_post_meta: false   # hide date/readtime
+  force_no_img: false     # ignore cover-img even if set (set to true to force no-image)
 ---
 
-## Research Interests
-My research develops Bayesian and stochastic-process models to understand how biological and epidemiological systems evolve over time. I work at the intersection of computational statistics, probability theory, and evolutionary biology.
+<h2 class="section-title">Research Interests</h2>
+My research develops Bayesian statistical methods for modeling stochastic processes in biological and epidemiological systems. 
+By integrating computational statistics, applied probability, and evolutionary biology, I work to understand how these complex systems evolve and change over time.
 
+<h2 class="subsection-title">Methodology</h2>
 
-### Methodology
 - **Bayesian Statistics** — hierarchical and nonparametric modeling, probabilistic inference, and prior construction.
 - **Computational Statistics** — algorithmic development for high-dimensional models, Markov chain Monte Carlo (MCMC) and Hamiltonian Monte Carlo (HMC).
 - **Applied Probability and Mathematical Biology** — continuous-time Markov chains (CTMCs) and diffusion models.
 
 [//]: # (<hr style="margin:40px 0; border:none; border-top:1px solid #ddd;">)
-
-### Areas of Application
+<h2 class="subsection-title">Areas of Application</h2>
 - **Evolutionary Processes** — phylogenetics, phylogeography, phylodynamics, and coalescent theory.
 - **Epidemiology and Infectious Diseases** — statistical modeling of epidemic dynamics and viral evolution to uncover the ecological and demographic drivers of transmission.
 
----
 
-## Projects
+
+<h2 class="section-title">Projects</h2>
 
 <div class="papers">
 {% include paper.html
@@ -30,6 +35,7 @@ title="Nonparametric Modeling of Continuous-Time Markov Chains"
 authors="<strong>Monti, F.</strong>, Ji, X., and Suchard, M. A."
 venue=""
 year="2025+"
+arxiv="http://arxiv.org/abs/2511.03954"
 status="Manuscript under review"
 code="https://github.com/suchard-group/NonParametricModelingofCTMCs/blob/f5e29b8f3ec9cb7dfbe190f0c85c59f8780ea3ad/README.md#L4"
 abstract="We develop GP-based priors on CTMC transition rates to capture covariate and temporal dependence. Efficient inference is obtained via matrix–exponential likelihood structure; applications to large phylogenies demonstrate scalability."
@@ -39,7 +45,7 @@ abstract="We develop GP-based priors on CTMC transition rates to capture covaria
 title = "Nonlinear Drivers of Population Dynamics: A Nonparametric Coalescent Approach"
 authors = "<strong>Monti, F.</strong>, Faria, N. R., Hill, S., Shapiro, B., Ji, X., Lemey, P., Kraemer, M., and Suchard, M. A."
 year = "2025+"
-status = "Manuscript in preparation"
+status = "Pre-print coming soon"
 abstract = "Effective population size (\$N_e(t)\$) is a fundamental parameter in population genetics and phylodynamics that quantifies genetic diversity and reveals demographic history.
 Coalescent-based methods infer $N_e(t)$ trajectories through time from time-scaled phylogenies reconstructed from molecular sequence data.
 Understanding the ecological and environmental drivers of population dynamics requires linking $N_e(t)$ to external covariates such as climate or epidemiological variables.

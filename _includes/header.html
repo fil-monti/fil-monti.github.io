@@ -1,96 +1,102 @@
-<!-- TODO this file has become a mess, refactor it -->
+<!-- Header include (refactored + flags) -->
 
 {% assign date_format = site.date_format | default: "%B %-d, %Y" %}
+{% assign h = page.header %}
+
+{%- comment -%} Defaults for flags {%- endcomment -%}
+{% if include.type == 'page' %}
+{% assign default_subtitle_style = 'span' %}
+{% else %}
+{% assign default_subtitle_style = 'h2' %}
+{% endif %}
+{% assign subtitle_style = h.subtitle_style | default: default_subtitle_style %}
+
+{% if h.show_post_meta == nil %}
+{% assign show_post_meta = include.type == 'post' %}
+{% else %}
+{% assign show_post_meta = h.show_post_meta %}
+{% endif %}
+
+{% assign force_no_img = h.force_no_img | default: false %}
+{% assign compact = h.compact | default: false %}
+
+{%- comment -%} Cover detection (can be forced off) {%- endcomment -%}
+{% assign has_cover = page.cover-img and (force_no_img == false) %}
 
 {% if page.cover-img or page.title %}
 
-{% if page.cover-img %}
-  <div id="header-big-imgs" data-num-img={% if page.cover-img.first %}{{ page.cover-img.size }}{% else %}1{% endif %}
-    {% for bigimg in page.cover-img %}
-    {% assign imgnum = forloop.index %}
-    {% for imginfo in bigimg %}
-      {% if imginfo[0] %}
-      data-img-src-{{ imgnum }}="{{ imginfo[0] | absolute_url }}"
-      data-img-desc-{{ imgnum }}="{{ imginfo[1] }}"
+{%- comment -%} Preload big header images if provided {%- endcomment -%}
+{% if has_cover %}
+<div id="header-big-imgs"
+     data-num-img={% if page.cover-img.first %}{{ page.cover-img.size }}{% else %}1{% endif %}
+     {% for bigimg in page.cover-img %}
+     {% assign imgnum = forloop.index %}
+     {% for imginfo in bigimg %}
+     {% if imginfo[0] %}
+     data-img-src-{{ imgnum }}="{{ imginfo[0] | relative_url }}"
+     data-img-desc-{{ imgnum }}="{{ imginfo[1] }}"
+     {% else %}
+     data-img-src-{{ imgnum }}="{{ imginfo | relative_url }}"
+     {% endif %}
+     {% endfor %}
+     {% endfor %}></div>
+{% endif %}
+
+{%- comment -%} Reusable heading markup {%- endcomment -%}
+{% capture _heading %}
+<div class="{{ include.type }}-heading page-heading">
+    <h1 class="{% if page.group-title %}group-title{% endif %}">
+        {% if page.title %}{{ page.title | strip_html }}{% else %}<br/>{% endif %}
+    </h1>
+
+    {% if page.subtitle %}
+    {% if subtitle_style == 'span' %}
+    <hr class="small">
+    <span class="{{ include.type }}-subheading page-subheading">{{ page.subtitle | strip_html }}</span>
     {% else %}
-      data-img-src-{{ imgnum }}="{{ imginfo | absolute_url }}"
+    <h2 class="{{ include.type }}-subheading">{{ page.subtitle | strip_html }}</h2>
     {% endif %}
-    {% endfor %}
-    {% endfor %}
-  ></div>
-{% endif %}
+    {% endif %}
 
-<header class="header-section {% if page.cover-img %}has-img{% endif %}">
-{% if page.cover-img %}
-<div class="big-img intro-header">
-  <div class="container-md">
-    <div class="row">
-      <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1">
-        <div class="{{ include.type }}-heading">
-          <h1 class="{% if page.group-title %}group-title{% endif %}">{% if page.title %}{{ page.title | strip_html }}{% else %}<br/>{% endif %}</h1>
-          {% if page.subtitle %}
-            {% if include.type == "page" %}
-              <hr class="small">
-              <span class="{{ include.type }}-subheading">{{ page.subtitle | strip_html }}</span>
-            {% else %}
-              <h2 class="{{ include.type }}-subheading">{{ page.subtitle | strip_html }}</h2>
-            {% endif %}
-          {% endif %}
-
-          {% if include.type == "post" %}
-            <span class="post-meta">Posted on {{ page.date | date: date_format }}</span>
-            {% if page.last-updated %}
-              <span class="post-meta">
-                <span class="d-none d-md-inline middot">&middot;</span>
-                Last updated {{ page.last-updated | date: date_format }}
-              </span>
-            {% endif %}
-            {% if page.readtime %}
-              {% include readtime.html %}
-            {% endif %}
-          {% endif %}
-        </div>
-      </div>
-    </div>
-  </div>
-  <span class='img-desc'></span>
+    {% if show_post_meta %}
+    <span class="post-meta">Posted on {{ page.date | date: date_format }}</span>
+    {% if page.last-updated %}
+    <span class="post-meta">
+            <span class="d-none d-md-inline middot">&middot;</span>
+            Last updated {{ page.last-updated | date: date_format }}
+          </span>
+    {% endif %}
+    {% if page.readtime %}
+    {% include readtime.html %}
+    {% endif %}
+    {% endif %}
 </div>
-{% endif %}
-<div class="intro-header no-img">
-  <div class="container-md">
-    <div class="row">
-      <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1">
-        <div class="{{ include.type }}-heading">
-          <h1>{% if page.title %}{{ page.title | strip_html }}{% else %}<br/>{% endif %}</h1>
-          {% if page.subtitle %}
-            {% if include.type == "page" %}
-              <hr class="small">
-              <span class="{{ include.type }}-subheading">{{ page.subtitle | strip_html }}</span>
-            {% else %}
-              <h2 class="{{ include.type }}-subheading">{{ page.subtitle | strip_html }}</h2>
-            {% endif %}
-          {% endif %}
+{% endcapture %}
 
-          {% if include.type == "post" %}
-            <!-- Commented out to remove "Posted on" -->
-            <!-- <span class="post-meta">Posted on {{ page.date | date: date_format }}</span> --> 
-            {% if page.last-updated %}
-              <span class="post-meta">
-                <span class="d-none d-md-inline middot">&middot;</span>
-                Last updated {{ page.last-updated | date: date_format }}
-              </span>
-            {% endif %}
-            {% if page.readtime %}
-              {% include readtime.html %}
-            {% endif %}
-          {% endif %}
+<header class="header-section {% if has_cover %}has-img{% endif %} {% if compact %}header--compact{% endif %}">
+    {% if has_cover %}
+    <div class="big-img intro-header">
+        <div class="container-md">
+            <div class="row">
+                <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1">
+                    {{ _heading }}
+                </div>
+            </div>
         </div>
-      </div>
+        <span class="img-desc"></span>
     </div>
-  </div>
-</div>
+    {% endif %}
+
+    <div class="intro-header no-img">
+        <div class="container-md">
+            <div class="row">
+                <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1">
+                    {{ _heading }}
+                </div>
+            </div>
+        </div>
+    </div>
 </header>
-
 
 {% else %}
 <div class="intro-header"></div>

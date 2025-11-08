@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Crimson+Pro:wght@400;500;600&display=swap');
-
+@import url("./teaching.css");
+@import url("./papers.css");
+@import url("./headerCompact.css");
 h1, h2, h3 {
     font-family: 'Inter', sans-serif;
 }
@@ -8,127 +10,134 @@ body {
     font-family: 'Crimson Pro', serif;
 }
 
-
-/* --- Paper entry styling --- */
-.paper-title {
-    font-size: 1.1rem; /* smaller than default */
-    font-weight: 600;
-    color: #025196; /* use your site’s blue instead of orange */
-    margin-bottom: 2px;
+.page-header .page-title,
+header.page-header .page-title,
+h1.page-title {
+    font-size: clamp(1.8rem, 4vw, 2.4rem) !important;
+    line-height: 1.1 !important;
+    margin-bottom: 0.35rem !important;
+    letter-spacing: -0.02em;
+    text-align: center;
 }
 
-.paper-authors {
-    margin: 0;
-    font-size: 0.96rem;
+/* Beautiful Jekyll: shrink page hero */
+.page-header {           /* the whole hero block */
+    padding: 1.2rem 0 !important;     /* was large; tighten vertically */
+    margin-bottom: 1.6rem !important; /* less gap before body */
 }
 
-.paper-status {
-    margin: 2px 0 0 0;
-    font-size: 0.9rem;
+.page-header .page-title, h1.page-title {
+    font-size: clamp(1.8rem, 4vw, 2.4rem) !important;
+    line-height: 1.12 !important;
+    margin: 0 0 0.4rem 0 !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em;
+    text-align: center;
 }
 
-.paper-links {
-    display: inline; /* place links on same line as status */
-    margin-left: 6px;
+.page-header .page-subtitle, h2.page-subtitle {
+    font-size: 1.05rem !important;
+    margin: 0 0 1.2rem 0 !important;
+    font-weight: 400 !important;
+    color: #333 !important;
 }
 
-.paper-links a {
-    margin-right: 8px;
-    text-decoration: none;
-    color: #FDB338;
-}
-
-.paper-links a:hover {
-    text-decoration: underline;
-}
-
-/* Container for all papers */
-.papers .paper-entry {
-    padding-bottom: 22px;          /* spacing inside each item */
-    margin-bottom: 26px;           /* spacing to the next item */
-    border-bottom: 1px solid #eee; /* optional divider */
-    line-height: 1.4;
-}
-
-/* Remove the divider/extra space after the last item */
-.papers .paper-entry:last-child {
-    border-bottom: 0;
-    margin-bottom: 0;
-    padding-bottom: 0;
-}
-
-/* Tighten default paragraph margins that can create big gaps */
-.papers .paper-entry p {
-    margin: 4px 0;
-}
-
-/* Title/authors/status sizing (keep if you like) */
-.paper-title   { font-size: 1.1rem; font-weight: 600; color:#025196; margin: 0 0 2px 0; }
-.paper-authors { margin: 0; font-size: 0.96rem; }
-.paper-status  { margin: 2px 0 0 0; font-size: 0.9rem; }
-
-.paper-links { display: inline; margin-left: 6px; }
-.paper-links a { margin-right: 8px; text-decoration: none; color: #FDB338; }
-.paper-links a:hover { text-decoration: underline; }
-
-.paper-status em {
-    margin-right: 0em;   /* space after the italic status */
-}
-
-.paper-links::before {
-    content: "-";          /* adds a clean dash */
-    margin: 0 0.2em;       /* equal spacing before and after the dash */
-}
-
-/* --- Abstract toggle styling --- */
-.abstract-block {
-    margin-top: 1px;
-    margin-bottom: 1px;  /* space after the abstract */
-}
-
-.abstract-block summary {
-    font-family: 'Inter', sans-serif;
+.page-header .page-subtitle,
+h2.page-subtitle {
+    font-size: 1.05rem !important;
+    margin-top: 0 !important;
+    margin-bottom: 1.6rem !important;
     font-weight: 400;
-    font-size: 0.65rem;
-    color: #025196;               /* same as your site’s link color */
-    cursor: pointer;
-    list-style: none;             /* remove default arrow */
-    display: inline-block;
-    position: relative;
-    transition: color 0.2s ease;
+    color: #333;
+}
+h2.subsection-title + p,
+h2.subsection-title + ul,
+h2.subsection-title + div,
+h2.subsection-title + ol {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
 }
 
-.abstract-block summary:hover {
-    color: #FDB338;               /* hover color (matches your theme) */
+
+/* Most themes add big padding around the hero container */
+.page-header {
+    padding: 1.2rem 0 1.2rem !important;  /* reduce vertical space */
 }
 
-.abstract-block summary::after {
-    content: " ▾";                /* add custom arrow */
-    font-size: 0.8rem;
+
+
+/*****************************************************************/
+/* --- Section headings & body --- */
+h2 {
+    font-size: 1.4rem;
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+p, li {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #222;
+}
+
+/* This adds colors to ul bullets */
+ul { padding-left: 1.2em; }
+ul li { margin-bottom: 0.4rem; }
+ul li::marker { color: #00509e; }
+
+
+/* --- Projects section and sub-section: just the title look --- */
+h2.section-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 0.6rem;
+}
+
+h2.subsection-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 1rem;
+    margin-bottom: 0rem;
+    /*border-bottom: 1px solid #e5e7eb;*/
+    padding-bottom: 0.4rem;
     color: #025196;
-    transition: transform 0.2s ease;
 }
 
-.abstract-block[open] summary::after {
-    transform: rotate(-180deg);   /* flip arrow when open */
+h2.section-title + p {
+    margin-top: 0.3rem;   /* or 0 if you want them very close */
+    margin-bottom: 0.3rem;
+}
+/*****************************************************************/
+
+
+
+
+/*****************************************************************/
+/* Make the blue footer stick to the bottom of short pages */
+html, body {
+    height: 100%;               /* allows flex container to fill viewport */
 }
 
-/*.abstract-block p {*/
-/*    margin-top: 8px;*/
-/*    line-height: 1.45;*/
-/*    color: #222;*/
-/*}*/
-.abstract-block p {
-    font-size: 0.8rem;      /* smaller than body text — adjust as you like */
-    line-height: 1.45;       /* good readability */
-    color: #222;             /* slightly softer than pure black */
-    margin-top: 8px;         /* small spacing below summary */
-    max-width: 75ch;         /* optional: keeps paragraphs comfortably wide */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;          /* ensures body is at least full screen */
 }
 
+/* Main content area should grow to push footer down */
+body > .container-md,
+body > .container-fluid,
+body > .page-content,
+body > main {
+    flex: 1 0 auto;
+}
 
-
-body::after{
-    content:"custom.css loaded";
-    position:fixed; right:10px; bottom:8px; font-size:12px; background:#eef3f8; padding:2px 6px;
+/* Footer stays at bottom naturally */
+footer {
+    flex-shrink: 0;
 }

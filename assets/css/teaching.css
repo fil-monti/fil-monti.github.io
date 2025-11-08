@@ -1,0 +1,30 @@
+.teaching-list {
+    padding-left: 1.2rem;
+    margin: 0.4rem 0 0.8rem;
+}
+
+.teaching-list li {
+    /* remove flex! */
+    margin-bottom: 0.3rem;
+    list-style: disc;            /* keep bullets */
+}
+
+.teaching-list li::marker { color: #025196; }
+
+.teaching-list .course { margin-right: 1rem; }
+
+.teaching-list .date {
+    float: right;
+    color: #555;
+    font-style: italic;
+    white-space: nowrap;
+}
+
+/* contain the float so the li height is correct */
+.teaching-list li::after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+/*.teaching-list li::marker { color:#025196; }*/
