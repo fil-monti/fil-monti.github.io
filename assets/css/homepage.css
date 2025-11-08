@@ -144,3 +144,49 @@ body.homepage .profile-pic {
         font-size: 0.95rem;
     }
 }
+
+
+/* Homepage about section - keep side-by-side layout */
+body.homepage .about-section {
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+}
+
+body.homepage .about-photo {
+    width: 180px;          /* smaller size for homepage */
+    height: 180px;
+    flex-shrink: 0;
+}
+
+/* Override mobile stacking for homepage only */
+@media (max-width: 768px) {
+    body.homepage .about-section {
+        flex-direction: row;     /* keep horizontal on mobile */
+        gap: 1.5rem;
+    }
+
+    body.homepage .about-photo {
+        width: 120px;            /* even smaller on mobile */
+        height: 120px;
+    }
+
+    body.homepage .about-text {
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 480px) {
+    body.homepage .about-section {
+        gap: 1rem;
+    }
+
+    body.homepage .about-photo {
+        width: 100px;            /* tiny on small phones */
+        height: 100px;
+    }
+
+    body.homepage .about-text {
+        font-size: 0.9rem;
+    }
+}
