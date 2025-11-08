@@ -32,26 +32,63 @@ By integrating computational statistics, applied probability, and evolutionary b
 
 [//]: # (- **Epidemiology and Infectious Diseases** — statistical modeling of epidemic dynamics and viral evolution to uncover the ecological and demographic drivers of transmission.)
 
-<div class="research-columns">
 
-  <div>
+<div class="row gx-5 gy-4">
+  <div class="col-lg-6">
     <h3 class="subsection-title">Methodology</h3>
     <ul>
-      <li><b>Bayesian Statistics</b> — hierarchical and nonparametric modeling, probabilistic inference, and prior construction.</li>
-      <li><b>Computational Statistics</b> — algorithmic development for high-dimensional models, Markov chain Monte Carlo (MCMC) and Hamiltonian Monte Carlo (HMC).</li>
-      <li><b>Applied Probability and Mathematical Biology</b> — continuous-time Markov chains (CTMCs) and diffusion models.</li>
+      <li><strong>Bayesian Statistics</strong> — hierarchical and nonparametric modeling, probabilistic inference, and prior construction.</li>
+      <li><strong>Computational Statistics</strong> — algorithmic development for high-dimensional models, Markov chain Monte Carlo (MCMC) and Hamiltonian Monte Carlo (HMC).</li>
+      <li><strong>Applied Probability and Mathematical Biology</strong> — continuous-time Markov chains (CTMCs) and diffusion models.</li>
     </ul>
   </div>
 
-  <div>
+  <div class="col-lg-6">
     <h3 class="subsection-title">Areas of Application</h3>
     <ul>
-      <li><b>Evolutionary Processes</b> — phylogenetics, phylogeography, phylodynamics, and coalescent theory.</li>
-      <li><b>Epidemiology and Infectious Diseases</b> — statistical modeling of epidemic dynamics and viral evolution to uncover the ecological and demographic drivers of transmission.</li>
+      <li><strong>Evolutionary Processes</strong> — phylogenetics, phylogeography, phylodynamics, and coalescent theory.</li>
+      <li><strong>Epidemiology and Infectious Diseases</strong> — statistical modeling of epidemic dynamics and viral evolution to uncover the ecological and demographic drivers of transmission.</li>
     </ul>
   </div>
-
 </div>
+
+
+[//]: # (<div class="research-columns">)
+
+[//]: # ()
+[//]: # (  <div>)
+
+[//]: # (    <h3 class="subsection-title">Methodology</h3>)
+
+[//]: # (    <ul>)
+
+[//]: # (      <li><b>Bayesian Statistics</b> — hierarchical and nonparametric modeling, probabilistic inference, and prior construction.</li>)
+
+[//]: # (      <li><b>Computational Statistics</b> — algorithmic development for high-dimensional models, Markov chain Monte Carlo &#40;MCMC&#41; and Hamiltonian Monte Carlo &#40;HMC&#41;.</li>)
+
+[//]: # (      <li><b>Applied Probability and Mathematical Biology</b> — continuous-time Markov chains &#40;CTMCs&#41; and diffusion models.</li>)
+
+[//]: # (    </ul>)
+
+[//]: # (  </div>)
+
+[//]: # ()
+[//]: # (  <div>)
+
+[//]: # (    <h3 class="subsection-title">Areas of Application</h3>)
+
+[//]: # (    <ul>)
+
+[//]: # (      <li><b>Evolutionary Processes</b> — phylogenetics, phylogeography, phylodynamics, and coalescent theory.</li>)
+
+[//]: # (      <li><b>Epidemiology and Infectious Diseases</b> — statistical modeling of epidemic dynamics and viral evolution to uncover the ecological and demographic drivers of transmission.</li>)
+
+[//]: # (    </ul>)
+
+[//]: # (  </div>)
+
+[//]: # ()
+[//]: # (</div>)
 
 <div style="margin-top: 2.5rem;"></div>
 
