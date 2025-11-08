@@ -119,6 +119,35 @@
     text-justify: inter-word;
 }
 
+/* Two-column layout for research sections */
+.research-columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 2rem; /* space between the columns */
+    align-items: start;
+}
+
+/* Keep headings and lists aligned neatly */
+.research-columns h3 {
+    margin-top: 0;
+    margin-bottom: 0.6rem;
+}
+
+.research-columns ul {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 1.2rem;
+}
+
+.research-columns li {
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+
+/* --- Make inline & display math match surrounding text size --- */
+
+/* MathJax v3 (SVG or CHTML) */
 mjx-container {                       /* both inline and display */
     font-size: 1em !important;          /* inherit from parent text size */
     line-height: inherit;

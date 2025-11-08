@@ -1,7 +1,7 @@
 ---
 layout: page
-title: Research
-subtitle: Modeling Evolution
+title: RESEARCH
+subtitle: MODELING EVOLUTION
 permalink: /myresearch/
 header:
   compact: true           # adds .header--compact (tight spacing)
@@ -14,18 +14,46 @@ header:
 My research develops Bayesian statistical methods for modeling stochastic processes in biological and epidemiological systems. 
 By integrating computational statistics, applied probability, and evolutionary biology, I work to understand how these complex systems evolve and change over time.
 
-<h2 class="subsection-title">Methodology</h2>
 
-- **Bayesian Statistics** — hierarchical and nonparametric modeling, probabilistic inference, and prior construction.
-- **Computational Statistics** — algorithmic development for high-dimensional models, Markov chain Monte Carlo (MCMC) and Hamiltonian Monte Carlo (HMC).
-- **Applied Probability and Mathematical Biology** — continuous-time Markov chains (CTMCs) and diffusion models.
+[//]: # (<h2 class="subsection-title">Methodology</h2>)
 
-[//]: # (<hr style="margin:40px 0; border:none; border-top:1px solid #ddd;">)
-<h2 class="subsection-title">Areas of Application</h2>
-- **Evolutionary Processes** — phylogenetics, phylogeography, phylodynamics, and coalescent theory.
-- **Epidemiology and Infectious Diseases** — statistical modeling of epidemic dynamics and viral evolution to uncover the ecological and demographic drivers of transmission.
+[//]: # ()
+[//]: # (- **Bayesian Statistics** — hierarchical and nonparametric modeling, probabilistic inference, and prior construction.)
 
+[//]: # (- **Computational Statistics** — algorithmic development for high-dimensional models, Markov chain Monte Carlo &#40;MCMC&#41; and Hamiltonian Monte Carlo &#40;HMC&#41;.)
 
+[//]: # (- **Applied Probability and Mathematical Biology** — continuous-time Markov chains &#40;CTMCs&#41; and diffusion models.)
+
+[//]: # ()
+[//]: # ([//]: # &#40;<hr style="margin:40px 0; border:none; border-top:1px solid #ddd;">&#41;)
+[//]: # (<h2 class="subsection-title">Areas of Application</h2>)
+
+[//]: # (- **Evolutionary Processes** — phylogenetics, phylogeography, phylodynamics, and coalescent theory.)
+
+[//]: # (- **Epidemiology and Infectious Diseases** — statistical modeling of epidemic dynamics and viral evolution to uncover the ecological and demographic drivers of transmission.)
+
+<div class="research-columns">
+
+  <div>
+    <h3 class="subsection-title">Methodology</h3>
+    <ul>
+      <li><b>Bayesian Statistics</b> — hierarchical and nonparametric modeling, probabilistic inference, and prior construction.</li>
+      <li><b>Computational Statistics</b> — algorithmic development for high-dimensional models, Markov chain Monte Carlo (MCMC) and Hamiltonian Monte Carlo (HMC).</li>
+      <li><b>Applied Probability and Mathematical Biology</b> — continuous-time Markov chains (CTMCs) and diffusion models.</li>
+    </ul>
+  </div>
+
+  <div>
+    <h3 class="subsection-title">Areas of Application</h3>
+    <ul>
+      <li><b>Evolutionary Processes</b> — phylogenetics, phylogeography, phylodynamics, and coalescent theory.</li>
+      <li><b>Epidemiology and Infectious Diseases</b> — statistical modeling of epidemic dynamics and viral evolution to uncover the ecological and demographic drivers of transmission.</li>
+    </ul>
+  </div>
+
+</div>
+
+<div style="margin-top: 2.5rem;"></div>
 
 <h2 class="section-title">Projects</h2>
 
