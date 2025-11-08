@@ -22,12 +22,13 @@
     </span>
         {% endif %}
     </div>
-<!--    {% if include.abstract %}-->
-<!--    <details class="abstract-block">-->
-<!--        <summary>Show Abstract</summary>-->
-<!--        <div class="abstract-text">-->
-<!--            {{ include.abstract | markdownify }}-->
-<!--        </div>-->
-<!--    </details>-->
-<!--    {% endif %}-->
+    {% if include.abstract %}
+    <details class="abstract-block">
+        <summary>Show Abstract</summary>
+        <div class="abstract-text">
+            {{ include.abstract | markdownify }}
+        </div>
+    </details>
+    {% endif %}
 </div>
+
