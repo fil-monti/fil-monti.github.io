@@ -12,7 +12,7 @@
 {% assign subtitle_style = h.subtitle_style | default: default_subtitle_style %}
 
 {% if h.show_post_meta == nil %}
-{% assign show_post_meta = include.type == 'post' %}
+{% assign show_post_meta = false %}
 {% else %}
 {% assign show_post_meta = h.show_post_meta %}
 {% endif %}
