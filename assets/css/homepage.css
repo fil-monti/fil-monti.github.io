@@ -121,3 +121,11 @@
         font-size: 1.05rem;
     }
 }
+
+
+@media (max-width: 600px) {
+    .about-photo {
+        width: 150px;
+        height: 150px;
+    }
+}
