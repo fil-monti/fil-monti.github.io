@@ -22,6 +22,10 @@ header:
 
 <ul class="teaching-list">
   <li>
+    <span class="course"><strong>Biostat 250B – Linear Models (Ph.D. Level)</strong></span>
+    <span class="date">Winter 2025</span>
+  </li>
+  <li>
     <span class="course"><strong>Biostat 250A – Linear Models (Ph.D. Level)</strong></span>
     <span class="date">Fall 2025</span>
   </li>
