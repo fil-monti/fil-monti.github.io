@@ -99,9 +99,9 @@ By integrating computational statistics, applied probability, and evolutionary b
 title="Nonparametric Modeling of Continuous-Time Markov Chains"
 authors="<strong>Monti, F.</strong>, Ji, X., and Suchard, M. A."
 venue=""
-year="2025+"
+year="2026+"
 arxiv="http://arxiv.org/abs/2511.03954"
-status="Manuscript under review"
+status="Manuscript submitted"
 code="https://github.com/suchard-group/NonParametricModelingofCTMCs/blob/f5e29b8f3ec9cb7dfbe190f0c85c59f8780ea3ad/README.md#L4"
 abstract="Inferring the infinitesimal rates of continuous-time Markov chains (CTMCs) is a central challenge in many scientific domains. 
 This task is hindered by three factors: quadratic growth in the number of rates as the CTMC state space expands, strong dependencies among rates, and incomplete information for many transitions.
@@ -116,16 +116,20 @@ Finally, we demonstrate our method on Bayesian phylogeography inference---a doma
 {% include paper.html
 title = "Nonlinear Drivers of Population Dynamics: A Nonparametric Coalescent Approach"
 authors = "<strong>Monti, F.</strong>, Faria, N. R., Hill, S., Shapiro, B., Ji, X., Lemey, P., Kraemer, M., and Suchard, M. A."
-year = "2025+"
-status = "Pre-print coming soon"
-abstract = "Effective population size (\$N_e(t)\$) is a fundamental parameter in population genetics and phylodynamics that quantifies genetic diversity and reveals demographic history.
-Coalescent-based methods infer $N_e(t)$ trajectories through time from time-scaled phylogenies reconstructed from molecular sequence data.
-Understanding the ecological and environmental drivers of population dynamics requires linking $N_e(t)$ to external covariates such as climate or epidemiological variables.
+year = "2025+",
+code="https://github.com/suchard-group/NonParametricModelingCoalescentProcesses",
+status = "Manuscript submitted"
+abstract = "Effective population size (\$N_e(t)\$) is a fundamental parameter in population genetics and phylodynamics that quantifies genetic diversity and reveals demographic history. 
+Coalescent-based methods enable the inference of $N_e(t)$ trajectories through time from time-scaled phylogenies reconstructed from molecular sequence data. 
+Understanding the ecological and environmental drivers of population dynamics requires linking $N_e(t)$ to external data such as climate or epidemiological variables. 
 Existing approaches typically impose log-linear relationships between covariates and $N_e(t)$, which may fail to capture complex biological processes and can introduce bias when the true relationship is nonlinear.
-We present a flexible Bayesian framework that integrates covariates into coalescent models with piecewise-constant $N_e(t)$ through a Gaussian process (GP) prior.
-The GP, a distribution over functions controlled by a kernel with data-driven hyperparameters, naturally accommodates nonlinear covariate effects without restrictive parametric assumptions.
-This formulation improves estimation of covariate-$N_e(t)$ relationships, mitigates bias when associations are nonlinear, and yields interpretable uncertainty quantification that varies across the covariate space.
-To balance global covariate-driven patterns with local temporal dynamics, we couple the GP prior with a Gaussian Markov random field that enforces smoothness in $N_e(t)$ trajectories."
+We present a flexible Bayesian framework that integrates covariates into coalescent models with piecewise-constant $N_e(t)$ through a Gaussian process (GP) prior. 
+The GP, a distribution over functions controlled by a kernel with data-driven hyperparameters, naturally accommodates nonlinear covariate effects without restrictive parametric assumptions. 
+This formulation improves estimation of covariate-$N_e(t)$ relationships, mitigates bias when associations are nonlinear, and yields interpretable uncertainty quantification that varies across the covariate space. 
+To balance global covariate-driven patterns with local temporal dynamics, we couple the GP prior with a Gaussian Markov random field that enforces smoothness in $N_e(t)$ trajectories. 
+Efficient inference is achieved via Hamiltonian Monte Carlo over the high-dimensional latent field.
+Through simulation studies and three empirical applications—yellow fever virus dynamics in Brazil (2016–2018), late-Quaternary musk ox demography, and HIV-1 CRF02\_AG evolution in Cameroon—we demonstrate that our method both confirms linear relationships where appropriate and reveals nonlinear covariate effects that would otherwise be missed or mischaracterized. 
+This framework advances phylodynamic inference by enabling more accurate and biologically realistic modeling of how environmental and epidemiological factors shape population size through time."
 %}
 
 {% include paper.html
