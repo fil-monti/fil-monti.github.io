@@ -116,8 +116,8 @@ Finally, we demonstrate our method on Bayesian phylogeography inference---a doma
 {% include paper.html
 title = "Nonlinear Drivers of Population Dynamics: A Nonparametric Coalescent Approach"
 authors = "<strong>Monti, F.</strong>, Faria, N. R., Hill, S., Shapiro, B., Ji, X., Lemey, P., Kraemer, M., and Suchard, M. A."
-year = "2025+",
-code="https://github.com/suchard-group/NonParametricModelingCoalescentProcesses",
+year = "2026+"
+code="https://github.com/suchard-group/NonParametricModelingCoalescentProcesses"
 status = "Manuscript submitted"
 abstract = "Effective population size (\$N_e(t)\$) is a fundamental parameter in population genetics and phylodynamics that quantifies genetic diversity and reveals demographic history. 
 Coalescent-based methods enable the inference of $N_e(t)$ trajectories through time from time-scaled phylogenies reconstructed from molecular sequence data. 
