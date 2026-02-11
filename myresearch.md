@@ -118,6 +118,7 @@ title = "Nonlinear Drivers of Population Dynamics: A Nonparametric Coalescent Ap
 authors = "<strong>Monti, F.</strong>, Faria, N. R., Hill, S., Shapiro, B., Ji, X., Lemey, P., Kraemer, M., and Suchard, M. A."
 year = "2026+"
 code="https://github.com/suchard-group/NonParametricModelingCoalescentProcesses"
+arxiv = "https://arxiv.org/abs/2602.06148"
 status = "Manuscript submitted"
 abstract = "Effective population size (\$N_e(t)\$) is a fundamental parameter in population genetics and phylodynamics that quantifies genetic diversity and reveals demographic history. 
 Coalescent-based methods enable the inference of $N_e(t)$ trajectories through time from time-scaled phylogenies reconstructed from molecular sequence data. 
