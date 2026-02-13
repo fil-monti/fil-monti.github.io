@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Discrete-Time Coalescent (Grid, Variable Pop Size)</title>
+  <title>Discrete-Time Coalescent (River Layout + Parametric Pop)</title>
 
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 
@@ -23,13 +23,13 @@
 
     .container {
       width: 100%;
-      max-width: 1200px;
+      max-width: 1280px;
     }
 
     h1 {
       text-align: center;
       font-weight: 800;
-      font-size: 2.2rem;
+      font-size: 2.15rem;
       letter-spacing: -0.02em;
       margin-bottom: 0.35rem;
     }
@@ -38,26 +38,24 @@
       text-align: center;
       color: #666;
       font-size: 1.05rem;
-      margin-bottom: 1.2rem;
+      margin-bottom: 1.15rem;
     }
 
-    /* --- layout: left sidebar (pop size) + canvas --- */
     .stage {
       display: grid;
-      grid-template-columns: auto 1fr;
+      grid-template-columns: 280px 1fr;
       gap: 14px;
       align-items: start;
-      justify-items: center;
     }
 
     .sidebar {
-      width: 210px;
+      width: 280px;
       border: 1px solid #edf0f2;
       border-radius: 14px;
       background: #fbfcfd;
       box-shadow: 0 10px 24px rgba(0,0,0,0.06);
       padding: 12px;
-      display: none; /* shown when toggle ON */
+      display: none; /* shown when time varying ON */
     }
 
     .sidebar .title {
@@ -65,7 +63,7 @@
       font-weight: 800;
       font-size: 0.95rem;
       color: #2c3e50;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .sidebar .hint {
@@ -75,8 +73,95 @@
       line-height: 1.25;
     }
 
+    .section {
+      border-top: 1px solid #eef2f5;
+      padding-top: 10px;
+      margin-top: 10px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .row label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      color: #334155;
+      font-weight: 800;
+    }
+
+    .row input[type="number"], .row input[type="text"] {
+      width: 120px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #e6e6e6;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #111;
+      background: #fff;
+    }
+
+    .toggleline {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      user-select: none;
+      margin-bottom: 8px;
+    }
+    .toggleline span {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 0.88rem;
+      color: #2c3e50;
+    }
+    .toggleline input { transform: scale(1.1); }
+
+    .radio-group {
+      display: grid;
+      gap: 8px;
+      margin-top: 6px;
+      margin-bottom: 8px;
+    }
+
+    .radio {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid #edf0f2;
+      background: #ffffff;
+    }
+    .radio strong {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.86rem;
+      color: #2c3e50;
+    }
+
+    .radio .params {
+      margin-left: auto;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .radio .params input[type="number"] {
+      width: 90px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #e6e6e6;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+
     .poplist {
-      max-height: 520px;
+      max-height: 360px;
       overflow: auto;
       padding-right: 4px;
       display: grid;
@@ -85,16 +170,16 @@
 
     .poprow {
       display: grid;
-      grid-template-columns: 1fr 78px;
+      grid-template-columns: 1fr 96px;
       gap: 8px;
       align-items: center;
     }
 
     .poprow label {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85rem;
+      font-size: 0.84rem;
       color: #334155;
-      font-weight: 700;
+      font-weight: 800;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -130,7 +215,6 @@
       height: auto;
     }
 
-    /* --- controls --- */
     .controls {
       display: flex;
       justify-content: center;
@@ -158,10 +242,6 @@
       background: #34495e;
       transform: translateY(-2px);
       box-shadow: 0 6px 14px rgba(44,62,80,0.25);
-    }
-
-    button:active {
-      transform: translateY(0);
     }
 
     .pill {
@@ -201,7 +281,7 @@
       font-family: 'JetBrains Mono', monospace;
       font-weight: 700;
       font-size: 0.9rem;
-      width: 86px;
+      width: 98px;
       background: #fff;
     }
 
@@ -256,12 +336,66 @@
 
     <div class="stage">
       <div class="sidebar" id="sidebar">
-        <div class="title">Varying population size</div>
+        <div class="title">Time varying population</div>
         <div class="hint">
-          One value per generation (row). Interpreted as the number of available nodes (columns)
-          at that generation. Values are clamped to 1…Nodes.
+          N₀ is the population at the present (bottom). Per-generation sizes define how many nodes are displayed in that row.
+          Rows are centered to form a “reverse river”.
         </div>
-        <div class="poplist" id="poplist"></div>
+
+        <div class="section">
+          <div class="toggleline">
+            <input id="parametricToggle" type="checkbox" />
+            <span>Parametric population</span>
+          </div>
+
+          <div id="parametricPanel">
+            <div class="row">
+              <label for="N0Input">N₀ (present)</label>
+              <input id="N0Input" type="number" min="1" value="20" />
+            </div>
+
+            <!-- Linear FIRST and default -->
+            <div class="radio-group">
+              <div class="radio">
+                <input type="radio" name="popModel" id="modelLin" value="lin" />
+                <strong>Linear</strong>
+                <div class="params">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:#64748b;">slope</span>
+                  <input id="linSlope" type="number" step="1" value="-1" />
+                </div>
+              </div>
+
+              <div class="radio">
+                <input type="radio" name="popModel" id="modelExp" value="exp" />
+                <strong>Exponential</strong>
+                <div class="params">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:#64748b;">rate</span>
+                  <input id="expRate" type="number" step="0.05" value="0.10" />
+                </div>
+              </div>
+            </div>
+
+            <button id="applyParamBtn" style="width:100%;padding:10px 12px;border-radius:12px;">Apply function</button>
+
+            <div style="margin-top:8px;color:#6b7280;font-size:0.83rem;line-height:1.25;">
+              Linear: <span style="font-family:'JetBrains Mono',monospace;">N(g)=round(N₀ + slope·g)</span><br/>
+              Exponential: <span style="font-family:'JetBrains Mono',monospace;">N(g)=round(N₀·exp(rate·g))</span><br/>
+              with <span style="font-family:'JetBrains Mono',monospace;">g=0</span> at present (bottom), increasing upward.
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="toggleline" style="margin-bottom:10px;">
+            <input id="personalizeToggle" type="checkbox" />
+            <span>Personalize</span>
+          </div>
+
+          <div id="popListBlock" style="display:none;">
+            <div class="title" style="margin-bottom:8px;">Population per generation</div>
+            <div class="poplist" id="poplist"></div>
+          </div>
+        </div>
       </div>
 
       <div class="canvas-wrapper">
@@ -289,37 +423,35 @@
 
       <div class="pill">
         <label for="gensInput">Generations</label>
-        <input id="gensInput" type="number" min="2" max="60" value="20">
-        <label for="nodesInput" style="margin-left:10px;">Nodes</label>
-        <input id="nodesInput" type="number" min="2" max="40" value="10">
+        <input id="gensInput" type="number" min="2" max="100" value="20">
+        <label for="taxaInput" style="margin-left:10px;">Taxa</label>
+        <input id="taxaInput" type="number" min="1" max="60" value="10">
         <button id="applyGridBtn" class="miniBtn">Apply</button>
       </div>
 
       <div class="toggle">
-        <input id="varyPopToggle" type="checkbox" />
-        <span>Varying population size</span>
+        <input id="varyPopToggle" type="checkbox" checked />
+        <span>Time varying population</span>
       </div>
     </div>
 
-    <div class="info">Filled nodes are active lineages; edges show parent assignment (coalescence allowed).</div>
-    <div class="small-note">Tip: when “Varying population size” is ON, parent choices at each generation are restricted to the first N nodes in that row.</div>
+    <div class="info">Bottom row has N₀ nodes, but only the taxa are filled. Parents are restricted to displayed nodes per generation.</div>
+    <div class="small-note">Rows are centered with a fixed global spacing to produce a “reverse river” when population shrinks toward the past.</div>
   </div>
 
 <script>
   // ---------------------------
-  // Canvas + drawing utilities
+  // Canvas + draw utils
   // ---------------------------
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
 
-  function clear() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }
+  function clear() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
 
   function circle(x, y, r, filled) {
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.lineWidth = 2;
+    ctx.lineWidth = Math.max(1.0, r * 0.26);
     ctx.strokeStyle = "#111";
     ctx.stroke();
     if (filled) {
@@ -351,7 +483,7 @@
   }
 
   // ---------------------------
-  // Seeded RNG (deterministic)
+  // Seeded RNG
   // ---------------------------
   function mulberry32(seed) {
     let t = seed >>> 0;
@@ -375,99 +507,191 @@
   let rng = mulberry32(parseSeed("42"));
 
   // ---------------------------
-  // Parameters (user-controlled)
+  // Params
   // ---------------------------
   const params = {
-    rows: 20,     // "generations" (doubled default)
-    cols: 10,     // "nodes" (starting nodes unchanged default)
+    rows: 20,        // generations
+    taxa: 10,        // number of observed lineages at present (filled nodes)
+    N0: 20,          // population at present (number of circles in bottom row)
     padX: 70,
     padY: 70,
-    radius: 9,
-    varyPop: false,
-    // popCaps[r] = available nodes at generation r (row index 0..rows-1)
-    // default = cols for all rows
-    popCaps: []
+    radius: 7,
+    varyPop: true,
+
+    // Time varying pop sizes: popCaps[r] is displayed node count in row r
+    popCaps: [],
+
+    // parametric pop
+    parametric: true,    // ON by default
+    popModel: 'lin',     // linear default
+    linSlope: -1,
+    expRate: 0.10,
+
+    // personalization
+    personalize: false   // OFF by default (list hidden)
   };
 
   function clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
 
-  function ensurePopCaps() {
+  // g=0 at present (bottom), increases upward
+  function gFromRow(r) { return (params.rows - 1) - r; }
+
+  function ensureConsistency() {
+    params.rows = clamp(params.rows, 2, 100);
+    params.taxa = clamp(params.taxa, 1, 200);
+
+    // enforce N0 >= taxa
+    params.N0 = clamp(params.N0, params.taxa, 500);
+
+    // popCaps length and clamping
     params.popCaps = Array.from({length: params.rows}, (_, r) => {
-      const v = params.popCaps[r] ?? params.cols;
-      return clamp(parseInt(v, 10) || params.cols, 1, params.cols);
+      const v = params.popCaps[r] ?? params.N0;
+      return clamp(parseInt(v, 10) || params.N0, 1, params.N0);
     });
+
+    // present row must be exactly N0
+    params.popCaps[params.rows - 1] = params.N0;
+  }
+
+  function applyParametricPopulation() {
+    if (!params.parametric) return;
+    const N0 = params.N0;
+
+    for (let r = 0; r < params.rows; r++) {
+      const g = gFromRow(r);
+      let Ng;
+      if (params.popModel === 'exp') {
+        Ng = Math.round(N0 * Math.exp((+params.expRate || 0) * g));
+      } else { // linear
+        Ng = Math.round(N0 + (+params.linSlope || 0) * g);
+      }
+      params.popCaps[r] = clamp(Ng, 1, N0);
+    }
+    params.popCaps[params.rows - 1] = params.N0;
   }
 
   // ---------------------------
-  // Grid geometry
+  // Geometry: "reverse river"
   // ---------------------------
-  let nodes = []; // nodes[r][c] = {x,y}
+  // Use a global dx based on max nodes at present (N0) so spacing is consistent.
+  // Then center each row of size cap within that fixed spacing.
+  let nodes = []; // nodes[r][c] = {x,y} with c<popCaps[r]
+  let baseDx = 0;
 
-  function buildGrid() {
-    nodes = [];
+  function computeDynamicRadius() {
     const w = canvas.width;
     const h = canvas.height;
-
     const usableW = w - 2 * params.padX;
     const usableH = h - 2 * params.padY;
 
-    const dx = usableW / (params.cols - 1);
-    const dy = usableH / (params.rows - 1);
+    const dx = usableW / Math.max(1, (params.N0 - 1));
+    const dy = usableH / Math.max(1, (params.rows - 1));
+    const spacing = Math.min(dx, dy);
 
+    // scale down as problem grows (mild)
+    const scaleFactor = Math.sqrt((params.N0 * params.rows) / 400); // 400 baseline ~ 20*20
+    const r = (0.24 * spacing) / Math.max(1, scaleFactor);
+
+    params.radius = clamp(r, 2.0, 9.0);
+  }
+
+  function buildGrid() {
+    ensureConsistency();
+    computeDynamicRadius();
+
+    const w = canvas.width;
+    const h = canvas.height;
+    const usableW = w - 2 * params.padX;
+    const usableH = h - 2 * params.padY;
+
+    baseDx = usableW / Math.max(1, (params.N0 - 1));
+    const dy = usableH / Math.max(1, (params.rows - 1));
+
+    nodes = [];
     for (let r = 0; r < params.rows; r++) {
+      const cap = params.varyPop ? params.popCaps[r] : params.N0;
+
       const row = [];
-      for (let c = 0; c < params.cols; c++) {
-        row.push({
-          x: params.padX + c * dx,
-          y: params.padY + r * dy
-        });
+      const y = params.padY + r * dy;
+
+      if (cap === 1) {
+        row.push({ x: params.padX + usableW / 2, y });
+      } else {
+        const rowWidth = baseDx * (cap - 1);
+        const startX = params.padX + (usableW - rowWidth) / 2; // CENTER -> reverse river
+        for (let c = 0; c < cap; c++) row.push({ x: startX + c * baseDx, y });
       }
+
       nodes.push(row);
     }
+  }
+
+  function rowCap(r) {
+    return params.varyPop ? params.popCaps[r] : params.N0;
   }
 
   // ---------------------------
   // Simulation state
   // ---------------------------
-  let active = [];   // active[r] is Set of columns active at row r
-  let edges = [];    // list of {child:{r,c}, parent:{r,c}}
+  let active = [];     // active[r] = Set of active indices in that row (row-local indices)
+  let edges = [];      // edges between row-local indices: {child:{r,c}, parent:{r,c}}
   let currentRow = 0;
+
+  // Choose taxa indices evenly across N0 nodes (row-local indices 0..N0-1).
+  function evenlySpacedTaxaIndices() {
+    const K = params.taxa;
+    const N = params.N0;
+
+    if (K === 1) return [Math.floor((N - 1) / 2)];
+    const idx = [];
+    for (let i = 0; i < K; i++) {
+      idx.push(Math.round(i * (N - 1) / (K - 1)));
+    }
+    // ensure uniqueness if rounding collides (rare with small N)
+    const uniq = Array.from(new Set(idx));
+    // if collisions reduced size, fill gaps left-to-right
+    let c = 0;
+    while (uniq.length < K) {
+      if (!uniq.includes(c)) uniq.push(c);
+      c++;
+    }
+    return uniq.slice(0, K);
+  }
 
   function resetSimulation() {
     edges = [];
     active = Array.from({length: params.rows}, () => new Set());
     currentRow = params.rows - 1;
 
-    // bottom row: observations = all starting nodes (cols) filled black
-    for (let c = 0; c < params.cols; c++) active[currentRow].add(c);
+    // enforce present row has N0 nodes
+    if (params.varyPop) params.popCaps[params.rows - 1] = params.N0;
+
+    buildGrid(); // rebuild geometry (since N0/popcaps may have changed)
+
+    // initial lineages are taxa only
+    const taxaIdx = evenlySpacedTaxaIndices();
+    for (const c of taxaIdx) active[currentRow].add(c);
 
     render();
   }
 
-  // Parent choice:
-  // - Mostly vertical
-  // - Small local drift
-  // - Occasional jump
-  // If varying pop size is ON, restrict parent to available columns in that row.
   function chooseParentCol(childCol, parentRow) {
-    const cap = params.varyPop ? params.popCaps[parentRow] : params.cols;
+    const cap = rowCap(parentRow);
     const maxC = cap - 1;
-
-    // if cap is small, just choose among 0..maxC
     if (maxC <= 0) return 0;
 
+    // keep choices "local" in index space; this preserves the river look
     const u = rng();
     let proposal;
     if (u < 0.70) proposal = childCol;
     else if (u < 0.85) proposal = childCol + (rng() < 0.5 ? -1 : 1);
     else proposal = Math.floor(rng() * cap);
 
-    // clamp into allowed parent columns
     return clamp(proposal, 0, maxC);
   }
 
   function stepOnce() {
-    if (currentRow === 0) return; // already at top
+    if (currentRow === 0) return;
 
     const r = currentRow;
     const parentsRow = r - 1;
@@ -476,66 +700,66 @@
     if (children.length === 0) return;
 
     const parentSet = new Set();
-
     for (const childCol of children) {
       const parentCol = chooseParentCol(childCol, parentsRow);
       parentSet.add(parentCol);
-
-      edges.push({
-        child: { r, c: childCol },
-        parent: { r: parentsRow, c: parentCol }
-      });
+      edges.push({ child: { r, c: childCol }, parent: { r: parentsRow, c: parentCol } });
     }
 
     active[parentsRow] = parentSet;
     currentRow = parentsRow;
 
     render();
-
     if (currentRow === 0) stop();
   }
 
   // ---------------------------
-  // Rendering
+  // Render
   // ---------------------------
+  function safeNodeAt(rc) {
+    const row = nodes[rc.r];
+    if (!row) return null;
+    return row[rc.c] ?? null;
+  }
+
   function render() {
     clear();
 
     text("Past", 20, params.padY - 18, { font: "700 13px JetBrains Mono", fill: "#6b7280" });
     text("Present", 20, canvas.height - params.padY + 30, { font: "700 13px JetBrains Mono", fill: "#6b7280" });
 
-    // edges behind nodes
+    // edges
     for (const e of edges) {
-      const A = nodes[e.child.r][e.child.c];
-      const B = nodes[e.parent.r][e.parent.c];
+      const A = safeNodeAt(e.child);
+      const B = safeNodeAt(e.parent);
+      if (!A || !B) continue;
       line(A.x, A.y, B.x, B.y, 0.85);
     }
 
     // nodes
     for (let r = 0; r < params.rows; r++) {
-      for (let c = 0; c < params.cols; c++) {
-        const isBottom = (r === params.rows - 1);
-        const isActive = active[r].has(c);
-
-        // bottom row always filled (observations)
-        const filled = isBottom || isActive;
-
+      const cap = rowCap(r);
+      for (let c = 0; c < cap; c++) {
+        const isPresent = (r === params.rows - 1);
+        // At present, fill only taxa nodes (active set contains taxa at time 0).
+        // For other rows, fill active nodes.
+        const filled = isPresent ? active[r].has(c) : active[r].has(c);
         circle(nodes[r][c].x, nodes[r][c].y, params.radius, filled);
       }
     }
 
     const activeCount = active[currentRow]?.size ?? 0;
-    const capHere = params.varyPop ? params.popCaps[currentRow] : params.cols;
+    const capHere = rowCap(currentRow);
 
     text(
-      `Row: ${currentRow + 1}/${params.rows}  |  Active: ${activeCount}  |  Available: ${capHere}`,
+      `Row: ${currentRow + 1}/${params.rows}  |  Active: ${activeCount}  |  Displayed: ${capHere}  |  N₀: ${params.N0}  |  Taxa: ${params.taxa}`,
       canvas.width - 20, 28,
       { font: "700 13px JetBrains Mono", fill: "#2c3e50", align: "right" }
     );
   }
 
   // ---------------------------
-  // Animation controls
+  // Animation
   // ---------------------------
   let isPlaying = false;
   let timer = null;
@@ -552,7 +776,6 @@
   function start() {
     if (isPlaying) return;
     isPlaying = true;
-
     timer = setInterval(() => {
       stepOnce();
       if (currentRow === 0) stop();
@@ -561,36 +784,44 @@
 
   function stop() {
     isPlaying = false;
-    if (timer) {
-      clearInterval(timer);
-      timer = null;
-    }
+    if (timer) { clearInterval(timer); timer = null; }
   }
 
   function rebuildTimerIfNeeded() {
     if (!isPlaying) return;
-    stop();
-    start();
+    stop(); start();
   }
 
   // ---------------------------
-  // Varying pop size UI
+  // Sidebar UI
   // ---------------------------
   const sidebar = document.getElementById('sidebar');
   const poplist = document.getElementById('poplist');
 
+  const varyPopToggle = document.getElementById('varyPopToggle');
+
+  const parametricToggle = document.getElementById('parametricToggle');
+  const parametricPanel  = document.getElementById('parametricPanel');
+  const modelLin = document.getElementById('modelLin');
+  const modelExp = document.getElementById('modelExp');
+  const N0Input  = document.getElementById('N0Input');
+  const linSlope = document.getElementById('linSlope');
+  const expRate  = document.getElementById('expRate');
+  const applyParamBtn = document.getElementById('applyParamBtn');
+
+  const personalizeToggle = document.getElementById('personalizeToggle');
+  const popListBlock = document.getElementById('popListBlock');
+
   function generationLabel(r) {
-    // r=0 is oldest (top). r=rows-1 is present (bottom).
-    // Make label readable in that sense:
-    const genFromPresent = (params.rows - 1) - r;
+    const g = gFromRow(r);
     if (r === params.rows - 1) return `Gen 0 (present)`;
-    if (r === 0) return `Gen ${genFromPresent} (oldest)`;
-    return `Gen ${genFromPresent}`;
+    if (r === 0) return `Gen ${g} (oldest)`;
+    return `Gen ${g}`;
   }
 
   function rebuildPopList() {
     poplist.innerHTML = "";
-    ensurePopCaps();
+    ensureConsistency();
 
     for (let r = 0; r < params.rows; r++) {
       const rowDiv = document.createElement('div');
@@ -602,15 +833,21 @@
       const inp = document.createElement('input');
       inp.type = "number";
       inp.min = "1";
-      inp.max = String(params.cols);
+      inp.max = String(params.N0);
       inp.value = String(params.popCaps[r]);
 
+      // if parametric ON, manual editing disabled (you can still see values)
+      inp.disabled = params.parametric;
+
       inp.addEventListener('input', () => {
-        const v = clamp(parseInt(inp.value, 10) || params.cols, 1, params.cols);
+        const v = clamp(parseInt(inp.value, 10) || params.N0, 1, params.N0);
         params.popCaps[r] = v;
-        inp.value = String(v);
-        // No need to reset; it affects future parent choices.
-        render();
+
+        // keep present row fixed at N0
+        params.popCaps[params.rows - 1] = params.N0;
+
+        stop();
+        resetSimulation();
       });
 
       rowDiv.appendChild(lab);
@@ -622,12 +859,57 @@
   function setVaryPop(on) {
     params.varyPop = on;
     sidebar.style.display = on ? "block" : "none";
+
+    if (on) {
+      // defaults requested:
+      // parametric ON by default, linear default
+      params.parametric = true;
+      params.popModel = 'lin';
+      parametricToggle.checked = true;
+      modelLin.checked = true;
+      modelExp.checked = false;
+      parametricPanel.style.display = "block";
+
+      ensureConsistency();
+      applyParametricPopulation();
+      rebuildPopList();
+      resetSimulation();
+    } else {
+      // if off, we still keep N0/taxa logic, but no per-row variability
+      resetSimulation();
+    }
+  }
+
+  function setParametric(on) {
+    params.parametric = on;
+    parametricPanel.style.display = on ? "block" : "none";
+    if (on) {
+      if (!params.popModel) params.popModel = 'lin';
+      applyParametricPopulation();
+    }
+    rebuildPopList();
+    resetSimulation();
+  }
+
+  function setPersonalize(on) {
+    params.personalize = on;
+    popListBlock.style.display = on ? "block" : "none";
     if (on) rebuildPopList();
-    render();
+  }
+
+  function applyParametricFromUI() {
+    params.N0 = parseInt(N0Input.value, 10) || 20;
+    params.linSlope = parseFloat(linSlope.value) || 0;
+    params.expRate = parseFloat(expRate.value) || 0;
+
+    ensureConsistency();
+    applyParametricPopulation();
+    rebuildPopList();
+    resetSimulation();
   }
 
   // ---------------------------
-  // Apply params (seed / grid)
+  // Top controls: seed / grid / taxa
   // ---------------------------
   function applySeed() {
     stop();
@@ -638,22 +920,16 @@
 
   function applyGrid() {
     stop();
+    params.rows = parseInt(document.getElementById('gensInput').value, 10) || params.rows;
+    params.taxa = parseInt(document.getElementById('taxaInput').value, 10) || params.taxa;
 
-    const rowsIn = parseInt(document.getElementById('gensInput').value, 10);
-    const colsIn = parseInt(document.getElementById('nodesInput').value, 10);
+    ensureConsistency();
+    // keep N0 >= taxa
+    N0Input.value = String(params.N0);
 
-    params.rows = clamp(rowsIn || 20, 2, 60);
-    params.cols = clamp(colsIn || 10, 2, 40);
+    if (params.varyPop && params.parametric) applyParametricPopulation();
 
-    // Keep popCaps consistent with new dimensions
-    ensurePopCaps();
-    // Clamp every cap to new cols
-    params.popCaps = params.popCaps.map(v => clamp(parseInt(v,10) || params.cols, 1, params.cols));
-    // If rows changed, re-ensure length
-    ensurePopCaps();
-
-    buildGrid();
-    if (params.varyPop) rebuildPopList();
+    if (params.personalize) rebuildPopList();
     resetSimulation();
   }
 
@@ -673,15 +949,41 @@
   document.getElementById('applySeedBtn').addEventListener('click', applySeed);
   document.getElementById('applyGridBtn').addEventListener('click', applyGrid);
 
-  document.getElementById('varyPopToggle').addEventListener('change', (e) => {
-    setVaryPop(e.target.checked);
+  varyPopToggle.addEventListener('change', (e) => setVaryPop(e.target.checked));
+
+  parametricToggle.addEventListener('change', (e) => setParametric(e.target.checked));
+
+  modelLin.addEventListener('change', () => {
+    if (modelLin.checked) { params.popModel = 'lin'; modelExp.checked = false; }
+  });
+  modelExp.addEventListener('change', () => {
+    if (modelExp.checked) { params.popModel = 'exp'; modelLin.checked = false; }
   });
 
+  personalizeToggle.addEventListener('change', (e) => setPersonalize(e.target.checked));
+
+  applyParamBtn.addEventListener('click', () => {
+    if (!params.popModel) { params.popModel = 'lin'; modelLin.checked = true; modelExp.checked = false; }
+    applyParametricFromUI();
+  });
+
+  // live mirror for N0 (do not auto-apply until button, to avoid constant resets)
+  N0Input.addEventListener('input', () => { /* no-op; applied on button */ });
+
   // ---------------------------
-  // Init
+  // Init: requested defaults
+  // - time varying ON
+  // - parametric ON
+  // - linear default
+  // - personalize OFF (list hidden)
   // ---------------------------
-  // default: 20 generations, 10 nodes, varying pop OFF
-  params.popCaps = Array.from({length: params.rows}, () => params.cols);
+  parametricToggle.checked = true;
+  modelLin.checked = true;
+  modelExp.checked = false;
+  personalizeToggle.checked = false;
+
+  setVaryPop(true);
+  setPersonalize(false);
   buildGrid();
   resetSimulation();
 </script>
