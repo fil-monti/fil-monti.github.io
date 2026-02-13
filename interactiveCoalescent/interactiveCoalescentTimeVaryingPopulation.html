@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Discrete-Time Coalescent (MRCA stop + Planar Tree)</title>
+  <title>Discrete-Time Coalescent (Fluctuating Pop + Basin Layout)</title>
 
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     body {
       font-family: 'DM Sans', sans-serif;
       background: #ffffff;
@@ -20,9 +19,7 @@
       padding: 20px;
       color: #1a1a1a;
     }
-
     .container { width: 100%; max-width: 1280px; }
-
     h1 {
       text-align: center;
       font-weight: 800;
@@ -30,21 +27,18 @@
       letter-spacing: -0.02em;
       margin-bottom: 0.35rem;
     }
-
     .subtitle {
       text-align: center;
       color: #666;
       font-size: 1.05rem;
       margin-bottom: 1.15rem;
     }
-
     .stage {
       display: grid;
       grid-template-columns: 280px 1fr;
       gap: 14px;
       align-items: start;
     }
-
     .sidebar {
       width: 280px;
       border: 1px solid #edf0f2;
@@ -54,7 +48,6 @@
       padding: 12px;
       display: none;
     }
-
     .sidebar .title {
       font-family: 'JetBrains Mono', monospace;
       font-weight: 800;
@@ -62,14 +55,12 @@
       color: #2c3e50;
       margin-bottom: 6px;
     }
-
     .sidebar .hint {
       font-size: 0.86rem;
       color: #6b7280;
       margin-bottom: 10px;
       line-height: 1.25;
     }
-
     .section { border-top: 1px solid #eef2f5; padding-top: 10px; margin-top: 10px; }
 
     .row {
@@ -79,14 +70,12 @@
       align-items: center;
       margin-bottom: 8px;
     }
-
     .row label {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.88rem;
       color: #334155;
       font-weight: 800;
     }
-
     .row input[type="number"], .row input[type="text"] {
       width: 120px;
       padding: 8px 10px;
@@ -115,7 +104,6 @@
     .toggleline input { transform: scale(1.1); }
 
     .radio-group { display: grid; gap: 8px; margin-top: 6px; margin-bottom: 8px; }
-
     .radio {
       display: flex;
       align-items: center;
@@ -130,14 +118,12 @@
       font-size: 0.86rem;
       color: #2c3e50;
     }
-
     .radio .params {
       margin-left: auto;
       display: flex;
       gap: 8px;
       align-items: center;
     }
-
     .radio .params input[type="number"] {
       width: 90px;
       padding: 8px 10px;
@@ -155,14 +141,12 @@
       display: grid;
       gap: 8px;
     }
-
     .poprow {
       display: grid;
       grid-template-columns: 1fr 96px;
       gap: 8px;
       align-items: center;
     }
-
     .poprow label {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.84rem;
@@ -172,7 +156,6 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-
     .poprow input[type="number"] {
       width: 100%;
       padding: 8px 10px;
@@ -191,7 +174,6 @@
       align-items: center;
       width: 100%;
     }
-
     canvas {
       display: block;
       background: #ffffff;
@@ -225,7 +207,6 @@
       transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
       box-shadow: 0 2px 10px rgba(44,62,80,0.22);
     }
-
     button:hover {
       background: #34495e;
       transform: translateY(-2px);
@@ -242,7 +223,6 @@
       background: #fbfcfd;
       box-shadow: 0 6px 16px rgba(0,0,0,0.05);
     }
-
     .pill label {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.9rem;
@@ -250,9 +230,7 @@
       font-weight: 800;
       white-space: nowrap;
     }
-
     .pill input[type="range"] { width: 170px; }
-
     .pill .value {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.9rem;
@@ -261,7 +239,6 @@
       min-width: 64px;
       text-align: right;
     }
-
     .pill input[type="text"], .pill input[type="number"] {
       padding: 8px 10px;
       border-radius: 10px;
@@ -272,7 +249,6 @@
       width: 98px;
       background: #fff;
     }
-
     .pill .miniBtn {
       padding: 10px 14px;
       border-radius: 10px;
@@ -290,7 +266,6 @@
       box-shadow: 0 6px 16px rgba(0,0,0,0.05);
       user-select: none;
     }
-
     .toggle span {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.9rem;
@@ -298,7 +273,6 @@
       color: #2c3e50;
       white-space: nowrap;
     }
-
     .toggle input { transform: scale(1.1); }
 
     .info {
@@ -307,7 +281,6 @@
       color: #777;
       font-size: 0.95rem;
     }
-
     .small-note {
       text-align: center;
       margin-top: 6px;
@@ -320,13 +293,14 @@
 <body>
   <div class="container">
     <h1>Discrete-Time Coalescent on a Grid</h1>
-    <p class="subtitle">Lineages start at the present (bottom row) and merge backward in time.</p>
+    <p class="subtitle">Fluctuating population sizes: the “river basin” widens/narrows backward in time.</p>
 
     <div class="stage">
       <div class="sidebar" id="sidebar">
         <div class="title">Time varying population</div>
         <div class="hint">
-          N₀ is the population at present. Rows are centered to form a “reverse river”.
+          N₀ is the population at present (bottom). Other generations may be larger or smaller.
+          Rows are always centered in a common width so the basin can expand/contract over time.
         </div>
 
         <div class="section">
@@ -414,21 +388,19 @@
         <span>Time varying population</span>
       </div>
 
-      <!-- NEW: Stop at MRCA -->
       <div class="toggle">
         <input id="stopAtMRCAToggle" type="checkbox" checked />
         <span>Stop at MRCA</span>
       </div>
 
-      <!-- Display Tree (hidden until finished) -->
       <div class="toggle" id="displayTreeWrap" style="display:none;">
         <input id="displayTreeToggle" type="checkbox" />
         <span>Display Tree</span>
       </div>
     </div>
 
-    <div class="info">“Stop at MRCA” stops when only one lineage remains. “Display Tree” appears only after stopping.</div>
-    <div class="small-note">Tree tips are filled black. Tip order is chosen to give a planar drawing (no crossings).</div>
+    <div class="info">Rows may increase or decrease over time; the basin is centered in a common width so the river metaphor still holds.</div>
+    <div class="small-note">Parent assignment uses x-position matching so fluctuations do not produce unnatural “index jumps”.</div>
   </div>
 
 <script>
@@ -446,10 +418,7 @@
     ctx.lineWidth = Math.max(1.0, r * 0.26);
     ctx.strokeStyle = "#111";
     ctx.stroke();
-    if (filled) {
-      ctx.fillStyle = "#111";
-      ctx.fill();
-    }
+    if (filled) { ctx.fillStyle = "#111"; ctx.fill(); }
   }
 
   function line(x1, y1, x2, y2, alpha = 1) {
@@ -501,10 +470,13 @@
   // ---------------------------
   // Params
   // ---------------------------
+  const HARD_MAX_N = 2000;
+
   const params = {
     rows: 20,
     taxa: 10,
     N0: 20,
+
     padX: 70,
     padY: 70,
     radius: 7,
@@ -512,31 +484,47 @@
     varyPop: true,
     popCaps: [],
 
-    parametric: true,       // default ON
-    popModel: 'lin',        // linear default
+    parametric: true,
+    popModel: 'lin',
     linSlope: -1,
     expRate: 0.10,
 
     personalize: false,
     displayTree: false,
-    stopAtMRCA: true        // default ON
+    stopAtMRCA: true
   };
 
   function clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
   function gFromRow(r) { return (params.rows - 1) - r; }
 
+  function rowCap(r) {
+    return params.varyPop ? params.popCaps[r] : params.N0;
+  }
+
+  function globalMaxNodes() {
+    if (!params.varyPop) return params.N0;
+    let m = params.N0;
+    for (const v of params.popCaps) m = Math.max(m, v);
+    return m;
+  }
+
   function ensureConsistency() {
     params.rows = clamp(params.rows, 2, 200);
     params.taxa = clamp(params.taxa, 1, 500);
-    params.N0 = clamp(params.N0, params.taxa, 2000);
 
+    // present population (N0) must be >= taxa
+    params.N0 = clamp(params.N0, params.taxa, HARD_MAX_N);
+
+    // popCaps can fluctuate and can be > N0, but must be >=1
     params.popCaps = Array.from({length: params.rows}, (_, r) => {
       const v = params.popCaps[r] ?? params.N0;
-      return clamp(parseInt(v, 10) || params.N0, 1, params.N0);
+      return clamp(parseInt(v, 10) || params.N0, 1, HARD_MAX_N);
     });
 
-    // present row is N0
+    // enforce present row exactly N0
     params.popCaps[params.rows - 1] = params.N0;
+
+    // also ensure any row is at least 1 and not insane; done by clamp above
   }
 
   function applyParametricPopulation() {
@@ -551,18 +539,16 @@
       } else {
         Ng = Math.round(N0 + (+params.linSlope || 0) * g);
       }
-      params.popCaps[r] = clamp(Ng, 1, N0);
+      params.popCaps[r] = clamp(Ng, 1, HARD_MAX_N);
     }
     params.popCaps[params.rows - 1] = params.N0;
   }
 
   // ---------------------------
-  // Geometry: reverse river (centered rows, fixed dx based on N0)
+  // Geometry: basin layout (center each row in global width = max_r popCaps[r])
   // ---------------------------
-  let nodes = []; // nodes[r][c] for c < rowCap(r)
+  let nodes = [];       // nodes[r][c] for c<rowCap(r)
   let baseDx = 0;
-
-  function rowCap(r) { return params.varyPop ? params.popCaps[r] : params.N0; }
 
   function computeDynamicRadius() {
     const w = canvas.width;
@@ -570,11 +556,13 @@
     const usableW = w - 2 * params.padX;
     const usableH = h - 2 * params.padY;
 
-    const dx = usableW / Math.max(1, (params.N0 - 1));
+    const W = globalMaxNodes();
+    const dx = usableW / Math.max(1, (W - 1));
     const dy = usableH / Math.max(1, (params.rows - 1));
     const spacing = Math.min(dx, dy);
 
-    const scaleFactor = Math.sqrt((params.N0 * params.rows) / 500);
+    // rescale with total drawn nodes scale proxy: W*rows
+    const scaleFactor = Math.sqrt((W * params.rows) / 500);
     const r = (0.24 * spacing) / Math.max(1, scaleFactor);
     params.radius = clamp(r, 2.0, 9.0);
   }
@@ -588,7 +576,8 @@
     const usableW = w - 2 * params.padX;
     const usableH = h - 2 * params.padY;
 
-    baseDx = usableW / Math.max(1, (params.N0 - 1));
+    const W = globalMaxNodes();
+    baseDx = usableW / Math.max(1, (W - 1));
     const dy = usableH / Math.max(1, (params.rows - 1));
 
     nodes = [];
@@ -601,7 +590,7 @@
         row.push({ x: params.padX + usableW / 2, y });
       } else {
         const rowWidth = baseDx * (cap - 1);
-        const startX = params.padX + (usableW - rowWidth) / 2;
+        const startX = params.padX + (usableW - rowWidth) / 2; // center basin
         for (let c = 0; c < cap; c++) row.push({ x: startX + c * baseDx, y });
       }
       nodes.push(row);
@@ -611,8 +600,8 @@
   // ---------------------------
   // Simulation state
   // ---------------------------
-  let active = [];     // active[r] = Set of row-local indices
-  let edges = [];      // {child:{r,c}, parent:{r,c}}
+  let active = [];      // active[r] = Set of row-local indices
+  let edges = [];       // {child:{r,c}, parent:{r,c}}
   let currentRow = 0;
   let finished = false;
   let taxaIdxCache = [];
@@ -629,25 +618,50 @@
     return uniq.slice(0, K).sort((a,b)=>a-b);
   }
 
-  function chooseParentCol(childCol, parentRow) {
-    const cap = rowCap(parentRow);
-    const maxC = cap - 1;
-    if (maxC <= 0) return 0;
-
-    const u = rng();
-    let proposal;
-    if (u < 0.70) proposal = childCol;
-    else if (u < 0.85) proposal = childCol + (rng() < 0.5 ? -1 : 1);
-    else proposal = Math.floor(rng() * cap);
-
-    return clamp(proposal, 0, maxC);
+  function safeNodeAt(rc) {
+    const row = nodes[rc.r];
+    if (!row) return null;
+    return row[rc.c] ?? null;
   }
+
+  // IMPORTANT: parent choice based on x-position matching (works under fluctuating caps)
+  function chooseParentColByX(childRC, parentRow) {
+    const childP = safeNodeAt(childRC);
+    if (!childP) return 0;
+
+    const parentCap = rowCap(parentRow);
+    if (parentCap <= 1) return 0;
+
+    // nearest x among parent nodes
+    let nearest = 0;
+    let bestD = Infinity;
+    for (let pc = 0; pc < parentCap; pc++) {
+      const px = nodes[parentRow][pc].x;
+      const d = Math.abs(px - childP.x);
+      if (d < bestD) { bestD = d; nearest = pc; }
+    }
+
+    // local jitter around nearest to keep paths organic
+    const u = rng();
+    let proposal = nearest;
+    if (u < 0.20) proposal = nearest + (rng() < 0.5 ? -1 : 1);
+    else if (u < 0.25) proposal = nearest + (rng() < 0.5 ? -2 : 2);
+    else if (u < 0.30) proposal = Math.floor(rng() * parentCap);
+
+    return clamp(proposal, 0, parentCap - 1);
+  }
+
+  function stop() {
+    isPlaying = false;
+    if (timer) { clearInterval(timer); timer = null; }
+  }
+
+  const displayTreeWrap = document.getElementById('displayTreeWrap');
+  const displayTreeToggle = document.getElementById('displayTreeToggle');
 
   function markFinished() {
     finished = true;
     stop();
-
-    // only show Display Tree toggle once finished
     displayTreeWrap.style.display = "flex";
   }
 
@@ -674,41 +688,25 @@
   function stepOnce() {
     if (finished) return;
 
-    // if we are stopping at MRCA and already at 1 lineage, finish
     if (params.stopAtMRCA && active[currentRow].size <= 1) {
-      markFinished();
-      render();
-      return;
+      markFinished(); render(); return;
     }
 
-    // if we reached the top row and are not stopping early, finish
     if (!params.stopAtMRCA && currentRow === 0) {
-      markFinished();
-      render();
-      return;
+      markFinished(); render(); return;
     }
 
-    // if we can still move upward
-    if (currentRow === 0) {
-      // stopAtMRCA=true may still finish here too
-      markFinished();
-      render();
-      return;
-    }
+    if (currentRow === 0) { markFinished(); render(); return; }
 
     const r = currentRow;
     const parentsRow = r - 1;
 
-    const children = Array.from(active[r]).sort((a,b) => a - b);
-    if (children.length === 0) {
-      markFinished();
-      render();
-      return;
-    }
+    const children = Array.from(active[r]).sort((a,b)=>a-b);
+    if (children.length === 0) { markFinished(); render(); return; }
 
     const parentSet = new Set();
     for (const childCol of children) {
-      const parentCol = chooseParentCol(childCol, parentsRow);
+      const parentCol = chooseParentColByX({r, c: childCol}, parentsRow);
       parentSet.add(parentCol);
       edges.push({ child: { r, c: childCol }, parent: { r: parentsRow, c: parentCol } });
     }
@@ -716,7 +714,6 @@
     active[parentsRow] = parentSet;
     currentRow = parentsRow;
 
-    // finish criterion
     if (params.stopAtMRCA) {
       if (active[currentRow].size <= 1) markFinished();
     } else {
@@ -727,52 +724,41 @@
   }
 
   // ---------------------------
-  // Tree building (planar leaf order, no crossings)
+  // Tree (planar leaf ordering; tips filled black)
   // ---------------------------
   function keyOf(r,c) { return `${r}:${c}`; }
   function parseKey(k) { const [rs, cs] = k.split(':'); return { r: +rs, c: +cs }; }
 
   function buildParentMap() {
-    const parent = new Map(); // childKey -> parentKey
+    const parent = new Map();
     for (const e of edges) parent.set(keyOf(e.child.r, e.child.c), keyOf(e.parent.r, e.parent.c));
     return parent;
   }
 
-  // Node object: { id, r, c, children:[], tips:Set<int>, minTip:number, isLeaf:boolean }
   function buildInducedTree() {
     const parentMap = buildParentMap();
-
-    // tips = taxa at present row (row = rows-1)
     const tipKeys = taxaIdxCache.map(c => keyOf(params.rows - 1, c));
 
-    // collect ancestors of tips
     const keep = new Set();
     for (const tk of tipKeys) {
       let cur = tk;
-      while (cur && !keep.has(cur)) {
-        keep.add(cur);
-        cur = parentMap.get(cur);
-      }
+      while (cur && !keep.has(cur)) { keep.add(cur); cur = parentMap.get(cur); }
     }
 
-    // build node map
     const nodeMap = new Map();
     function getNode(k) {
       if (!nodeMap.has(k)) {
         const {r,c} = parseKey(k);
-        nodeMap.set(k, { id: k, r, c, children: [], tips: new Set(), minTip: Infinity, isLeaf: false });
+        nodeMap.set(k, { id: k, r, c, children: [], tips: new Set(), minTip: Infinity });
       }
       return nodeMap.get(k);
     }
     for (const k of keep) getNode(k);
-
-    // children lists
     for (const k of keep) {
       const p = parentMap.get(k);
       if (p && keep.has(p)) getNode(p).children.push(getNode(k));
     }
 
-    // root = node in keep with no parent in keep
     let root = null;
     for (const k of keep) {
       const p = parentMap.get(k);
@@ -780,68 +766,46 @@
     }
     if (!root) root = getNode(tipKeys[0]);
 
-    // annotate tips sets bottom-up
     const tipIndexByKey = new Map();
-    // Use present index order only for "subtree signature", NOT the final display order.
-    // This helps stable child ordering.
-    tipKeys.forEach((k, i) => tipIndexByKey.set(k, i));
+    tipKeys.forEach((k,i)=>tipIndexByKey.set(k,i));
 
     function post(n) {
-      if (tipIndexByKey.has(n.id)) {
-        n.isLeaf = true;
-        n.tips.add(tipIndexByKey.get(n.id));
-      } else {
-        n.isLeaf = false;
-        for (const ch of n.children) {
-          post(ch);
-          for (const t of ch.tips) n.tips.add(t);
-        }
+      n.tips = new Set();
+      if (tipIndexByKey.has(n.id)) n.tips.add(tipIndexByKey.get(n.id));
+      for (const ch of n.children) {
+        post(ch);
+        for (const t of ch.tips) n.tips.add(t);
       }
       n.minTip = Math.min(...n.tips);
-      // order children by minTip (planar embedding), tie-break by subtree size
-      n.children.sort((a,b) => (a.minTip - b.minTip) || (a.tips.size - b.tips.size));
+      n.children.sort((a,b)=>(a.minTip-b.minTip)||(a.tips.size-b.tips.size));
     }
     post(root);
 
-    // Contract unary chains (keep leaves and branching coalescent nodes)
     function contract(n, isRoot=false) {
-      n.children = n.children.map(ch => contract(ch,false)).filter(Boolean);
-
-      if (n.children.length === 0) return n;            // leaf
-      if (n.children.length === 1 && !isRoot) return n.children[0]; // contract
-      return n; // branching node or root
+      n.children = n.children.map(ch=>contract(ch,false)).filter(Boolean);
+      if (n.children.length === 0) return n;
+      if (n.children.length === 1 && !isRoot) return n.children[0];
+      return n;
     }
-    root = contract(root, true);
+    root = contract(root,true);
 
-    // Recompute tips/minTip after contraction and re-order children
     function post2(n) {
       n.tips = new Set();
-      if (n.children.length === 0) {
-        n.isLeaf = true;
-        n.tips.add(tipIndexByKey.get(n.id));
-      } else {
-        n.isLeaf = false;
-        for (const ch of n.children) {
-          post2(ch);
-          for (const t of ch.tips) n.tips.add(t);
-        }
-      }
+      if (n.children.length === 0) n.tips.add(tipIndexByKey.get(n.id));
+      for (const ch of n.children) { post2(ch); for (const t of ch.tips) n.tips.add(t); }
       n.minTip = Math.min(...n.tips);
-      n.children.sort((a,b) => (a.minTip - b.minTip) || (a.tips.size - b.tips.size));
+      n.children.sort((a,b)=>(a.minTip-b.minTip)||(a.tips.size-b.tips.size));
     }
     post2(root);
 
-    // Build planar leaf order by DFS
     const planarLeaves = [];
-    function collectLeaves(n) {
+    (function collect(n){
       if (n.children.length === 0) { planarLeaves.push(n.id); return; }
-      for (const ch of n.children) collectLeaves(ch);
-    }
-    collectLeaves(root);
+      for (const ch of n.children) collect(ch);
+    })(root);
 
-    // map leaf id -> planar position 0..(taxa-1)
     const leafOrder = new Map();
-    planarLeaves.forEach((id,i) => leafOrder.set(id,i));
+    planarLeaves.forEach((id,i)=>leafOrder.set(id,i));
 
     return { root, leafOrder, nTips: planarLeaves.length };
   }
@@ -860,73 +824,60 @@
     }
 
     const pos = new Map();
-
     function place(n) {
       if (n.children.length === 0) {
         const ord = leafOrder.get(n.id);
         const x = xTip[ord];
         const y = yFromRow(n.r);
-        pos.set(n.id, {x,y});
-        return {x,y, left: x, right: x};
+        pos.set(n.id,{x,y});
+        return {left:x,right:x};
       } else {
-        const childPts = n.children.map(place);
-        const left = Math.min(...childPts.map(p=>p.left));
-        const right = Math.max(...childPts.map(p=>p.right));
-        // internal x between extremes -> avoids crossings
-        const x = (left + right) / 2;
+        const spans = n.children.map(place);
+        const left = Math.min(...spans.map(s=>s.left));
+        const right= Math.max(...spans.map(s=>s.right));
+        const x = (left+right)/2;
         const y = yFromRow(n.r);
-        pos.set(n.id, {x,y});
-        return {x,y, left, right};
+        pos.set(n.id,{x,y});
+        return {left,right};
       }
     }
     place(root);
-
     return pos;
   }
 
   function drawTree(tree, pos, box) {
     const { root } = tree;
 
-    text("Tree", box.x0 + 4, box.y0 - 18, { font: "700 13px JetBrains Mono", fill: "#6b7280", align: "left" });
+    text("Tree", box.x0 + 4, box.y0 - 18, { font: "700 13px JetBrains Mono", fill: "#6b7280" });
 
-    function dfsEdges(n) {
+    (function drawEdges(n){
       const P = pos.get(n.id);
       for (const ch of n.children) {
         const C = pos.get(ch.id);
-        if (P && C) line(P.x, P.y, C.x, C.y, 0.92);
-        dfsEdges(ch);
+        if (P && C) line(P.x,P.y,C.x,C.y,0.92);
+        drawEdges(ch);
       }
-    }
-    dfsEdges(root);
+    })(root);
 
-    // nodes: show only leaves + coalescent nodes (branching)
-    function dfsNodes(n) {
+    (function drawNodes(n){
       const p = pos.get(n.id);
       if (!p) return;
-
       const isLeaf = (n.children.length === 0);
       const isCoal = (n.children.length >= 2);
 
       if (isLeaf) {
-        // TIPs filled black (requested)
-        circle(p.x, p.y, Math.max(2.4, params.radius*0.85), true);
+        circle(p.x,p.y,Math.max(2.4, params.radius*0.85), true); // tips filled black
       } else if (isCoal) {
-        circle(p.x, p.y, Math.max(2.6, params.radius*0.95), true);
+        circle(p.x,p.y,Math.max(2.6, params.radius*0.95), true);
       }
-      for (const ch of n.children) dfsNodes(ch);
-    }
-    dfsNodes(root);
+
+      for (const ch of n.children) drawNodes(ch);
+    })(root);
   }
 
   // ---------------------------
-  // Render: grid-only OR grid+tree
+  // Render
   // ---------------------------
-  function safeNodeAt(rc) {
-    const row = nodes[rc.r];
-    if (!row) return null;
-    return row[rc.c] ?? null;
-  }
-
   function render() {
     clear();
 
@@ -956,12 +907,10 @@
     text("Past", gridBox.x0 - 50, fullY0 + 10, { font: "700 13px JetBrains Mono", fill: "#6b7280" });
     text("Present", gridBox.x0 - 50, fullY0 + fullH - 5, { font: "700 13px JetBrains Mono", fill: "#6b7280" });
 
-    // nodes were built in fullW coordinates; squeeze X only if tree is shown
     const scaleX = gridBox.w / fullW;
     function mapGridX(x) { return gridBox.x0 + (x - fullX0) * scaleX; }
     function mapGridY(y) { return y; }
 
-    // grid edges
     for (const e of edges) {
       const A = safeNodeAt(e.child);
       const B = safeNodeAt(e.parent);
@@ -969,7 +918,6 @@
       line(mapGridX(A.x), mapGridY(A.y), mapGridX(B.x), mapGridY(B.y), 0.85);
     }
 
-    // grid nodes
     for (let r = 0; r < params.rows; r++) {
       const cap = rowCap(r);
       for (let c = 0; c < cap; c++) {
@@ -981,8 +929,9 @@
 
     const activeCount = active[currentRow]?.size ?? 0;
     const capHere = rowCap(currentRow);
+    const W = globalMaxNodes();
     text(
-      `Row: ${currentRow + 1}/${params.rows}  |  Active: ${activeCount}  |  Displayed: ${capHere}  |  N₀: ${params.N0}  |  Taxa: ${params.taxa}`,
+      `Row: ${currentRow + 1}/${params.rows} | Active: ${activeCount} | RowCap: ${capHere} | N₀: ${params.N0} | MaxCap: ${W} | Taxa: ${params.taxa}`,
       canvas.width - 20, 28,
       { font: "700 13px JetBrains Mono", fill: "#2c3e50", align: "right" }
     );
@@ -1018,18 +967,13 @@
     }, getIntervalMs());
   }
 
-  function stop() {
-    isPlaying = false;
-    if (timer) { clearInterval(timer); timer = null; }
-  }
-
   function rebuildTimerIfNeeded() {
     if (!isPlaying) return;
     stop(); start();
   }
 
   // ---------------------------
-  // Sidebar UI
+  // Sidebar + controls wiring
   // ---------------------------
   const sidebar = document.getElementById('sidebar');
   const poplist = document.getElementById('poplist');
@@ -1048,9 +992,6 @@
 
   const personalizeToggle = document.getElementById('personalizeToggle');
   const popListBlock = document.getElementById('popListBlock');
-
-  const displayTreeWrap = document.getElementById('displayTreeWrap');
-  const displayTreeToggle = document.getElementById('displayTreeToggle');
 
   function generationLabel(r) {
     const g = gFromRow(r);
@@ -1073,14 +1014,14 @@
       const inp = document.createElement('input');
       inp.type = "number";
       inp.min = "1";
-      inp.max = String(params.N0);
+      inp.max = String(HARD_MAX_N);
       inp.value = String(params.popCaps[r]);
       inp.disabled = params.parametric;
 
       inp.addEventListener('input', () => {
-        const v = clamp(parseInt(inp.value, 10) || params.N0, 1, params.N0);
+        const v = clamp(parseInt(inp.value, 10) || params.N0, 1, HARD_MAX_N);
         params.popCaps[r] = v;
-        params.popCaps[params.rows - 1] = params.N0;
+        params.popCaps[params.rows - 1] = params.N0; // keep present fixed
         stop();
         resetSimulation();
       });
@@ -1096,7 +1037,6 @@
     sidebar.style.display = on ? "block" : "none";
 
     if (on) {
-      // defaults
       params.parametric = true;
       params.popModel = 'lin';
       parametricToggle.checked = true;
@@ -1129,15 +1069,13 @@
     params.N0 = parseInt(N0Input.value, 10) || 20;
     params.linSlope = parseFloat(linSlope.value) || 0;
     params.expRate = parseFloat(expRate.value) || 0;
+
     ensureConsistency();
     applyParametricPopulation();
     if (params.personalize) rebuildPopList();
     resetSimulation();
   }
 
-  // ---------------------------
-  // Top controls
-  // ---------------------------
   function applySeed() {
     stop();
     const seedStr = (document.getElementById('seedInput').value || "0").trim();
@@ -1159,28 +1097,25 @@
     resetSimulation();
   }
 
-  // ---------------------------
-  // Wire UI
-  // ---------------------------
+  // Buttons
   document.getElementById('playBtn').addEventListener('click', start);
   document.getElementById('pauseBtn').addEventListener('click', stop);
   document.getElementById('stepBtn').addEventListener('click', () => { stop(); stepOnce(); });
   document.getElementById('resetBtn').addEventListener('click', () => { stop(); resetSimulation(); });
 
+  // Speed
   speedSlider.addEventListener('input', () => {
     speedValue.textContent = `${parseFloat(speedSlider.value).toFixed(1)}×`;
     rebuildTimerIfNeeded();
   });
 
+  // Seed & grid
   document.getElementById('applySeedBtn').addEventListener('click', applySeed);
   document.getElementById('applyGridBtn').addEventListener('click', applyGrid);
 
+  // Toggles
   varyPopToggle.addEventListener('change', (e) => setVaryPop(e.target.checked));
-
-  stopAtMRCAToggle.addEventListener('change', (e) => {
-    params.stopAtMRCA = e.target.checked;
-    // if currently finished/unfinished, do nothing; it will affect next run
-  });
+  stopAtMRCAToggle.addEventListener('change', (e) => { params.stopAtMRCA = e.target.checked; });
 
   parametricToggle.addEventListener('change', (e) => setParametric(e.target.checked));
 
@@ -1192,11 +1127,7 @@
   });
 
   personalizeToggle.addEventListener('change', (e) => setPersonalize(e.target.checked));
-
-  applyParamBtn.addEventListener('click', () => {
-    if (!params.popModel) { params.popModel = 'lin'; modelLin.checked = true; modelExp.checked = false; }
-    applyParametricFromUI();
-  });
+  applyParamBtn.addEventListener('click', applyParametricFromUI);
 
   displayTreeToggle.addEventListener('change', (e) => {
     params.displayTree = e.target.checked;
@@ -1206,12 +1137,12 @@
   // ---------------------------
   // Init defaults
   // ---------------------------
+  sidebar.style.display = "block";
   parametricToggle.checked = true;
   modelLin.checked = true;
   modelExp.checked = false;
   personalizeToggle.checked = false;
 
-  sidebar.style.display = "block";
   params.popCaps = Array.from({length: params.rows}, () => params.N0);
 
   setVaryPop(true);
