@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Discrete-Time Coalescent (River Layout + Parametric Pop)</title>
+  <title>Discrete-Time Coalescent (MRCA stop + Planar Tree)</title>
 
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 
@@ -21,10 +21,7 @@
       color: #1a1a1a;
     }
 
-    .container {
-      width: 100%;
-      max-width: 1280px;
-    }
+    .container { width: 100%; max-width: 1280px; }
 
     h1 {
       text-align: center;
@@ -55,7 +52,7 @@
       background: #fbfcfd;
       box-shadow: 0 10px 24px rgba(0,0,0,0.06);
       padding: 12px;
-      display: none; /* shown when time varying ON */
+      display: none;
     }
 
     .sidebar .title {
@@ -73,11 +70,7 @@
       line-height: 1.25;
     }
 
-    .section {
-      border-top: 1px solid #eef2f5;
-      padding-top: 10px;
-      margin-top: 10px;
-    }
+    .section { border-top: 1px solid #eef2f5; padding-top: 10px; margin-top: 10px; }
 
     .row {
       display: grid;
@@ -121,12 +114,7 @@
     }
     .toggleline input { transform: scale(1.1); }
 
-    .radio-group {
-      display: grid;
-      gap: 8px;
-      margin-top: 6px;
-      margin-bottom: 8px;
-    }
+    .radio-group { display: grid; gap: 8px; margin-top: 6px; margin-bottom: 8px; }
 
     .radio {
       display: flex;
@@ -338,8 +326,7 @@
       <div class="sidebar" id="sidebar">
         <div class="title">Time varying population</div>
         <div class="hint">
-          N₀ is the population at the present (bottom). Per-generation sizes define how many nodes are displayed in that row.
-          Rows are centered to form a “reverse river”.
+          N₀ is the population at present. Rows are centered to form a “reverse river”.
         </div>
 
         <div class="section">
@@ -354,7 +341,6 @@
               <input id="N0Input" type="number" min="1" value="20" />
             </div>
 
-            <!-- Linear FIRST and default -->
             <div class="radio-group">
               <div class="radio">
                 <input type="radio" name="popModel" id="modelLin" value="lin" />
@@ -376,12 +362,6 @@
             </div>
 
             <button id="applyParamBtn" style="width:100%;padding:10px 12px;border-radius:12px;">Apply function</button>
-
-            <div style="margin-top:8px;color:#6b7280;font-size:0.83rem;line-height:1.25;">
-              Linear: <span style="font-family:'JetBrains Mono',monospace;">N(g)=round(N₀ + slope·g)</span><br/>
-              Exponential: <span style="font-family:'JetBrains Mono',monospace;">N(g)=round(N₀·exp(rate·g))</span><br/>
-              with <span style="font-family:'JetBrains Mono',monospace;">g=0</span> at present (bottom), increasing upward.
-            </div>
           </div>
         </div>
 
@@ -423,9 +403,9 @@
 
       <div class="pill">
         <label for="gensInput">Generations</label>
-        <input id="gensInput" type="number" min="2" max="100" value="20">
+        <input id="gensInput" type="number" min="2" max="200" value="20">
         <label for="taxaInput" style="margin-left:10px;">Taxa</label>
-        <input id="taxaInput" type="number" min="1" max="60" value="10">
+        <input id="taxaInput" type="number" min="1" max="500" value="10">
         <button id="applyGridBtn" class="miniBtn">Apply</button>
       </div>
 
@@ -433,10 +413,22 @@
         <input id="varyPopToggle" type="checkbox" checked />
         <span>Time varying population</span>
       </div>
+
+      <!-- NEW: Stop at MRCA -->
+      <div class="toggle">
+        <input id="stopAtMRCAToggle" type="checkbox" checked />
+        <span>Stop at MRCA</span>
+      </div>
+
+      <!-- Display Tree (hidden until finished) -->
+      <div class="toggle" id="displayTreeWrap" style="display:none;">
+        <input id="displayTreeToggle" type="checkbox" />
+        <span>Display Tree</span>
+      </div>
     </div>
 
-    <div class="info">Bottom row has N₀ nodes, but only the taxa are filled. Parents are restricted to displayed nodes per generation.</div>
-    <div class="small-note">Rows are centered with a fixed global spacing to produce a “reverse river” when population shrinks toward the past.</div>
+    <div class="info">“Stop at MRCA” stops when only one lineage remains. “Display Tree” appears only after stopping.</div>
+    <div class="small-note">Tree tips are filled black. Tip order is chosen to give a planar drawing (no crossings).</div>
   </div>
 
 <script>
@@ -510,46 +502,40 @@
   // Params
   // ---------------------------
   const params = {
-    rows: 20,        // generations
-    taxa: 10,        // number of observed lineages at present (filled nodes)
-    N0: 20,          // population at present (number of circles in bottom row)
+    rows: 20,
+    taxa: 10,
+    N0: 20,
     padX: 70,
     padY: 70,
     radius: 7,
-    varyPop: true,
 
-    // Time varying pop sizes: popCaps[r] is displayed node count in row r
+    varyPop: true,
     popCaps: [],
 
-    // parametric pop
-    parametric: true,    // ON by default
-    popModel: 'lin',     // linear default
+    parametric: true,       // default ON
+    popModel: 'lin',        // linear default
     linSlope: -1,
     expRate: 0.10,
 
-    // personalization
-    personalize: false   // OFF by default (list hidden)
+    personalize: false,
+    displayTree: false,
+    stopAtMRCA: true        // default ON
   };
 
   function clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
-
-  // g=0 at present (bottom), increases upward
   function gFromRow(r) { return (params.rows - 1) - r; }
 
   function ensureConsistency() {
-    params.rows = clamp(params.rows, 2, 100);
-    params.taxa = clamp(params.taxa, 1, 200);
+    params.rows = clamp(params.rows, 2, 200);
+    params.taxa = clamp(params.taxa, 1, 500);
+    params.N0 = clamp(params.N0, params.taxa, 2000);
 
-    // enforce N0 >= taxa
-    params.N0 = clamp(params.N0, params.taxa, 500);
-
-    // popCaps length and clamping
     params.popCaps = Array.from({length: params.rows}, (_, r) => {
       const v = params.popCaps[r] ?? params.N0;
       return clamp(parseInt(v, 10) || params.N0, 1, params.N0);
     });
 
-    // present row must be exactly N0
+    // present row is N0
     params.popCaps[params.rows - 1] = params.N0;
   }
 
@@ -562,7 +548,7 @@
       let Ng;
       if (params.popModel === 'exp') {
         Ng = Math.round(N0 * Math.exp((+params.expRate || 0) * g));
-      } else { // linear
+      } else {
         Ng = Math.round(N0 + (+params.linSlope || 0) * g);
       }
       params.popCaps[r] = clamp(Ng, 1, N0);
@@ -571,12 +557,12 @@
   }
 
   // ---------------------------
-  // Geometry: "reverse river"
+  // Geometry: reverse river (centered rows, fixed dx based on N0)
   // ---------------------------
-  // Use a global dx based on max nodes at present (N0) so spacing is consistent.
-  // Then center each row of size cap within that fixed spacing.
-  let nodes = []; // nodes[r][c] = {x,y} with c<popCaps[r]
+  let nodes = []; // nodes[r][c] for c < rowCap(r)
   let baseDx = 0;
+
+  function rowCap(r) { return params.varyPop ? params.popCaps[r] : params.N0; }
 
   function computeDynamicRadius() {
     const w = canvas.width;
@@ -588,10 +574,8 @@
     const dy = usableH / Math.max(1, (params.rows - 1));
     const spacing = Math.min(dx, dy);
 
-    // scale down as problem grows (mild)
-    const scaleFactor = Math.sqrt((params.N0 * params.rows) / 400); // 400 baseline ~ 20*20
+    const scaleFactor = Math.sqrt((params.N0 * params.rows) / 500);
     const r = (0.24 * spacing) / Math.max(1, scaleFactor);
-
     params.radius = clamp(r, 2.0, 9.0);
   }
 
@@ -609,70 +593,40 @@
 
     nodes = [];
     for (let r = 0; r < params.rows; r++) {
-      const cap = params.varyPop ? params.popCaps[r] : params.N0;
-
-      const row = [];
+      const cap = rowCap(r);
       const y = params.padY + r * dy;
 
+      const row = [];
       if (cap === 1) {
         row.push({ x: params.padX + usableW / 2, y });
       } else {
         const rowWidth = baseDx * (cap - 1);
-        const startX = params.padX + (usableW - rowWidth) / 2; // CENTER -> reverse river
+        const startX = params.padX + (usableW - rowWidth) / 2;
         for (let c = 0; c < cap; c++) row.push({ x: startX + c * baseDx, y });
       }
-
       nodes.push(row);
     }
-  }
-
-  function rowCap(r) {
-    return params.varyPop ? params.popCaps[r] : params.N0;
   }
 
   // ---------------------------
   // Simulation state
   // ---------------------------
-  let active = [];     // active[r] = Set of active indices in that row (row-local indices)
-  let edges = [];      // edges between row-local indices: {child:{r,c}, parent:{r,c}}
+  let active = [];     // active[r] = Set of row-local indices
+  let edges = [];      // {child:{r,c}, parent:{r,c}}
   let currentRow = 0;
+  let finished = false;
+  let taxaIdxCache = [];
 
-  // Choose taxa indices evenly across N0 nodes (row-local indices 0..N0-1).
   function evenlySpacedTaxaIndices() {
     const K = params.taxa;
     const N = params.N0;
-
     if (K === 1) return [Math.floor((N - 1) / 2)];
     const idx = [];
-    for (let i = 0; i < K; i++) {
-      idx.push(Math.round(i * (N - 1) / (K - 1)));
-    }
-    // ensure uniqueness if rounding collides (rare with small N)
+    for (let i = 0; i < K; i++) idx.push(Math.round(i * (N - 1) / (K - 1)));
     const uniq = Array.from(new Set(idx));
-    // if collisions reduced size, fill gaps left-to-right
     let c = 0;
-    while (uniq.length < K) {
-      if (!uniq.includes(c)) uniq.push(c);
-      c++;
-    }
-    return uniq.slice(0, K);
-  }
-
-  function resetSimulation() {
-    edges = [];
-    active = Array.from({length: params.rows}, () => new Set());
-    currentRow = params.rows - 1;
-
-    // enforce present row has N0 nodes
-    if (params.varyPop) params.popCaps[params.rows - 1] = params.N0;
-
-    buildGrid(); // rebuild geometry (since N0/popcaps may have changed)
-
-    // initial lineages are taxa only
-    const taxaIdx = evenlySpacedTaxaIndices();
-    for (const c of taxaIdx) active[currentRow].add(c);
-
-    render();
+    while (uniq.length < K) { if (!uniq.includes(c)) uniq.push(c); c++; }
+    return uniq.slice(0, K).sort((a,b)=>a-b);
   }
 
   function chooseParentCol(childCol, parentRow) {
@@ -680,7 +634,6 @@
     const maxC = cap - 1;
     if (maxC <= 0) return 0;
 
-    // keep choices "local" in index space; this preserves the river look
     const u = rng();
     let proposal;
     if (u < 0.70) proposal = childCol;
@@ -690,14 +643,68 @@
     return clamp(proposal, 0, maxC);
   }
 
+  function markFinished() {
+    finished = true;
+    stop();
+
+    // only show Display Tree toggle once finished
+    displayTreeWrap.style.display = "flex";
+  }
+
+  function resetSimulation() {
+    edges = [];
+    active = Array.from({length: params.rows}, () => new Set());
+    currentRow = params.rows - 1;
+    finished = false;
+
+    params.displayTree = false;
+    displayTreeToggle.checked = false;
+    displayTreeWrap.style.display = "none";
+
+    if (params.varyPop) params.popCaps[params.rows - 1] = params.N0;
+
+    buildGrid();
+
+    taxaIdxCache = evenlySpacedTaxaIndices();
+    for (const c of taxaIdxCache) active[currentRow].add(c);
+
+    render();
+  }
+
   function stepOnce() {
-    if (currentRow === 0) return;
+    if (finished) return;
+
+    // if we are stopping at MRCA and already at 1 lineage, finish
+    if (params.stopAtMRCA && active[currentRow].size <= 1) {
+      markFinished();
+      render();
+      return;
+    }
+
+    // if we reached the top row and are not stopping early, finish
+    if (!params.stopAtMRCA && currentRow === 0) {
+      markFinished();
+      render();
+      return;
+    }
+
+    // if we can still move upward
+    if (currentRow === 0) {
+      // stopAtMRCA=true may still finish here too
+      markFinished();
+      render();
+      return;
+    }
 
     const r = currentRow;
     const parentsRow = r - 1;
 
     const children = Array.from(active[r]).sort((a,b) => a - b);
-    if (children.length === 0) return;
+    if (children.length === 0) {
+      markFinished();
+      render();
+      return;
+    }
 
     const parentSet = new Set();
     for (const childCol of children) {
@@ -709,12 +716,210 @@
     active[parentsRow] = parentSet;
     currentRow = parentsRow;
 
+    // finish criterion
+    if (params.stopAtMRCA) {
+      if (active[currentRow].size <= 1) markFinished();
+    } else {
+      if (currentRow === 0) markFinished();
+    }
+
     render();
-    if (currentRow === 0) stop();
   }
 
   // ---------------------------
-  // Render
+  // Tree building (planar leaf order, no crossings)
+  // ---------------------------
+  function keyOf(r,c) { return `${r}:${c}`; }
+  function parseKey(k) { const [rs, cs] = k.split(':'); return { r: +rs, c: +cs }; }
+
+  function buildParentMap() {
+    const parent = new Map(); // childKey -> parentKey
+    for (const e of edges) parent.set(keyOf(e.child.r, e.child.c), keyOf(e.parent.r, e.parent.c));
+    return parent;
+  }
+
+  // Node object: { id, r, c, children:[], tips:Set<int>, minTip:number, isLeaf:boolean }
+  function buildInducedTree() {
+    const parentMap = buildParentMap();
+
+    // tips = taxa at present row (row = rows-1)
+    const tipKeys = taxaIdxCache.map(c => keyOf(params.rows - 1, c));
+
+    // collect ancestors of tips
+    const keep = new Set();
+    for (const tk of tipKeys) {
+      let cur = tk;
+      while (cur && !keep.has(cur)) {
+        keep.add(cur);
+        cur = parentMap.get(cur);
+      }
+    }
+
+    // build node map
+    const nodeMap = new Map();
+    function getNode(k) {
+      if (!nodeMap.has(k)) {
+        const {r,c} = parseKey(k);
+        nodeMap.set(k, { id: k, r, c, children: [], tips: new Set(), minTip: Infinity, isLeaf: false });
+      }
+      return nodeMap.get(k);
+    }
+    for (const k of keep) getNode(k);
+
+    // children lists
+    for (const k of keep) {
+      const p = parentMap.get(k);
+      if (p && keep.has(p)) getNode(p).children.push(getNode(k));
+    }
+
+    // root = node in keep with no parent in keep
+    let root = null;
+    for (const k of keep) {
+      const p = parentMap.get(k);
+      if (!p || !keep.has(p)) { root = getNode(k); break; }
+    }
+    if (!root) root = getNode(tipKeys[0]);
+
+    // annotate tips sets bottom-up
+    const tipIndexByKey = new Map();
+    // Use present index order only for "subtree signature", NOT the final display order.
+    // This helps stable child ordering.
+    tipKeys.forEach((k, i) => tipIndexByKey.set(k, i));
+
+    function post(n) {
+      if (tipIndexByKey.has(n.id)) {
+        n.isLeaf = true;
+        n.tips.add(tipIndexByKey.get(n.id));
+      } else {
+        n.isLeaf = false;
+        for (const ch of n.children) {
+          post(ch);
+          for (const t of ch.tips) n.tips.add(t);
+        }
+      }
+      n.minTip = Math.min(...n.tips);
+      // order children by minTip (planar embedding), tie-break by subtree size
+      n.children.sort((a,b) => (a.minTip - b.minTip) || (a.tips.size - b.tips.size));
+    }
+    post(root);
+
+    // Contract unary chains (keep leaves and branching coalescent nodes)
+    function contract(n, isRoot=false) {
+      n.children = n.children.map(ch => contract(ch,false)).filter(Boolean);
+
+      if (n.children.length === 0) return n;            // leaf
+      if (n.children.length === 1 && !isRoot) return n.children[0]; // contract
+      return n; // branching node or root
+    }
+    root = contract(root, true);
+
+    // Recompute tips/minTip after contraction and re-order children
+    function post2(n) {
+      n.tips = new Set();
+      if (n.children.length === 0) {
+        n.isLeaf = true;
+        n.tips.add(tipIndexByKey.get(n.id));
+      } else {
+        n.isLeaf = false;
+        for (const ch of n.children) {
+          post2(ch);
+          for (const t of ch.tips) n.tips.add(t);
+        }
+      }
+      n.minTip = Math.min(...n.tips);
+      n.children.sort((a,b) => (a.minTip - b.minTip) || (a.tips.size - b.tips.size));
+    }
+    post2(root);
+
+    // Build planar leaf order by DFS
+    const planarLeaves = [];
+    function collectLeaves(n) {
+      if (n.children.length === 0) { planarLeaves.push(n.id); return; }
+      for (const ch of n.children) collectLeaves(ch);
+    }
+    collectLeaves(root);
+
+    // map leaf id -> planar position 0..(taxa-1)
+    const leafOrder = new Map();
+    planarLeaves.forEach((id,i) => leafOrder.set(id,i));
+
+    return { root, leafOrder, nTips: planarLeaves.length };
+  }
+
+  function layoutTree(tree, box) {
+    const { root, leafOrder, nTips } = tree;
+
+    const xTip = new Array(nTips).fill(0).map((_,i)=>{
+      if (nTips === 1) return box.x0 + box.w/2;
+      return box.x0 + (i/(nTips-1))*box.w;
+    });
+
+    function yFromRow(r) {
+      const t = r / (params.rows - 1);
+      return box.y0 + t * box.h;
+    }
+
+    const pos = new Map();
+
+    function place(n) {
+      if (n.children.length === 0) {
+        const ord = leafOrder.get(n.id);
+        const x = xTip[ord];
+        const y = yFromRow(n.r);
+        pos.set(n.id, {x,y});
+        return {x,y, left: x, right: x};
+      } else {
+        const childPts = n.children.map(place);
+        const left = Math.min(...childPts.map(p=>p.left));
+        const right = Math.max(...childPts.map(p=>p.right));
+        // internal x between extremes -> avoids crossings
+        const x = (left + right) / 2;
+        const y = yFromRow(n.r);
+        pos.set(n.id, {x,y});
+        return {x,y, left, right};
+      }
+    }
+    place(root);
+
+    return pos;
+  }
+
+  function drawTree(tree, pos, box) {
+    const { root } = tree;
+
+    text("Tree", box.x0 + 4, box.y0 - 18, { font: "700 13px JetBrains Mono", fill: "#6b7280", align: "left" });
+
+    function dfsEdges(n) {
+      const P = pos.get(n.id);
+      for (const ch of n.children) {
+        const C = pos.get(ch.id);
+        if (P && C) line(P.x, P.y, C.x, C.y, 0.92);
+        dfsEdges(ch);
+      }
+    }
+    dfsEdges(root);
+
+    // nodes: show only leaves + coalescent nodes (branching)
+    function dfsNodes(n) {
+      const p = pos.get(n.id);
+      if (!p) return;
+
+      const isLeaf = (n.children.length === 0);
+      const isCoal = (n.children.length >= 2);
+
+      if (isLeaf) {
+        // TIPs filled black (requested)
+        circle(p.x, p.y, Math.max(2.4, params.radius*0.85), true);
+      } else if (isCoal) {
+        circle(p.x, p.y, Math.max(2.6, params.radius*0.95), true);
+      }
+      for (const ch of n.children) dfsNodes(ch);
+    }
+    dfsNodes(root);
+  }
+
+  // ---------------------------
+  // Render: grid-only OR grid+tree
   // ---------------------------
   function safeNodeAt(rc) {
     const row = nodes[rc.r];
@@ -725,37 +930,68 @@
   function render() {
     clear();
 
-    text("Past", 20, params.padY - 18, { font: "700 13px JetBrains Mono", fill: "#6b7280" });
-    text("Present", 20, canvas.height - params.padY + 30, { font: "700 13px JetBrains Mono", fill: "#6b7280" });
+    const showTree = finished && params.displayTree;
 
-    // edges
+    const fullX0 = params.padX;
+    const fullY0 = params.padY;
+    const fullW  = canvas.width  - 2*params.padX;
+    const fullH  = canvas.height - 2*params.padY;
+
+    const gap = 28;
+    const gridFrac = showTree ? 0.52 : 1.0;
+
+    const gridBox = {
+      x0: fullX0,
+      y0: fullY0,
+      w: showTree ? (fullW*gridFrac - gap/2) : fullW,
+      h: fullH
+    };
+    const treeBox = {
+      x0: showTree ? (fullX0 + fullW*gridFrac + gap/2) : 0,
+      y0: fullY0,
+      w: showTree ? (fullW*(1-gridFrac) - gap/2) : 0,
+      h: fullH
+    };
+
+    text("Past", gridBox.x0 - 50, fullY0 + 10, { font: "700 13px JetBrains Mono", fill: "#6b7280" });
+    text("Present", gridBox.x0 - 50, fullY0 + fullH - 5, { font: "700 13px JetBrains Mono", fill: "#6b7280" });
+
+    // nodes were built in fullW coordinates; squeeze X only if tree is shown
+    const scaleX = gridBox.w / fullW;
+    function mapGridX(x) { return gridBox.x0 + (x - fullX0) * scaleX; }
+    function mapGridY(y) { return y; }
+
+    // grid edges
     for (const e of edges) {
       const A = safeNodeAt(e.child);
       const B = safeNodeAt(e.parent);
       if (!A || !B) continue;
-      line(A.x, A.y, B.x, B.y, 0.85);
+      line(mapGridX(A.x), mapGridY(A.y), mapGridX(B.x), mapGridY(B.y), 0.85);
     }
 
-    // nodes
+    // grid nodes
     for (let r = 0; r < params.rows; r++) {
       const cap = rowCap(r);
       for (let c = 0; c < cap; c++) {
-        const isPresent = (r === params.rows - 1);
-        // At present, fill only taxa nodes (active set contains taxa at time 0).
-        // For other rows, fill active nodes.
-        const filled = isPresent ? active[r].has(c) : active[r].has(c);
-        circle(nodes[r][c].x, nodes[r][c].y, params.radius, filled);
+        const filled = active[r].has(c);
+        const p = nodes[r][c];
+        circle(mapGridX(p.x), mapGridY(p.y), params.radius, filled);
       }
     }
 
     const activeCount = active[currentRow]?.size ?? 0;
     const capHere = rowCap(currentRow);
-
     text(
       `Row: ${currentRow + 1}/${params.rows}  |  Active: ${activeCount}  |  Displayed: ${capHere}  |  N₀: ${params.N0}  |  Taxa: ${params.taxa}`,
       canvas.width - 20, 28,
       { font: "700 13px JetBrains Mono", fill: "#2c3e50", align: "right" }
     );
+
+    if (showTree) {
+      const tree = buildInducedTree();
+      const pos = layoutTree(tree, treeBox);
+      drawTree(tree, pos, treeBox);
+    }
   }
 
   // ---------------------------
@@ -778,7 +1014,7 @@
     isPlaying = true;
     timer = setInterval(() => {
       stepOnce();
-      if (currentRow === 0) stop();
+      if (finished) stop();
     }, getIntervalMs());
   }
 
@@ -799,6 +1035,7 @@
   const poplist = document.getElementById('poplist');
 
   const varyPopToggle = document.getElementById('varyPopToggle');
+  const stopAtMRCAToggle = document.getElementById('stopAtMRCAToggle');
 
   const parametricToggle = document.getElementById('parametricToggle');
   const parametricPanel  = document.getElementById('parametricPanel');
@@ -811,6 +1048,9 @@
 
   const personalizeToggle = document.getElementById('personalizeToggle');
   const popListBlock = document.getElementById('popListBlock');
+
+  const displayTreeWrap = document.getElementById('displayTreeWrap');
+  const displayTreeToggle = document.getElementById('displayTreeToggle');
 
   function generationLabel(r) {
     const g = gFromRow(r);
@@ -835,17 +1075,12 @@
       inp.min = "1";
       inp.max = String(params.N0);
       inp.value = String(params.popCaps[r]);
-
-      // if parametric ON, manual editing disabled (you can still see values)
       inp.disabled = params.parametric;
 
       inp.addEventListener('input', () => {
         const v = clamp(parseInt(inp.value, 10) || params.N0, 1, params.N0);
         params.popCaps[r] = v;
-
-        // keep present row fixed at N0
         params.popCaps[params.rows - 1] = params.N0;
-
         stop();
         resetSimulation();
       });
@@ -861,8 +1096,7 @@
     sidebar.style.display = on ? "block" : "none";
 
     if (on) {
-      // defaults requested:
-      // parametric ON by default, linear default
+      // defaults
       params.parametric = true;
       params.popModel = 'lin';
       parametricToggle.checked = true;
@@ -872,22 +1106,16 @@
 
       ensureConsistency();
       applyParametricPopulation();
-      rebuildPopList();
-      resetSimulation();
-    } else {
-      // if off, we still keep N0/taxa logic, but no per-row variability
-      resetSimulation();
+      if (params.personalize) rebuildPopList();
     }
+    resetSimulation();
   }
 
   function setParametric(on) {
     params.parametric = on;
     parametricPanel.style.display = on ? "block" : "none";
-    if (on) {
-      if (!params.popModel) params.popModel = 'lin';
-      applyParametricPopulation();
-    }
-    rebuildPopList();
+    if (on) applyParametricPopulation();
+    if (params.personalize) rebuildPopList();
     resetSimulation();
   }
 
@@ -901,15 +1129,14 @@
     params.N0 = parseInt(N0Input.value, 10) || 20;
     params.linSlope = parseFloat(linSlope.value) || 0;
     params.expRate = parseFloat(expRate.value) || 0;
-
     ensureConsistency();
     applyParametricPopulation();
-    rebuildPopList();
+    if (params.personalize) rebuildPopList();
     resetSimulation();
   }
 
   // ---------------------------
-  // Top controls: seed / grid / taxa
+  // Top controls
   // ---------------------------
   function applySeed() {
     stop();
@@ -924,12 +1151,11 @@
     params.taxa = parseInt(document.getElementById('taxaInput').value, 10) || params.taxa;
 
     ensureConsistency();
-    // keep N0 >= taxa
     N0Input.value = String(params.N0);
 
     if (params.varyPop && params.parametric) applyParametricPopulation();
-
     if (params.personalize) rebuildPopList();
+
     resetSimulation();
   }
 
@@ -951,6 +1177,11 @@
 
   varyPopToggle.addEventListener('change', (e) => setVaryPop(e.target.checked));
 
+  stopAtMRCAToggle.addEventListener('change', (e) => {
+    params.stopAtMRCA = e.target.checked;
+    // if currently finished/unfinished, do nothing; it will affect next run
+  });
+
   parametricToggle.addEventListener('change', (e) => setParametric(e.target.checked));
 
   modelLin.addEventListener('change', () => {
@@ -967,20 +1198,21 @@
     applyParametricFromUI();
   });
 
-  // live mirror for N0 (do not auto-apply until button, to avoid constant resets)
-  N0Input.addEventListener('input', () => { /* no-op; applied on button */ });
+  displayTreeToggle.addEventListener('change', (e) => {
+    params.displayTree = e.target.checked;
+    render();
+  });
 
   // ---------------------------
-  // Init: requested defaults
-  // - time varying ON
-  // - parametric ON
-  // - linear default
-  // - personalize OFF (list hidden)
+  // Init defaults
   // ---------------------------
   parametricToggle.checked = true;
   modelLin.checked = true;
   modelExp.checked = false;
   personalizeToggle.checked = false;
+
+  sidebar.style.display = "block";
+  params.popCaps = Array.from({length: params.rows}, () => params.N0);
 
   setVaryPop(true);
   setPersonalize(false);
