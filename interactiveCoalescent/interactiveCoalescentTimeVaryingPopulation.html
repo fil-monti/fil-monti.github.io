@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Discrete-Time Coalescent (Grid, Variable Pop Size)</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      color: #1a1a1a;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    h1 {
+      text-align: center;
+      font-weight: 800;
+      font-size: 2.2rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.35rem;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 1.05rem;
+      margin-bottom: 1.2rem;
+    }
+
+    /* --- layout: left sidebar (pop size) + canvas --- */
+    .stage {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 14px;
+      align-items: start;
+      justify-items: center;
+    }
+
+    .sidebar {
+      width: 210px;
+      border: 1px solid #edf0f2;
+      border-radius: 14px;
+      background: #fbfcfd;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+      padding: 12px;
+      display: none; /* shown when toggle ON */
+    }
+
+    .sidebar .title {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: #2c3e50;
+      margin-bottom: 8px;
+    }
+
+    .sidebar .hint {
+      font-size: 0.86rem;
+      color: #6b7280;
+      margin-bottom: 10px;
+      line-height: 1.25;
+    }
+
+    .poplist {
+      max-height: 520px;
+      overflow: auto;
+      padding-right: 4px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .poprow {
+      display: grid;
+      grid-template-columns: 1fr 78px;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .poprow label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: #334155;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .poprow input[type="number"] {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #e6e6e6;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #111;
+      background: #fff;
+    }
+
+    .canvas-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
+
+    canvas {
+      display: block;
+      background: #ffffff;
+      border: 2px solid #e6e6e6;
+      border-radius: 14px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+      width: 100%;
+      max-width: 980px;
+      height: auto;
+    }
+
+    /* --- controls --- */
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    button {
+      font-family: 'DM Sans', sans-serif;
+      background: #2c3e50;
+      color: #fff;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      box-shadow: 0 2px 10px rgba(44,62,80,0.22);
+    }
+
+    button:hover {
+      background: #34495e;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(44,62,80,0.25);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid #edf0f2;
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: #fbfcfd;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+    }
+
+    .pill label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: #2c3e50;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .pill input[type="range"] { width: 170px; }
+
+    .pill .value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #2c3e50;
+      min-width: 64px;
+      text-align: right;
+    }
+
+    .pill input[type="text"], .pill input[type="number"] {
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #e6e6e6;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.9rem;
+      width: 86px;
+      background: #fff;
+    }
+
+    .pill .miniBtn {
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+    }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid #edf0f2;
+      border-radius: 12px;
+      background: #fbfcfd;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+      user-select: none;
+    }
+
+    .toggle span {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #2c3e50;
+      white-space: nowrap;
+    }
+
+    .toggle input { transform: scale(1.1); }
+
+    .info {
+      text-align: center;
+      margin-top: 10px;
+      color: #777;
+      font-size: 0.95rem;
+    }
+
+    .small-note {
+      text-align: center;
+      margin-top: 6px;
+      color: #999;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Discrete-Time Coalescent on a Grid</h1>
+    <p class="subtitle">Lineages start at the present (bottom row) and merge backward in time.</p>
+
+    <div class="stage">
+      <div class="sidebar" id="sidebar">
+        <div class="title">Varying population size</div>
+        <div class="hint">
+          One value per generation (row). Interpreted as the number of available nodes (columns)
+          at that generation. Values are clamped to 1…Nodes.
+        </div>
+        <div class="poplist" id="poplist"></div>
+      </div>
+
+      <div class="canvas-wrapper">
+        <canvas id="canvas" width="980" height="640"></canvas>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="playBtn">▶ Play</button>
+      <button id="pauseBtn">⏸ Pause</button>
+      <button id="stepBtn">⤴ Step</button>
+      <button id="resetBtn">↻ Reset</button>
+
+      <div class="pill">
+        <label for="speedSlider">Speed</label>
+        <input type="range" id="speedSlider" min="0.2" max="3.0" step="0.1" value="1.0" />
+        <div class="value" id="speedValue">1.0×</div>
+      </div>
+
+      <div class="pill">
+        <label for="seedInput">Seed</label>
+        <input id="seedInput" type="text" value="42">
+        <button id="applySeedBtn" class="miniBtn">Apply</button>
+      </div>
+
+      <div class="pill">
+        <label for="gensInput">Generations</label>
+        <input id="gensInput" type="number" min="2" max="60" value="20">
+        <label for="nodesInput" style="margin-left:10px;">Nodes</label>
+        <input id="nodesInput" type="number" min="2" max="40" value="10">
+        <button id="applyGridBtn" class="miniBtn">Apply</button>
+      </div>
+
+      <div class="toggle">
+        <input id="varyPopToggle" type="checkbox" />
+        <span>Varying population size</span>
+      </div>
+    </div>
+
+    <div class="info">Filled nodes are active lineages; edges show parent assignment (coalescence allowed).</div>
+    <div class="small-note">Tip: when “Varying population size” is ON, parent choices at each generation are restricted to the first N nodes in that row.</div>
+  </div>
+
+<script>
+  // ---------------------------
+  // Canvas + drawing utilities
+  // ---------------------------
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  function clear() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function circle(x, y, r, filled) {
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#111";
+    ctx.stroke();
+    if (filled) {
+      ctx.fillStyle = "#111";
+      ctx.fill();
+    }
+  }
+
+  function line(x1, y1, x2, y2, alpha = 1) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#111";
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function text(s, x, y, opts = {}) {
+    const { font = "600 14px JetBrains Mono", fill = "#2c3e50", align = "left" } = opts;
+    ctx.save();
+    ctx.font = font;
+    ctx.fillStyle = fill;
+    ctx.textAlign = align;
+    ctx.fillText(s, x, y);
+    ctx.restore();
+  }
+
+  // ---------------------------
+  // Seeded RNG (deterministic)
+  // ---------------------------
+  function mulberry32(seed) {
+    let t = seed >>> 0;
+    return function() {
+      t += 0x6D2B79F5;
+      let x = Math.imul(t ^ (t >>> 15), 1 | t);
+      x ^= x + Math.imul(x ^ (x >>> 7), 61 | x);
+      return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function parseSeed(str) {
+    let h = 2166136261 >>> 0;
+    for (let i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return h >>> 0;
+  }
+
+  let rng = mulberry32(parseSeed("42"));
+
+  // ---------------------------
+  // Parameters (user-controlled)
+  // ---------------------------
+  const params = {
+    rows: 20,     // "generations" (doubled default)
+    cols: 10,     // "nodes" (starting nodes unchanged default)
+    padX: 70,
+    padY: 70,
+    radius: 9,
+    varyPop: false,
+    // popCaps[r] = available nodes at generation r (row index 0..rows-1)
+    // default = cols for all rows
+    popCaps: []
+  };
+
+  function clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
+
+  function ensurePopCaps() {
+    params.popCaps = Array.from({length: params.rows}, (_, r) => {
+      const v = params.popCaps[r] ?? params.cols;
+      return clamp(parseInt(v, 10) || params.cols, 1, params.cols);
+    });
+  }
+
+  // ---------------------------
+  // Grid geometry
+  // ---------------------------
+  let nodes = []; // nodes[r][c] = {x,y}
+
+  function buildGrid() {
+    nodes = [];
+    const w = canvas.width;
+    const h = canvas.height;
+
+    const usableW = w - 2 * params.padX;
+    const usableH = h - 2 * params.padY;
+
+    const dx = usableW / (params.cols - 1);
+    const dy = usableH / (params.rows - 1);
+
+    for (let r = 0; r < params.rows; r++) {
+      const row = [];
+      for (let c = 0; c < params.cols; c++) {
+        row.push({
+          x: params.padX + c * dx,
+          y: params.padY + r * dy
+        });
+      }
+      nodes.push(row);
+    }
+  }
+
+  // ---------------------------
+  // Simulation state
+  // ---------------------------
+  let active = [];   // active[r] is Set of columns active at row r
+  let edges = [];    // list of {child:{r,c}, parent:{r,c}}
+  let currentRow = 0;
+
+  function resetSimulation() {
+    edges = [];
+    active = Array.from({length: params.rows}, () => new Set());
+    currentRow = params.rows - 1;
+
+    // bottom row: observations = all starting nodes (cols) filled black
+    for (let c = 0; c < params.cols; c++) active[currentRow].add(c);
+
+    render();
+  }
+
+  // Parent choice:
+  // - Mostly vertical
+  // - Small local drift
+  // - Occasional jump
+  // If varying pop size is ON, restrict parent to available columns in that row.
+  function chooseParentCol(childCol, parentRow) {
+    const cap = params.varyPop ? params.popCaps[parentRow] : params.cols;
+    const maxC = cap - 1;
+
+    // if cap is small, just choose among 0..maxC
+    if (maxC <= 0) return 0;
+
+    const u = rng();
+    let proposal;
+    if (u < 0.70) proposal = childCol;
+    else if (u < 0.85) proposal = childCol + (rng() < 0.5 ? -1 : 1);
+    else proposal = Math.floor(rng() * cap);
+
+    // clamp into allowed parent columns
+    return clamp(proposal, 0, maxC);
+  }
+
+  function stepOnce() {
+    if (currentRow === 0) return; // already at top
+
+    const r = currentRow;
+    const parentsRow = r - 1;
+
+    const children = Array.from(active[r]).sort((a,b) => a - b);
+    if (children.length === 0) return;
+
+    const parentSet = new Set();
+
+    for (const childCol of children) {
+      const parentCol = chooseParentCol(childCol, parentsRow);
+      parentSet.add(parentCol);
+
+      edges.push({
+        child: { r, c: childCol },
+        parent: { r: parentsRow, c: parentCol }
+      });
+    }
+
+    active[parentsRow] = parentSet;
+    currentRow = parentsRow;
+
+    render();
+
+    if (currentRow === 0) stop();
+  }
+
+  // ---------------------------
+  // Rendering
+  // ---------------------------
+  function render() {
+    clear();
+
+    text("Past", 20, params.padY - 18, { font: "700 13px JetBrains Mono", fill: "#6b7280" });
+    text("Present", 20, canvas.height - params.padY + 30, { font: "700 13px JetBrains Mono", fill: "#6b7280" });
+
+    // edges behind nodes
+    for (const e of edges) {
+      const A = nodes[e.child.r][e.child.c];
+      const B = nodes[e.parent.r][e.parent.c];
+      line(A.x, A.y, B.x, B.y, 0.85);
+    }
+
+    // nodes
+    for (let r = 0; r < params.rows; r++) {
+      for (let c = 0; c < params.cols; c++) {
+        const isBottom = (r === params.rows - 1);
+        const isActive = active[r].has(c);
+
+        // bottom row always filled (observations)
+        const filled = isBottom || isActive;
+
+        circle(nodes[r][c].x, nodes[r][c].y, params.radius, filled);
+      }
+    }
+
+    const activeCount = active[currentRow]?.size ?? 0;
+    const capHere = params.varyPop ? params.popCaps[currentRow] : params.cols;
+
+    text(
+      `Row: ${currentRow + 1}/${params.rows}  |  Active: ${activeCount}  |  Available: ${capHere}`,
+      canvas.width - 20, 28,
+      { font: "700 13px JetBrains Mono", fill: "#2c3e50", align: "right" }
+    );
+  }
+
+  // ---------------------------
+  // Animation controls
+  // ---------------------------
+  let isPlaying = false;
+  let timer = null;
+
+  const speedSlider = document.getElementById('speedSlider');
+  const speedValue  = document.getElementById('speedValue');
+
+  function getIntervalMs() {
+    const s = parseFloat(speedSlider.value);
+    const base = 650;
+    return Math.max(60, Math.round(base / s));
+  }
+
+  function start() {
+    if (isPlaying) return;
+    isPlaying = true;
+
+    timer = setInterval(() => {
+      stepOnce();
+      if (currentRow === 0) stop();
+    }, getIntervalMs());
+  }
+
+  function stop() {
+    isPlaying = false;
+    if (timer) {
+      clearInterval(timer);
+      timer = null;
+    }
+  }
+
+  function rebuildTimerIfNeeded() {
+    if (!isPlaying) return;
+    stop();
+    start();
+  }
+
+  // ---------------------------
+  // Varying pop size UI
+  // ---------------------------
+  const sidebar = document.getElementById('sidebar');
+  const poplist = document.getElementById('poplist');
+
+  function generationLabel(r) {
+    // r=0 is oldest (top). r=rows-1 is present (bottom).
+    // Make label readable in that sense:
+    const genFromPresent = (params.rows - 1) - r;
+    if (r === params.rows - 1) return `Gen 0 (present)`;
+    if (r === 0) return `Gen ${genFromPresent} (oldest)`;
+    return `Gen ${genFromPresent}`;
+  }
+
+  function rebuildPopList() {
+    poplist.innerHTML = "";
+    ensurePopCaps();
+
+    for (let r = 0; r < params.rows; r++) {
+      const rowDiv = document.createElement('div');
+      rowDiv.className = 'poprow';
+
+      const lab = document.createElement('label');
+      lab.textContent = generationLabel(r);
+
+      const inp = document.createElement('input');
+      inp.type = "number";
+      inp.min = "1";
+      inp.max = String(params.cols);
+      inp.value = String(params.popCaps[r]);
+
+      inp.addEventListener('input', () => {
+        const v = clamp(parseInt(inp.value, 10) || params.cols, 1, params.cols);
+        params.popCaps[r] = v;
+        inp.value = String(v);
+        // No need to reset; it affects future parent choices.
+        render();
+      });
+
+      rowDiv.appendChild(lab);
+      rowDiv.appendChild(inp);
+      poplist.appendChild(rowDiv);
+    }
+  }
+
+  function setVaryPop(on) {
+    params.varyPop = on;
+    sidebar.style.display = on ? "block" : "none";
+    if (on) rebuildPopList();
+    render();
+  }
+
+  // ---------------------------
+  // Apply params (seed / grid)
+  // ---------------------------
+  function applySeed() {
+    stop();
+    const seedStr = (document.getElementById('seedInput').value || "0").trim();
+    rng = mulberry32(parseSeed(seedStr));
+    resetSimulation();
+  }
+
+  function applyGrid() {
+    stop();
+
+    const rowsIn = parseInt(document.getElementById('gensInput').value, 10);
+    const colsIn = parseInt(document.getElementById('nodesInput').value, 10);
+
+    params.rows = clamp(rowsIn || 20, 2, 60);
+    params.cols = clamp(colsIn || 10, 2, 40);
+
+    // Keep popCaps consistent with new dimensions
+    ensurePopCaps();
+    // Clamp every cap to new cols
+    params.popCaps = params.popCaps.map(v => clamp(parseInt(v,10) || params.cols, 1, params.cols));
+    // If rows changed, re-ensure length
+    ensurePopCaps();
+
+    buildGrid();
+    if (params.varyPop) rebuildPopList();
+    resetSimulation();
+  }
+
+  // ---------------------------
+  // Wire UI
+  // ---------------------------
+  document.getElementById('playBtn').addEventListener('click', start);
+  document.getElementById('pauseBtn').addEventListener('click', stop);
+  document.getElementById('stepBtn').addEventListener('click', () => { stop(); stepOnce(); });
+  document.getElementById('resetBtn').addEventListener('click', () => { stop(); resetSimulation(); });
+
+  speedSlider.addEventListener('input', () => {
+    speedValue.textContent = `${parseFloat(speedSlider.value).toFixed(1)}×`;
+    rebuildTimerIfNeeded();
+  });
+
+  document.getElementById('applySeedBtn').addEventListener('click', applySeed);
+  document.getElementById('applyGridBtn').addEventListener('click', applyGrid);
+
+  document.getElementById('varyPopToggle').addEventListener('change', (e) => {
+    setVaryPop(e.target.checked);
+  });
+
+  // ---------------------------
+  // Init
+  // ---------------------------
+  // default: 20 generations, 10 nodes, varying pop OFF
+  params.popCaps = Array.from({length: params.rows}, () => params.cols);
+  buildGrid();
+  resetSimulation();
+</script>
+</body>
+</html>
