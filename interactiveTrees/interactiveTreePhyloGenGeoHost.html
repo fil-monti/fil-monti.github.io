@@ -1,0 +1,2797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phylogenetic Tree Evolution</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1a1a1a;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            font-weight: 400;
+        }
+
+        #canvas {
+            display: block;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        button {
+            font-family: 'DM Sans', sans-serif;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(44, 62, 80, 0.2);
+        }
+
+        button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .speed-control label {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .speed-control input {
+            width: 120px;
+        }
+
+        .speed-control input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+            transform: scale(1.2);
+        }
+
+        .info {
+            text-align: center;
+            margin-top: 1rem;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        /* Professional Control Panel Styles */
+        .control-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .control-section {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .control-section-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .control-section-header::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: #3498db;
+            border-radius: 2px;
+        }
+
+        .control-section-header .header-title {
+            flex: 1;
+        }
+
+        .control-section-header input[type="checkbox"] {
+            transform: scale(1.4);
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .control-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-item label {
+            color: #555;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .control-item-inline {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .control-item-inline input[type="checkbox"] {
+            transform: scale(1.3);
+            cursor: pointer;
+        }
+
+        .control-item-inline label {
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .slider-container input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #dee2e6;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb:hover {
+            background: #2980b9;
+            transform: scale(1.1);
+        }
+
+        .slider-container input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .slider-container input[type="range"]::-moz-range-thumb:hover {
+            background: #2980b9;
+            transform: scale(1.1);
+        }
+
+        .slider-value {
+            min-width: 50px;
+            text-align: right;
+            font-weight: 600;
+            color: #2c3e50;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .child-controls {
+            margin-left: 1.5rem;
+            padding-left: 1rem;
+            border-left: 3px solid #dee2e6;
+            margin-top: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .child-controls .control-item-inline label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-top: 1rem;
+            margin-bottom: 0;
+        }
+
+        button {
+            font-family: 'DM Sans', sans-serif;
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+        }
+
+        button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Sequence Evolution on Phylogenetic Tree</h1>
+    <p class="subtitle">Watch how DNA sequences mutate and diverge along evolutionary branches</p>
+
+    <canvas id="canvas" width="1000" height="700"></canvas>
+
+    <div class="button-group">
+        <button id="playBtn">▶ Play</button>
+        <button id="pauseBtn">⏸ Pause</button>
+        <button id="resetBtn">↻ Reset</button>
+        <div class="control-item" style="margin-left: 20px;">
+            <label style="margin-right: 8px;">Animation Speed</label>
+            <div class="slider-container" style="width: 180px;">
+                <input type="range" id="speedSlider" min="0" max="1" step="0.05" value="0.1">
+                <span class="slider-value" id="speedValue">0.1x</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="control-panel">
+        <!-- Phylogenetics Section -->
+        <div class="control-section">
+            <div class="control-section-header">
+                <span class="header-title">Phylogenetics</span>
+                <input type="checkbox" id="phylogeneticsCheckbox" checked>
+            </div>
+            <div class="control-group">
+                <div class="child-controls" id="phylogeneticsControls">
+                    <div class="control-item">
+                        <label>Mutation Rate</label>
+                        <div class="slider-container">
+                            <input type="range" id="mutationSlider" min="0" max="10" step="0.1" value="5">
+                            <span class="slider-value" id="mutationValue">5.00</span>
+                        </div>
+                    </div>
+
+                    <div class="control-item-inline">
+                        <input type="checkbox" id="highlightCheckbox" checked>
+                        <label for="highlightCheckbox">Highlight tracked nucleotide</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phylogeography Section -->
+        <div class="control-section">
+            <div class="control-section-header">
+                <span class="header-title">Phylogeography</span>
+                <input type="checkbox" id="phylogeographyCheckbox" checked>
+            </div>
+            <div class="control-group">
+                <div class="child-controls" id="phylogeographyControls">
+                    <div class="control-item">
+                        <label>Diffusion Rate</label>
+                        <div class="slider-container">
+                            <input type="range" id="diffusionSlider" min="0" max="1" step="0.05" value="0.5">
+                            <span class="slider-value" id="diffusionValue">0.50</span>
+                        </div>
+                    </div>
+
+                    <div class="control-item-inline">
+                        <input type="checkbox" id="trackAllBranchesCheckbox" checked>
+                        <label for="trackAllBranchesCheckbox">Track all branches</label>
+                    </div>
+
+                    <div class="control-item-inline">
+                        <input type="checkbox" id="stickyPathsCheckbox">
+                        <label for="stickyPathsCheckbox">Sticky paths</label>
+                    </div>
+
+                    <div class="control-item-inline">
+                        <input type="checkbox" id="drawLocationsCheckbox" checked>
+                        <label for="drawLocationsCheckbox">Draw locations</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Host Transmission Section -->
+        <div class="control-section">
+            <div class="control-section-header">
+                <span class="header-title">Host transmission</span>
+                <input type="checkbox" id="hostTransmissionCheckbox" checked>
+            </div>
+            <div class="control-group">
+                <div class="child-controls" id="hostTransmissionControls">
+                    <div class="control-item">
+                        <label>Transmission Rate</label>
+                        <div class="slider-container">
+                            <input type="range" id="transmissionSlider" min="0" max="1" step="0.05" value="0.5">
+                            <span class="slider-value" id="transmissionValue">0.50</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p class="info">Sequences split at nodes and evolve independently along each branch</p>
+</div>
+
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Nucleotide colors
+    const colors = {
+        'A': '#e74c3c',
+        'T': '#3498db',
+        'G': '#f39c12',
+        'C': '#27ae60'
+    };
+
+    const nucleotides = ['A', 'T', 'G', 'C'];
+
+    // Tree structure: Internal node on straight line from Root to Tip 1 (180° angle)
+    const tree = {
+        x: 500,
+        y: 100,
+        children: [
+            {
+                x: 350,
+                y: 350,
+                children: [
+                    { x: 200, y: 600, children: [], label: 'Tip 1' },
+                    { x: 500, y: 600, children: [], label: 'Tip 2' }
+                ]
+            },
+            {
+                x: 800,
+                y: 600,
+                children: [],
+                label: 'Tip 3'
+            }
+        ]
+    };
+
+    // Animation state
+    let sequences = [];
+    let animationFrame;
+    let isPlaying = false;
+    let speed = 0.1;
+    let mutationRate = 5; // Probability of mutation per frame
+
+    // CTMC transition tracking
+    let ctmcCurrentNucleotide = null;
+    let ctmcPreviousNucleotide = null;
+    let ctmcTransitionProgress = 1;
+    let ctmcTransitionSpeed = 0.1; // Speed of transition animation
+
+    // Highlight tracked nucleotide
+    let highlightTrackedNucleotide = true;
+
+    // Phylogeography
+    let showPhylogeography = true;
+    let showPhylogenetics = true;
+    let stickyPaths = false;
+    let drawLocations = true;
+    let trackAllBranches = true;
+    let diffusionRate = 0.5; // Controls CTMC rate
+
+    // Host transmission
+    let showHostTransmission = true;
+    let transmissionRate = 0.5;
+
+    // World map GeoJSON data
+    let worldLandGeoJSON = null;
+    let neCountries = null;
+    const silhouetteCache = new Map(); // continentName -> {canvas, w, h}
+
+    // -----------------------------
+    // HOST DRAWING HELPERS
+    // -----------------------------
+
+    function withCtx(ctx, fn) { ctx.save(); fn(); ctx.restore(); }
+
+    function circle(ctx, x, y, r, fill) {
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fillStyle = fill;
+        ctx.fill();
+    }
+
+    function blob(ctx, cx, cy, rx, ry, rot, fill) {
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, rx, ry, rot, 0, Math.PI * 2);
+        ctx.fillStyle = fill;
+        ctx.fill();
+    }
+
+    // Color palette for hosts and virus
+    const hostPalette = {
+        human: "#3b82f6",
+        bat: "#6b7280",
+        elephant: "#64748b",
+        mouse: "#8b5e3c",
+        mosquito: "#111",
+        virus: "#ef4444"
+    };
+
+    // -----------------------------
+    // HOST DRAWING FUNCTIONS
+    // -----------------------------
+
+    function drawHuman(ctx, cx, cy, s=1) {
+        const c = hostPalette.human;
+        // Head
+        circle(ctx, cx, cy-48*s, 10*s, c);
+        circle(ctx, cx-3*s, cy-52*s, 3.5*s, "rgba(255,255,255,0.25)");
+
+        // Torso (rounded trapezoid)
+        withCtx(ctx, () => {
+            ctx.fillStyle = c;
+            ctx.beginPath();
+            ctx.moveTo(cx-18*s, cy-35*s);
+            ctx.quadraticCurveTo(cx, cy-48*s, cx+18*s, cy-35*s);
+            ctx.lineTo(cx+22*s, cy+5*s);
+            ctx.quadraticCurveTo(cx, cy+18*s, cx-22*s, cy+5*s);
+            ctx.closePath();
+            ctx.fill();
+        });
+
+        // Arms
+        ctx.strokeStyle = c;
+        ctx.lineWidth = 9*s;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(cx-18*s, cy-22*s);
+        ctx.quadraticCurveTo(cx-42*s, cy-6*s, cx-30*s, cy+18*s);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(cx+18*s, cy-22*s);
+        ctx.quadraticCurveTo(cx+42*s, cy-6*s, cx+30*s, cy+18*s);
+        ctx.stroke();
+
+        // Legs
+        withCtx(ctx, () => {
+            ctx.fillStyle = c;
+            ctx.beginPath();
+            ctx.roundRect(cx-18*s, cy+5*s, 14*s, 44*s, 8*s);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.roundRect(cx+4*s, cy+5*s, 14*s, 44*s, 8*s);
+            ctx.fill();
+        });
+
+        // Feet
+        blob(ctx, cx-11*s, cy+52*s, 12*s, 7*s, 0, c);
+        blob(ctx, cx+11*s, cy+52*s, 12*s, 7*s, 0, c);
+    }
+
+    function drawBat(ctx, cx, cy, s=1){
+        const fur = "#3f3f4a";
+        const furLight = "#5a5a66";
+        const innerEar = "#e6c6b8";
+        const eye = "#111";
+        // ---- Wings (single silhouette) ----
+        ctx.fillStyle = fur;
+        ctx.beginPath();
+        ctx.moveTo(cx-70*s, cy+8*s);
+        // left outer curve
+        ctx.bezierCurveTo(cx-60*s, cy-30*s, cx-28*s, cy-50*s, cx-6*s, cy-18*s);
+        // left scallops
+        ctx.quadraticCurveTo(cx-18*s, cy-2*s,  cx-32*s, cy+10*s);
+        ctx.quadraticCurveTo(cx-18*s, cy+20*s, cx-4*s,  cy+6*s);
+        // center top
+        ctx.quadraticCurveTo(cx,      cy-4*s,  cx+4*s,  cy+6*s);
+        // right scallops
+        ctx.quadraticCurveTo(cx+18*s, cy+20*s, cx+32*s, cy+10*s);
+        ctx.quadraticCurveTo(cx+18*s, cy-2*s,  cx+6*s,  cy-18*s);
+        // right outer curve
+        ctx.bezierCurveTo(cx+28*s, cy-50*s, cx+60*s, cy-30*s, cx+70*s, cy+8*s);
+        // bottom closure
+        ctx.quadraticCurveTo(cx+36*s, cy+26*s, cx,      cy+20*s);
+        ctx.quadraticCurveTo(cx-36*s, cy+26*s, cx-70*s, cy+8*s);
+        ctx.closePath();
+        ctx.fill();
+        // ---- Body ----
+        blob(ctx, cx, cy+10*s, 14*s, 20*s, 0, furLight);
+        // ---- Head ----
+        circle(ctx, cx, cy-6*s, 10*s, furLight);
+        // ---- Ears ----
+        ear(ctx, cx-6*s, cy-20*s, 10*s, 14*s, -0.4, furLight);
+        ear(ctx, cx+6*s, cy-20*s, 10*s, 14*s,  0.4, furLight);
+        // inner ears
+        ear(ctx, cx-6*s, cy-18*s, 6*s, 8*s, -0.4, innerEar);
+        ear(ctx, cx+6*s, cy-18*s, 6*s, 8*s,  0.4, innerEar);
+        // ---- Eyes ----
+        circle(ctx, cx-3*s, cy-6*s, 2.2*s, eye);
+        circle(ctx, cx+3*s, cy-6*s, 2.2*s, eye);
+        // small highlight
+        circle(ctx, cx-3.8*s, cy-7*s, 0.9*s, "rgba(255,255,255,0.5)");
+        circle(ctx, cx+2.2*s, cy-7*s, 0.9*s, "rgba(255,255,255,0.5)");
+        // ---- Optional subtle outline ----
+        ctx.strokeStyle = "rgba(0,0,0,0.25)";
+        ctx.lineWidth = 2*s;
+        ctx.stroke();
+    }
+
+    function drawElephant(ctx, cx, cy, s=1) {
+        const c = hostPalette.elephant;
+        blob(ctx, cx-10*s, cy, 50*s, 35*s, 0, c);
+        blob(ctx, cx+40*s, cy-10*s, 30*s, 30*s, 0, c);
+        blob(ctx, cx+70*s, cy+15*s, 12*s, 20*s, 0, c);
+        ctx.strokeStyle = c;
+        ctx.lineWidth = 8*s;
+        ctx.beginPath();
+        ctx.moveTo(cx+70*s, cy+20*s);
+        ctx.quadraticCurveTo(cx+90*s, cy+30*s, cx+70*s, cy+50*s);
+        ctx.stroke();
+        blob(ctx, cx-40*s, cy+40*s, 12*s, 25*s, 0, c);
+        blob(ctx, cx-15*s, cy+40*s, 12*s, 25*s, 0, c);
+        blob(ctx, cx+10*s, cy+40*s, 12*s, 25*s, 0, c);
+        blob(ctx, cx+35*s, cy+40*s, 12*s, 25*s, 0, c);
+    }
+
+    function drawMonkey(ctx, cx, cy, s=1){
+        const fur = "#6b4f3a";      // brown fur
+        const face = "#f3d2b6";     // light beige face
+        const eye = "#1b1b1b";
+        // ---- Tail (behind body) ----
+        ctx.strokeStyle = fur;
+        ctx.lineWidth = 6*s;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(cx+22*s, cy+12*s);
+        ctx.bezierCurveTo(
+            cx+65*s, cy-10*s,
+            cx+65*s, cy+70*s,
+            cx+18*s, cy+55*s
+        );
+        ctx.stroke();
+        // ---- Body ----
+        blob(ctx, cx, cy+20*s, 24*s, 32*s, 0, fur);
+        // ---- Head ----
+        circle(ctx, cx, cy-10*s, 26*s, fur);
+        // ---- Ears ----
+        circle(ctx, cx-28*s, cy-12*s, 12*s, fur);
+        circle(ctx, cx+28*s, cy-12*s, 12*s, fur);
+        circle(ctx, cx-28*s, cy-12*s, 7*s, face);
+        circle(ctx, cx+28*s, cy-12*s, 7*s, face);
+        // ---- Face patch ----
+        blob(ctx, cx, cy-6*s, 20*s, 18*s, 0, face);
+        // ---- Eyes ----
+        circle(ctx, cx-8*s, cy-10*s, 4*s, eye);
+        circle(ctx, cx+8*s, cy-10*s, 4*s, eye);
+        // small highlight
+        circle(ctx, cx-9*s, cy-11*s, 1.5*s, "rgba(255,255,255,0.5)");
+        circle(ctx, cx+7*s, cy-11*s, 1.5*s, "rgba(255,255,255,0.5)");
+        // ---- Nose / muzzle detail ----
+        ctx.strokeStyle = "#5a3e2b";
+        ctx.lineWidth = 2*s;
+        ctx.beginPath();
+        ctx.moveTo(cx-4*s, cy-2*s);
+        ctx.lineTo(cx+4*s, cy-2*s);
+        ctx.stroke();
+        // ---- Arms ----
+        ctx.strokeStyle = fur;
+        ctx.lineWidth = 8*s;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(cx-18*s, cy+10*s);
+        ctx.quadraticCurveTo(cx-38*s, cy+25*s, cx-24*s, cy+40*s);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(cx+18*s, cy+10*s);
+        ctx.quadraticCurveTo(cx+38*s, cy+25*s, cx+24*s, cy+40*s);
+        ctx.stroke();
+        // ---- Legs ----
+        ctx.beginPath();
+        ctx.moveTo(cx-12*s, cy+48*s);
+        ctx.lineTo(cx-12*s, cy+65*s);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(cx+12*s, cy+48*s);
+        ctx.lineTo(cx+12*s, cy+65*s);
+        ctx.stroke();
+    }
+
+    function drawMouse(ctx, cx, cy, s=1) {
+        const c = hostPalette.mouse;
+        blob(ctx, cx+10*s, cy+10*s, 35*s, 25*s, 0, c);
+        blob(ctx, cx-30*s, cy-5*s, 20*s, 18*s, 0, c);
+        circle(ctx, cx-45*s, cy-20*s, 8*s, c);
+        circle(ctx, cx-20*s, cy-22*s, 8*s, c);
+        ctx.strokeStyle = c;
+        ctx.lineWidth = 4*s;
+        ctx.beginPath();
+        ctx.moveTo(cx+45*s, cy+5*s);
+        ctx.quadraticCurveTo(cx+80*s, cy+20*s, cx+90*s, cy-10*s);
+        ctx.stroke();
+    }
+
+    // Helper functions for drawPig
+    function roundRect(ctx, x, y, w, h, r, fill){
+        const rr = Math.min(r, w/2, h/2);
+        ctx.fillStyle = fill;
+        ctx.beginPath();
+        ctx.moveTo(x+rr, y);
+        ctx.arcTo(x+w, y, x+w, y+h, rr);
+        ctx.arcTo(x+w, y+h, x, y+h, rr);
+        ctx.arcTo(x, y+h, x, y, rr);
+        ctx.arcTo(x, y, x+w, y, rr);
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    function ear(ctx, x, y, w, h, tilt, fill){
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(tilt);
+        ctx.fillStyle = fill;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.quadraticCurveTo(w*0.75, h*0.15, w*0.5, h);
+        ctx.quadraticCurveTo(w*0.05, h*0.75, 0, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+    }
+
+    function ellipsePath(ctx, x, y, rx, ry){
+        ctx.moveTo(x + rx, y);
+        ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI*2);
+    }
+
+    function drawPig(ctx, cx, cy, s=1){
+        const pink = "#f7a9b8";
+        const pink2 = "#f9c2cd";
+        const outline = "rgba(120,70,85,0.35)";
+        const eye = "#1b1b1b";
+        const hoof = "#d98a98";
+        // ---- Tail (behind body) ----
+        ctx.strokeStyle = pink;
+        ctx.lineWidth = 6*s;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(cx+28*s, cy+28*s);
+        ctx.bezierCurveTo(cx+46*s, cy+22*s, cx+46*s, cy+52*s, cx+28*s, cy+46*s);
+        ctx.bezierCurveTo(cx+16*s, cy+42*s, cx+18*s, cy+30*s, cx+30*s, cy+34*s);
+        ctx.stroke();
+        // ---- Body ----
+        blob(ctx, cx, cy+26*s, 30*s, 22*s, 0, pink);
+        // subtle belly highlight
+        blob(ctx, cx-6*s, cy+30*s, 18*s, 12*s, 0, "rgba(255,255,255,0.18)");
+        // ---- Legs ----
+        // rear
+        roundRect(ctx, cx-18*s, cy+44*s, 10*s, 18*s, 5*s, pink);
+        roundRect(ctx, cx+6*s,  cy+44*s, 10*s, 18*s, 5*s, pink);
+        // hooves
+        roundRect(ctx, cx-18*s, cy+58*s, 10*s, 6*s, 3*s, hoof);
+        roundRect(ctx, cx+6*s,  cy+58*s, 10*s, 6*s, 3*s, hoof);
+        // ---- Head ----
+        circle(ctx, cx-10*s, cy+6*s, 20*s, pink);
+        // ---- Ears ----
+        // outer ears
+        ear(ctx, cx-22*s, cy-10*s, 14*s, 16*s, -0.5, pink);
+        ear(ctx, cx+2*s,  cy-10*s, 14*s, 16*s,  0.5, pink);
+        // inner ears
+        ear(ctx, cx-21*s, cy-8*s,  9*s, 10*s, -0.5, pink2);
+        ear(ctx, cx+1*s,  cy-8*s,  9*s, 10*s,  0.5, pink2);
+        // ---- Snout ----
+        roundRect(ctx, cx-30*s, cy+4*s, 20*s, 16*s, 7*s, pink2);
+        // nostrils
+        circle(ctx, cx-24*s, cy+12*s, 2.6*s, "rgba(90,40,55,0.55)");
+        circle(ctx, cx-16*s, cy+12*s, 2.6*s, "rgba(90,40,55,0.55)");
+        // ---- Eyes ----
+        circle(ctx, cx-6*s,  cy+2*s, 2.8*s, eye);
+        // tiny highlight
+        circle(ctx, cx-7*s, cy+1*s, 1.1*s, "rgba(255,255,255,0.55)");
+        // ---- Optional soft outline (keeps it crisp on pale bg) ----
+        ctx.strokeStyle = outline;
+        ctx.lineWidth = 2*s;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        // outline head
+        ctx.beginPath();
+        ctx.arc(cx-10*s, cy+6*s, 20*s, 0, Math.PI*2);
+        ctx.stroke();
+        // outline body
+        ctx.beginPath();
+        ellipsePath(ctx, cx, cy+26*s, 30*s, 22*s);
+        ctx.stroke();
+    }
+
+    function drawMosquito(ctx, cx, cy, s=1) {
+        const ink = hostPalette.mosquito;
+        blob(ctx, cx, cy, 10*s, 28*s, 0, ink);
+        blob(ctx, cx, cy-28*s, 8*s, 8*s, 0, ink);
+
+        ctx.strokeStyle = ink;
+        ctx.lineWidth = 3*s;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.ellipse(cx-18*s, cy-20*s, 26*s, 14*s, -0.25, 0, Math.PI*2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.ellipse(cx+18*s, cy-20*s, 26*s, 14*s, 0.25, 0, Math.PI*2);
+        ctx.stroke();
+
+        ctx.lineWidth = 2.2*s;
+        for (const k of [-1,0,1]) {
+            ctx.beginPath();
+            ctx.moveTo(cx-6*s, cy-2*s + k*6*s);
+            ctx.quadraticCurveTo(cx-34*s, cy+8*s + k*6*s, cx-42*s, cy+24*s + k*6*s);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(cx+6*s, cy-2*s + k*6*s);
+            ctx.quadraticCurveTo(cx+34*s, cy+8*s + k*6*s, cx+42*s, cy+24*s + k*6*s);
+            ctx.stroke();
+        }
+
+        ctx.lineWidth = 2.8*s;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy-34*s);
+        ctx.lineTo(cx, cy-60*s);
+        ctx.stroke();
+
+        blob(ctx, cx-3*s, cy+6*s, 3*s, 10*s, 0, "rgba(255,255,255,0.14)");
+    }
+
+    function drawVirus(ctx, cx, cy, s=1) {
+        const c = hostPalette.virus;
+        const R = 14*s;
+        circle(ctx, cx, cy, R, c);
+        for (let i=0; i<12; i++) {
+            const a = i/12 * Math.PI * 2;
+            const x1 = cx + Math.cos(a) * R;
+            const y1 = cy + Math.sin(a) * R;
+            const x2 = cx + Math.cos(a) * (R + 10*s);
+            const y2 = cy + Math.sin(a) * (R + 10*s);
+            ctx.strokeStyle = c;
+            ctx.lineWidth = 3*s;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+            circle(ctx, x2, y2, 3*s, c);
+        }
+        circle(ctx, cx-4*s, cy-4*s, 4*s, "rgba(255,255,255,0.3)");
+    }
+
+    // Dictionary of host drawing functions
+    const HOST_ICON = {
+        "Human": drawHuman,
+        "Bat": drawBat,
+        "Monkey": drawMonkey,
+        "Pig": drawPig,
+        "Mosquito": drawMosquito
+    };
+
+    // -----------------------------
+    // HOST TRANSMISSION SYSTEM
+    // -----------------------------
+
+    // Host species (similar to geographic states)
+    const hostStates = [
+        { name: "Human" },
+        { name: "Monkey" },
+        { name: "Bat" },
+        { name: "Pig" },
+        { name: "Mosquito" }
+    ];
+
+    // Row-stochastic transition matrix for host jumps
+    const hostTransitionMatrix = [
+        //   H     M     B     P    Mq
+        [ 0.10, 0.10, 0.30, 0.20, 0.30 ], // Human
+        [ 0.10, 0.10, 0.15, 0.30, 0.35 ], // Monkey
+        [ 0.30, 0.15, 0.10, 0.25, 0.20 ], // Bat
+        [ 0.20, 0.30, 0.25, 0.10, 0.15 ], // Pig
+        [ 0.30, 0.35, 0.20, 0.15, 0.00 ], // Mosquito
+    ];
+
+    // Host transmission CTMC (similar to GeoCTMCStar)
+    class HostTransmissionCTMC {
+        constructor(initialHostIndex = 0) {
+            this.i = initialHostIndex;        // current host
+            this.j = initialHostIndex;        // next host
+            this.t = 1;                       // interpolation progress [0,1]
+            this.holding = true;              // true while in current host
+
+            this.lambda = 0.5;                // transmissions per second
+            this.travelTime = 0.6;            // seconds to visually "jump" between hosts
+
+            this.holdRemaining = sampleExp(this.lambda);
+        }
+
+        setRate(rate01) {
+            // map slider [0,1] -> reasonable CTMC rate
+            this.lambda = 0.1 + 1.5 * rate01;
+        }
+
+        update(dt) {
+            if (this.holding) {
+                this.holdRemaining -= dt;
+                if (this.holdRemaining <= 0) {
+                    // transmission decision
+                    this.j = sampleCategorical(hostTransitionMatrix[this.i]);
+                    if (this.j === this.i) {
+                        // stay in same host
+                        this.holdRemaining = sampleExp(this.lambda);
+                    } else {
+                        // start transmission
+                        this.holding = false;
+                        this.t = 0;
+                    }
+                }
+                return;
+            }
+
+            // transmitting
+            this.t += dt / this.travelTime;
+            if (this.t >= 1) {
+                this.t = 1;
+                // arrive at new host
+                this.i = this.j;
+                this.holding = true;
+                this.holdRemaining = sampleExp(this.lambda);
+            }
+        }
+
+        currentHostName() {
+            return hostStates[this.i].name;
+        }
+
+        isTransmitting() {
+            return !this.holding;
+        }
+
+        getTransmissionProgress() {
+            return this.t;
+        }
+
+        getCurrentHostIndex() {
+            return this.i;
+        }
+
+        getTargetHostIndex() {
+            return this.j;
+        }
+    }
+
+    // Host transmission state
+    let hostCTMC = null;
+
+    // -----------------------------
+    // SIMPLE CONTINENT CTMC + COMET TRAIL (efficient)
+    // -----------------------------
+
+    // Continent anchor points (imaginary but fixed)
+    const geoStates = [
+        { name: "North America", lon: -100, lat: 40 },
+        { name: "South America", lon:  -60, lat: -15 },
+        { name: "Europe",        lon:   10, lat:  50 },
+        { name: "Africa",        lon:   20, lat:   5 },
+        { name: "Middle East",   lon:   50, lat:  25 },
+        { name: "East Asia",     lon:  110, lat:  35 },
+        { name: "Australia",     lon:  135, lat: -25 },
+    ];
+
+    // Row-stochastic transition matrix for jumps (discrete-time jump kernel)
+    const P = [
+        //   NA    SA    EU    AF    ME    EA    AU
+        [ 0.10, 0.45, 0.20, 0.10, 0.10, 0.05, 0.00 ], // NA
+        [ 0.45, 0.10, 0.10, 0.25, 0.10, 0.00, 0.00 ], // SA
+        [ 0.20, 0.05, 0.10, 0.25, 0.25, 0.15, 0.00 ], // EU
+        [ 0.10, 0.20, 0.25, 0.10, 0.20, 0.10, 0.05 ], // AF
+        [ 0.10, 0.05, 0.25, 0.20, 0.10, 0.25, 0.05 ], // ME
+        [ 0.05, 0.00, 0.15, 0.10, 0.25, 0.10, 0.35 ], // EA
+        [ 0.00, 0.00, 0.00, 0.10, 0.15, 0.55, 0.20 ], // AU
+    ];
+
+    function sampleCategorical(probs) {
+        let r = Math.random();
+        for (let i = 0; i < probs.length; i++) {
+            r -= probs[i];
+            if (r <= 0) return i;
+        }
+        return probs.length - 1;
+    }
+
+    function sampleExp(rate) {
+        // rate > 0, return waiting time in seconds
+        return -Math.log(1 - Math.random()) / rate;
+    }
+
+    // One moving dot with a comet trail
+    // Uses a CTMC: hold in a state for Exp(lambda) seconds, then jump to next state by P
+    // -------------------------------
+    // Curved routes: circular arc in pixel space
+    // -------------------------------
+
+    // Cache for precomputed routes
+    const routeCache = new Map();
+
+    function routeKey(i, j) { return `${i}->${j}`; }
+
+    // Compute a constant-curvature circular arc from A to B
+    function computeCircularArc(A, B, radiusFactor = 1.3, concaveUp = true) {
+        const dx = B.x - A.x;
+        const dy = B.y - A.y;
+        const d = Math.hypot(dx, dy);
+
+        // If points are too close, return degenerate "arc" = straight segment
+        if (d < 1e-6) {
+            return { type: "line", A, B };
+        }
+
+        // Choose radius R = radiusFactor * (d/2), must be > 1.0
+        const minFactor = 1.01;
+        const f = Math.max(minFactor, radiusFactor);
+        const R = f * (d / 2);
+
+        const mx = (A.x + B.x) / 2;
+        const my = (A.y + B.y) / 2;
+
+        // Unit perpendicular to chord (rotate (dx,dy) by +/-90 degrees)
+        const ux = -dy / d;
+        const uy = dx / d;
+
+        const half = d / 2;
+        const h = Math.sqrt(Math.max(0, R*R - half*half));
+
+        // Two possible centers: M ± h * u
+        const C1 = { x: mx + h * ux, y: my + h * uy };
+        const C2 = { x: mx - h * ux, y: my - h * uy };
+
+        // Pick center that makes the arc "concave up" (smaller y)
+        const C = concaveUp ? (C1.y < C2.y ? C1 : C2) : (C1.y > C2.y ? C1 : C2);
+
+        // Angles from center to endpoints
+        const a0 = Math.atan2(A.y - C.y, A.x - C.x);
+        const a1 = Math.atan2(B.y - C.y, B.x - C.x);
+
+        // Ensure we go the "short way" around the circle
+        let da = a1 - a0;
+        while (da > Math.PI) da -= 2*Math.PI;
+        while (da < -Math.PI) da += 2*Math.PI;
+
+        return { type: "arc", A, B, C, R, a0, da };
+    }
+
+    // Evaluate a route at u in [0,1]
+    function evalRoute(route, u) {
+        if (route.type === "line") {
+            return {
+                x: route.A.x + (route.B.x - route.A.x) * u,
+                y: route.A.y + (route.B.y - route.A.y) * u,
+            };
+        }
+        const a = route.a0 + route.da * u;
+        return {
+            x: route.C.x + route.R * Math.cos(a),
+            y: route.C.y + route.R * Math.sin(a),
+        };
+    }
+
+    // Get (or build) route for transition i->j
+    function getRoute(i, j, radiusFactor, offsetX, offsetY, mapWidth, mapHeight) {
+        const k = routeKey(i, j);
+        const cached = routeCache.get(k);
+
+        // If curve factor changed, rebuild cache
+        if (!cached || cached.radiusFactor !== radiusFactor) {
+            const A = projectEquirect(geoStates[i].lon, geoStates[i].lat, offsetX, offsetY, mapWidth, mapHeight);
+            const B = projectEquirect(geoStates[j].lon, geoStates[j].lat, offsetX, offsetY, mapWidth, mapHeight);
+
+            // Hemisphere-aware curvature: northern hemisphere routes curve down (concave), southern curve up
+            const avgLat = (geoStates[i].lat + geoStates[j].lat) / 2;
+            const concaveUp = avgLat < 0; // Southern hemisphere: curve up, Northern: curve down
+
+            const route = computeCircularArc(
+                { x: A[0], y: A[1] },
+                { x: B[0], y: B[1] },
+                radiusFactor,
+                concaveUp
+            );
+            routeCache.set(k, { route, radiusFactor });
+            return route;
+        }
+        return cached.route;
+    }
+
+    // -------------------------------
+    // CTMC star with smooth head + curved travel
+    // -------------------------------
+
+    class GeoCTMCStar {
+        constructor(initialStateIndex = 0) {
+            this.i = initialStateIndex;        // current state
+            this.j = initialStateIndex;        // next state
+            this.t = 1;                        // interpolation progress [0,1]
+            this.holding = true;               // true while waiting in a state
+
+            this.lambda = 0.8;                 // jumps per second (overall rate)
+            this.travelTime = 0.8;             // seconds to visually "fly" between states
+
+            this.holdRemaining = sampleExp(this.lambda);
+
+            // Smooth head position (updated every frame in pixel space)
+            this.headX = 0;
+            this.headY = 0;
+
+            // Current route object while traveling
+            this.route = null;
+            this.curveFactor = 1.3;            // curve strength (1.0 = straight, higher = more curve)
+
+            // comet trail: list of {x,y,age} in pixel space
+            this.trail = [];
+            this.trailMaxAge = 9.0;            // seconds of visible tail
+            this.trailSampleHz = 12;           // points per second
+            this._trailAcc = 0;
+
+            // Sticky paths option
+            this.stickyPaths = false;          // if true, paths don't fade
+        }
+
+        setRate(rate01) {
+            // map slider [0,1] -> reasonable CTMC rate (avoid 0)
+            this.lambda = 0.15 + 2.5 * rate01;
+        }
+
+        setStickyPaths(sticky) {
+            this.stickyPaths = sticky;
+            if (sticky) {
+                // Reset age for all existing trail points to make them permanent
+                for (const p of this.trail) p.age = 0;
+            }
+        }
+
+        // Nice flight-like easing (keeps motion smooth and natural)
+        easeInOut(u) {
+            // smoothstep-ish
+            return u * u * (3 - 2 * u);
+        }
+
+        // returns current lon/lat by interpolating between i and j (or i if holding)
+        currentLonLat() {
+            const a = geoStates[this.i];
+            if (this.holding) return { lon: a.lon, lat: a.lat };
+
+            const b = geoStates[this.j];
+            const u = this.t;
+
+            // simple linear interpolation
+            return { lon: a.lon + (b.lon - a.lon) * u, lat: a.lat + (b.lat - a.lat) * u };
+        }
+
+        update(dt, offsetX, offsetY, mapWidth, mapHeight) {
+            if (this.holding) {
+                this.holdRemaining -= dt;
+                if (this.holdRemaining <= 0) {
+                    // jump decision
+                    this.j = sampleCategorical(P[this.i]);
+                    if (this.j === this.i) {
+                        // re-hold
+                        this.holdRemaining = sampleExp(this.lambda);
+                    } else {
+                        // start traveling
+                        this.holding = false;
+                        this.t = 0;
+                        this.route = getRoute(this.i, this.j, this.curveFactor, offsetX, offsetY, mapWidth, mapHeight);
+                    }
+                }
+                // head stays at anchor point while holding
+                const [x, y] = projectEquirect(geoStates[this.i].lon, geoStates[this.i].lat, offsetX, offsetY, mapWidth, mapHeight);
+                this.headX = x;
+                this.headY = y;
+                return;
+            }
+
+            // traveling
+            this.t += dt / this.travelTime;
+            if (this.t >= 1) {
+                this.t = 1;
+            }
+
+            const p = evalRoute(this.route, this.easeInOut(this.t));
+            this.headX = p.x;
+            this.headY = p.y;
+
+            if (this.t >= 1) {
+                // arrive
+                this.i = this.j;
+                this.holding = true;
+                this.holdRemaining = sampleExp(this.lambda);
+                this.route = null;
+            }
+        }
+
+        // maintain sticky comet trail in pixel space (decoupled from head)
+        updateTrail(dt) {
+            // Only age points if sticky paths is disabled
+            if (!this.stickyPaths) {
+                // age existing points
+                for (const p of this.trail) p.age += dt;
+                // drop old
+                while (this.trail.length && this.trail[0].age > this.trailMaxAge) {
+                    this.trail.shift();
+                }
+            }
+
+            // add new samples at fixed rate
+            this._trailAcc += dt;
+            const step = 1 / this.trailSampleHz;
+            while (this._trailAcc >= step) {
+                this._trailAcc -= step;
+                this.trail.push({ x: this.headX, y: this.headY, age: 0 });
+            }
+
+            // Pin the last point to the head to avoid micro-jumps at the end
+            if (this.trail.length) {
+                const last = this.trail[this.trail.length - 1];
+                last.x = this.headX;
+                last.y = this.headY;
+            }
+        }
+
+        draw(ctx) {
+            // Draw comet trail (simple line segments in pixel space)
+            if (this.trail.length > 1) {
+                for (let k = 1; k < this.trail.length; k++) {
+                    const p0 = this.trail[k - 1];
+                    const p1 = this.trail[k];
+
+                    if (this.stickyPaths) {
+                        // Sticky paths: draw with full opacity and constant width
+                        ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+                        ctx.lineWidth = 2;
+                    } else {
+                        // Fading trail: age-based opacity and width
+                        const a = 1 - (p1.age / this.trailMaxAge); // 1 -> 0
+                        const alpha = Math.max(0, Math.min(1, a));
+                        ctx.strokeStyle = `rgba(0,0,0,${0.55 * alpha})`;
+                        ctx.lineWidth = 1 + 2 * alpha;
+                    }
+
+                    ctx.beginPath();
+                    ctx.moveTo(p0.x, p0.y);
+                    ctx.lineTo(p1.x, p1.y);
+                    ctx.stroke();
+                }
+            }
+
+            // Head (dot) - draw from smooth headX/headY
+            ctx.fillStyle = "#000";
+            ctx.beginPath();
+            ctx.arc(this.headX, this.headY, 4.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = "#333";
+            ctx.lineWidth = 1.2;
+            ctx.stroke();
+        }
+
+        currentStateName() {
+            return geoStates[this.i].name;
+        }
+    }
+
+    // We'll run multiple stars - one per sequence path to each tip
+    // 0: Root → Internal Node → Tip 1
+    // 1: Root → Internal Node → Tip 2
+    // 2: Root → Tip 3
+    let geoStars = []; // Array of {sequenceId, star} objects
+    let lastTimeSec = null;
+    let nextSequenceId = 0; // Counter for unique sequence IDs
+
+    // Great circle interpolation (spherical linear interpolation)
+    function greatCircleInterpolate(lon1, lat1, lon2, lat2, t) {
+        // Convert to radians
+        const toRad = Math.PI / 180;
+        const toDeg = 180 / Math.PI;
+
+        const φ1 = lat1 * toRad;
+        const φ2 = lat2 * toRad;
+        const λ1 = lon1 * toRad;
+        const λ2 = lon2 * toRad;
+
+        // Calculate angular distance
+        const Δφ = φ2 - φ1;
+        const Δλ = λ2 - λ1;
+
+        const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+            Math.cos(φ1) * Math.cos(φ2) *
+            Math.sin(Δλ/2) * Math.sin(Δλ/2);
+        const δ = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+        if (δ < 0.001) {
+            // Points are very close, use simple linear interpolation
+            return {
+                lon: lon1 + (lon2 - lon1) * t,
+                lat: lat1 + (lat2 - lat1) * t
+            };
+        }
+
+        // Spherical linear interpolation
+        const A = Math.sin((1-t)*δ) / Math.sin(δ);
+        const B = Math.sin(t*δ) / Math.sin(δ);
+
+        const x = A * Math.cos(φ1) * Math.cos(λ1) + B * Math.cos(φ2) * Math.cos(λ2);
+        const y = A * Math.cos(φ1) * Math.sin(λ1) + B * Math.cos(φ2) * Math.sin(λ2);
+        const z = A * Math.sin(φ1) + B * Math.sin(φ2);
+
+        const φ = Math.atan2(z, Math.sqrt(x*x + y*y));
+        const λ = Math.atan2(y, x);
+
+        return {
+            lon: λ * toDeg,
+            lat: φ * toDeg
+        };
+    }
+
+    // Initial sequence
+    const initialSequence = ['A', 'T', 'G', 'C', 'A'];
+
+    function drawTree() {
+        ctx.strokeStyle = '#34495e';
+        ctx.lineWidth = 3;
+
+        function drawNode(node) {
+            if (node.children.length > 0) {
+                node.children.forEach(child => {
+                    ctx.beginPath();
+                    ctx.moveTo(node.x, node.y);
+                    ctx.lineTo(child.x, child.y);
+                    ctx.stroke();
+                    drawNode(child);
+                });
+            }
+
+            // Draw node circles
+            ctx.fillStyle = '#2c3e50';
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, node.children.length > 0 ? 8 : 10, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw labels for tips
+            if (node.label) {
+                ctx.fillStyle = '#555';
+                ctx.font = '14px "DM Sans"';
+                ctx.textAlign = 'center';
+                ctx.fillText(node.label, node.x, node.y + 40);
+            }
+        }
+
+        // Draw root label
+        ctx.fillStyle = '#555';
+        ctx.font = '14px "DM Sans"';
+        ctx.textAlign = 'center';
+        ctx.fillText('Root', tree.x, tree.y - 20);
+
+        drawNode(tree);
+    }
+
+    // Load world land GeoJSON data
+    async function loadWorldLand() {
+        if (worldLandGeoJSON) return;
+        try {
+            // Using Natural Earth 110m resolution land data from CDN
+            const resp = await fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json");
+            const topology = await resp.json();
+            // Convert TopoJSON to GeoJSON
+            worldLandGeoJSON = topojson.feature(topology, topology.objects.land);
+        } catch (error) {
+            console.error("Failed to load world map data:", error);
+        }
+    }
+
+    async function loadNaturalEarthCountries() {
+        if (neCountries) return;
+        try {
+            const url = "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson";
+            const resp = await fetch(url);
+            neCountries = await resp.json();
+        } catch (error) {
+            console.error("Failed to load Natural Earth countries:", error);
+        }
+    }
+
+    function lonLatBBoxOfFeature(f) {
+        let minLon = +Infinity, maxLon = -Infinity, minLat = +Infinity, maxLat = -Infinity;
+
+        function visitCoord(coord) {
+            const lon = coord[0], lat = coord[1];
+            if (lon < minLon) minLon = lon;
+            if (lon > maxLon) maxLon = lon;
+            if (lat < minLat) minLat = lat;
+            if (lat > maxLat) maxLat = lat;
+        }
+
+        function walkCoords(coords) {
+            if (typeof coords[0] === "number") {
+                visitCoord(coords);
+            } else {
+                for (const c of coords) walkCoords(c);
+            }
+        }
+
+        walkCoords(f.geometry.coordinates);
+        return { minLon, maxLon, minLat, maxLat };
+    }
+
+    function buildSilhouetteForContinent(continentName, targetW = 120, targetH = 60) {
+        if (!neCountries) return null;
+        if (silhouetteCache.has(continentName)) return silhouetteCache.get(continentName);
+
+        const feats = neCountries.features.filter(f => f?.properties?.CONTINENT === continentName);
+        if (!feats.length) return null;
+
+        // compute bbox over all features
+        let minLon = +Infinity, maxLon = -Infinity, minLat = +Infinity, maxLat = -Infinity;
+        for (const f of feats) {
+            const bb = lonLatBBoxOfFeature(f);
+            minLon = Math.min(minLon, bb.minLon);
+            maxLon = Math.max(maxLon, bb.maxLon);
+            minLat = Math.min(minLat, bb.minLat);
+            maxLat = Math.max(maxLat, bb.maxLat);
+        }
+
+        // offscreen canvas
+        const c = document.createElement("canvas");
+        c.width = targetW;
+        c.height = targetH;
+        const g = c.getContext("2d");
+
+        // map lon/lat in bbox -> pixel
+        function projLocal(lon, lat) {
+            const x = ((lon - minLon) / Math.max(1e-9, (maxLon - minLon))) * targetW;
+            const y = ((maxLat - lat) / Math.max(1e-9, (maxLat - minLat))) * targetH;
+            return [x, y];
+        }
+
+        // draw filled polygons with no stroke (so it looks like one silhouette)
+        g.clearRect(0, 0, targetW, targetH);
+        g.fillStyle = "rgba(165, 214, 167, 0.85)";  // green from map with high opacity
+        g.beginPath();
+
+        function drawRing(ring) {
+            for (let i = 0; i < ring.length; i++) {
+                const [x, y] = projLocal(ring[i][0], ring[i][1]);
+                if (i === 0) g.moveTo(x, y);
+                else g.lineTo(x, y);
+            }
+            g.closePath();
+        }
+
+        for (const f of feats) {
+            const geom = f.geometry;
+            if (!geom) continue;
+            if (geom.type === "Polygon") {
+                for (const ring of geom.coordinates) drawRing(ring);
+            } else if (geom.type === "MultiPolygon") {
+                for (const poly of geom.coordinates) {
+                    for (const ring of poly) drawRing(ring);
+                }
+            }
+        }
+
+        g.fill();
+
+        const out = { canvas: c, w: targetW, h: targetH };
+        silhouetteCache.set(continentName, out);
+        return out;
+    }
+
+    function drawLocationBadgeBehind(seqX, seqY, locationName) {
+        // Badge extends behind sequence and below label
+        const badgeW = Math.max(110, locationName.length * 7.5);
+        const sequenceHeight = 18; // approximate height of sequence boxes
+        const badgeH = sequenceHeight + 34; // cover sequence + label area
+
+        const x0 = seqX - badgeW / 2;
+        const y0 = seqY - sequenceHeight + 6; // start above sequence
+
+        // silhouette (background) - green with high opacity
+        const sil = buildSilhouetteForContinent(locationName, Math.round(badgeW), Math.round(badgeH));
+        if (sil) {
+            ctx.save();
+            ctx.globalAlpha = 1.0;              // alpha already in silhouette fillStyle
+            ctx.drawImage(sil.canvas, x0, y0, badgeW, badgeH);
+            ctx.restore();
+        }
+
+        // very subtle white overlay only for text readability (minimal opacity)
+        ctx.save();
+        ctx.fillStyle = "rgba(255,255,255,0.15)";
+        const r = 6;
+        ctx.beginPath();
+        ctx.moveTo(x0 + r, y0);
+        ctx.arcTo(x0 + badgeW, y0, x0 + badgeW, y0 + badgeH, r);
+        ctx.arcTo(x0 + badgeW, y0 + badgeH, x0, y0 + badgeH, r);
+        ctx.arcTo(x0, y0 + badgeH, x0, y0, r);
+        ctx.arcTo(x0, y0, x0 + badgeW, y0, r);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+
+        // foreground label (text)
+        ctx.fillStyle = "#2e4d2e"; // darker green for better contrast
+        ctx.font = 'bold 12px "DM Sans"';
+        ctx.textAlign = "center";
+        ctx.fillText(locationName, seqX, y0 + badgeH - 13);
+    }
+
+    // Project lon/lat to canvas x/y (simple equirectangular projection)
+    function projectEquirect(lon, lat, offsetX, offsetY, w, h) {
+        // lon in [-180, 180], lat in [-90, 90]
+        const x = offsetX + ((lon + 180) / 360) * w;
+        const y = offsetY + ((90 - lat) / 180) * h;
+        return [x, y];
+    }
+
+    // Draw GeoJSON land data on canvas
+    function drawGeoJSONLand(ctx, geojson, offsetX, offsetY, w, h) {
+        const drawRing = (ring) => {
+            ring.forEach((pt, i) => {
+                const [lon, lat] = pt;
+                const [x, y] = projectEquirect(lon, lat, offsetX, offsetY, w, h);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.closePath();
+        };
+
+        for (const feat of geojson.features) {
+            const g = feat.geometry;
+            if (!g) continue;
+
+            ctx.beginPath();
+            if (g.type === "Polygon") {
+                g.coordinates.forEach(drawRing);
+            } else if (g.type === "MultiPolygon") {
+                g.coordinates.forEach(poly => poly.forEach(drawRing));
+            }
+            ctx.fill();
+            ctx.stroke();
+        }
+    }
+
+    function drawPhylogeography() {
+        // Draw proper world map in top right corner (moved right, 5% smaller)
+        const offsetX = canvas.width - 360;
+        const offsetY = 50;
+        const mapWidth = 342;
+        const mapHeight = 200;
+
+        // Draw ocean background
+        ctx.fillStyle = '#e3f2fd';
+        ctx.fillRect(offsetX, offsetY, mapWidth, mapHeight);
+        ctx.strokeStyle = '#90a4ae';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(offsetX, offsetY, mapWidth, mapHeight);
+
+        // Draw land masses from GeoJSON
+        if (worldLandGeoJSON) {
+            ctx.fillStyle = '#a5d6a7';
+            ctx.strokeStyle = '#66bb6a';
+            ctx.lineWidth = 0.5;
+            drawGeoJSONLand(ctx, worldLandGeoJSON, offsetX, offsetY, mapWidth, mapHeight);
+        } else {
+            // Fallback: show loading text
+            ctx.fillStyle = '#666';
+            ctx.font = '12px "DM Sans"';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Loading map...', offsetX + mapWidth/2, offsetY + mapHeight/2);
+        }
+
+        // Clip to map bounds
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(offsetX, offsetY, mapWidth, mapHeight);
+        ctx.clip();
+
+        // Draw the stars (trail + dot) for visible sequences
+        geoStars.forEach(({ sequenceId, star }) => {
+            const seq = sequences.find(s => s.sequenceId === sequenceId);
+            if (!seq) return;
+
+            // If trackAllBranches is off, only show sequences with trackedGeo=true (Root → Tip 1)
+            // If trackAllBranches is on, show all sequences
+            const shouldShow = trackAllBranches || seq.trackedGeo;
+            if (shouldShow) {
+                star.draw(ctx);
+            }
+        });
+
+        ctx.restore();
+
+        // Add title
+        ctx.fillStyle = '#555';
+        ctx.font = '14px "DM Sans"';
+        ctx.textAlign = 'center';
+        ctx.fillText('Geographic Distribution', offsetX + mapWidth/2, offsetY - 12);
+    }
+
+    function drawHostTransmission() {
+        if (!hostCTMC) return;
+
+        // Draw host transmission panel in middle-right
+        const panelX = canvas.width - 360;
+        const panelY = 280;
+        const panelWidth = 342;
+        const panelHeight = 280;
+
+        // Add title
+        ctx.fillStyle = '#555';
+        ctx.font = '14px "DM Sans"';
+        ctx.textAlign = 'center';
+        ctx.fillText('Host Transmission', panelX + panelWidth/2, panelY - 12);
+
+        // Host positions (arranged in a circle-ish pattern)
+        const centerX = panelX + panelWidth/2;
+        const centerY = panelY + panelHeight/2;
+        const radius = 95;
+
+        const hostPositions = [];
+        const numHosts = hostStates.length;
+        for (let i = 0; i < numHosts; i++) {
+            const angle = (i / numHosts) * Math.PI * 2 - Math.PI/2; // Start from top
+            hostPositions.push({
+                x: centerX + Math.cos(angle) * radius,
+                y: centerY + Math.sin(angle) * radius,
+                name: hostStates[i].name
+            });
+        }
+
+        // Draw hosts
+        hostPositions.forEach((pos, i) => {
+            const isCurrentHost = (i === hostCTMC.getCurrentHostIndex());
+            const isTargetHost = (i === hostCTMC.getTargetHostIndex() && hostCTMC.isTransmitting());
+
+            // Draw host with scale based on selection - make pig 50% bigger
+            let scale = isCurrentHost ? 0.5 : 0.4;
+            if (pos.name === "Pig") {
+                scale = scale * 1.5;
+            }
+
+            // Highlight background for current/target host
+            if (isCurrentHost || isTargetHost) {
+                ctx.fillStyle = isCurrentHost ? 'rgba(59, 130, 246, 0.15)' : 'rgba(239, 68, 68, 0.1)';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 50, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Draw the host icon
+            HOST_ICON[pos.name](ctx, pos.x, pos.y, scale);
+
+            // Draw host label
+            ctx.fillStyle = isCurrentHost ? '#3b82f6' : '#666';
+            ctx.font = isCurrentHost ? 'bold 11px "DM Sans"' : '10px "DM Sans"';
+            ctx.textAlign = 'center';
+            ctx.fillText(pos.name, pos.x, pos.y + 48);
+        });
+
+        // Draw virus (either stationary or jumping)
+        if (hostCTMC.isTransmitting()) {
+            // Virus is jumping from current to target
+            const currentPos = hostPositions[hostCTMC.getCurrentHostIndex()];
+            const targetPos = hostPositions[hostCTMC.getTargetHostIndex()];
+            const t = hostCTMC.getTransmissionProgress();
+
+            // Ease function for smooth motion
+            const easeT = t * t * (3 - 2 * t);
+
+            const virusX = currentPos.x + (targetPos.x - currentPos.x) * easeT;
+            const virusY = currentPos.y + (targetPos.y - currentPos.y) * easeT;
+
+            // Draw path
+            ctx.strokeStyle = 'rgba(239, 68, 68, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(currentPos.x, currentPos.y);
+            ctx.lineTo(targetPos.x, targetPos.y);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Draw jumping virus
+            drawVirus(ctx, virusX, virusY, 0.6);
+        } else {
+            // Virus is in current host
+            const currentPos = hostPositions[hostCTMC.getCurrentHostIndex()];
+            drawVirus(ctx, currentPos.x, currentPos.y - 5, 0.5);
+        }
+    }
+
+    function drawCTMC(currentNucleotide = null, previousNucleotide = null, transitionProgress = 1) {
+        // Draw CTMC (Continuous Time Markov Chain) in top left corner
+        const offsetX = 80;
+        const offsetY = 80;
+        const size = 120;  // Doubled from 60
+
+        // Define square vertices with nucleotides
+        const vertices = [
+            { x: offsetX, y: offsetY, nucleotide: 'A' },           // top-left
+            { x: offsetX + size, y: offsetY, nucleotide: 'T' },    // top-right
+            { x: offsetX + size, y: offsetY + size, nucleotide: 'G' }, // bottom-right
+            { x: offsetX, y: offsetY + size, nucleotide: 'C' }     // bottom-left
+        ];
+
+        // Draw edges between all vertices (showing all possible transitions)
+        ctx.strokeStyle = '#bdc3c7';
+        ctx.lineWidth = 2;
+
+        // Function to draw arrow head
+        function drawArrowHead(fromX, fromY, toX, toY, color = '#bdc3c7') {
+            const headLength = 8;
+            const angle = Math.atan2(toY - fromY, toX - fromX);
+
+            // Shorten the line to stop at vertex edge (radius 16)
+            const shortenDistance = 16;
+            const dx = toX - fromX;
+            const dy = toY - fromY;
+            const length = Math.sqrt(dx * dx + dy * dy);
+            const ratio = (length - shortenDistance) / length;
+            const endX = fromX + dx * ratio;
+            const endY = fromY + dy * ratio;
+
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+
+            // Draw arrow head
+            ctx.beginPath();
+            ctx.moveTo(endX, endY);
+            ctx.lineTo(
+                endX - headLength * Math.cos(angle - Math.PI / 6),
+                endY - headLength * Math.sin(angle - Math.PI / 6)
+            );
+            ctx.lineTo(
+                endX - headLength * Math.cos(angle + Math.PI / 6),
+                endY - headLength * Math.sin(angle + Math.PI / 6)
+            );
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        // Draw all edges with bidirectional arrows
+        // Horizontal and vertical edges
+        for (let i = 0; i < vertices.length; i++) {
+            const next = (i + 1) % vertices.length;
+            const from = vertices[i];
+            const to = vertices[next];
+
+            ctx.beginPath();
+            ctx.moveTo(from.x, from.y);
+            ctx.lineTo(to.x, to.y);
+            ctx.stroke();
+
+            // Draw arrow heads in both directions
+            drawArrowHead(from.x, from.y, to.x, to.y);
+            drawArrowHead(to.x, to.y, from.x, from.y);
+        }
+
+        // Diagonal edges
+        // Diagonal 1: top-left to bottom-right
+        ctx.beginPath();
+        ctx.moveTo(vertices[0].x, vertices[0].y);
+        ctx.lineTo(vertices[2].x, vertices[2].y);
+        ctx.stroke();
+        drawArrowHead(vertices[0].x, vertices[0].y, vertices[2].x, vertices[2].y);
+        drawArrowHead(vertices[2].x, vertices[2].y, vertices[0].x, vertices[0].y);
+
+        // Diagonal 2: top-right to bottom-left
+        ctx.beginPath();
+        ctx.moveTo(vertices[1].x, vertices[1].y);
+        ctx.lineTo(vertices[3].x, vertices[3].y);
+        ctx.stroke();
+        drawArrowHead(vertices[1].x, vertices[1].y, vertices[3].x, vertices[3].y);
+        drawArrowHead(vertices[3].x, vertices[3].y, vertices[1].x, vertices[1].y);
+
+        // Draw vertices (nucleotide circles)
+        vertices.forEach(v => {
+            ctx.fillStyle = colors[v.nucleotide];
+            ctx.beginPath();
+            ctx.arc(v.x, v.y, 16, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw nucleotide letter
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 14px "JetBrains Mono"';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(v.nucleotide, v.x, v.y);
+        });
+
+        // Draw tracking point with transition animation
+        if (currentNucleotide) {
+            const currentVertex = vertices.find(v => v.nucleotide === currentNucleotide);
+
+            if (previousNucleotide && transitionProgress < 1) {
+                // Animating transition
+                const previousVertex = vertices.find(v => v.nucleotide === previousNucleotide);
+                if (previousVertex && currentVertex) {
+                    // Interpolate position along the edge/diagonal
+                    const x = previousVertex.x + (currentVertex.x - previousVertex.x) * transitionProgress;
+                    const y = previousVertex.y + (currentVertex.y - previousVertex.y) * transitionProgress;
+
+                    // Draw trail
+                    ctx.strokeStyle = '#2c3e50';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(previousVertex.x, previousVertex.y);
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+
+                    // Draw arrow head on trail
+                    const headLength = 8;
+                    const angle = Math.atan2(y - previousVertex.y, x - previousVertex.x);
+                    ctx.fillStyle = '#2c3e50';
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(
+                        x - headLength * Math.cos(angle - Math.PI / 6),
+                        y - headLength * Math.sin(angle - Math.PI / 6)
+                    );
+                    ctx.lineTo(
+                        x - headLength * Math.cos(angle + Math.PI / 6),
+                        y - headLength * Math.sin(angle + Math.PI / 6)
+                    );
+                    ctx.closePath();
+                    ctx.fill();
+
+                    // Draw moving dot
+                    ctx.fillStyle = '#2c3e50';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            } else if (currentVertex) {
+                // Stationary at current vertex
+                // Draw outer ring
+                ctx.strokeStyle = '#2c3e50';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(currentVertex.x, currentVertex.y, 24, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // Draw center dot
+                ctx.fillStyle = '#2c3e50';
+                ctx.beginPath();
+                ctx.arc(currentVertex.x, currentVertex.y, 6, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // Add label
+        ctx.fillStyle = '#555';
+        ctx.font = '14px "DM Sans"';
+        ctx.textAlign = 'center';
+        ctx.fillText('CTMC', offsetX + size/2, offsetY - 20);
+
+        // Add tracking info
+        ctx.fillStyle = '#888';
+        ctx.font = '11px "DM Sans"';
+        ctx.fillText('Tracking: 1st nucleotide (Root → Tip 1)', offsetX + size/2, offsetY + size + 30);
+    }
+
+    function drawCTMCLegend() {
+        // Draw legend below CTMC in two rows mirroring the square layout
+        const offsetX = 80;
+        const offsetY = 260; // Below CTMC and tracking label
+        const boxSize = 18;
+        const horizontalSpacing = 85;
+        const verticalSpacing = 24;
+
+        // Row 1: A and T (top row of CTMC)
+        // A (Adenine)
+        ctx.fillStyle = colors['A'];
+        ctx.fillRect(offsetX, offsetY, boxSize, boxSize);
+
+        // Draw white letter inside box
+        ctx.fillStyle = 'white';
+        ctx.font = 'bold 12px "JetBrains Mono"';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('A', offsetX + boxSize/2, offsetY + boxSize/2);
+
+        // Draw label
+        ctx.fillStyle = '#555';
+        ctx.font = '11px "DM Sans"';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Adenine', offsetX + boxSize + 6, offsetY + boxSize/2);
+
+        // T (Thymine)
+        ctx.fillStyle = colors['T'];
+        ctx.fillRect(offsetX + horizontalSpacing, offsetY, boxSize, boxSize);
+
+        // Draw white letter inside box
+        ctx.fillStyle = 'white';
+        ctx.font = 'bold 12px "JetBrains Mono"';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('T', offsetX + horizontalSpacing + boxSize/2, offsetY + boxSize/2);
+
+        // Draw label
+        ctx.fillStyle = '#555';
+        ctx.font = '11px "DM Sans"';
+        ctx.textAlign = 'left';
+        ctx.fillText('Thymine', offsetX + horizontalSpacing + boxSize + 6, offsetY + boxSize/2);
+
+        // Row 2: C and G (bottom row of CTMC)
+        const row2Y = offsetY + verticalSpacing;
+
+        // C (Cytosine)
+        ctx.fillStyle = colors['C'];
+        ctx.fillRect(offsetX, row2Y, boxSize, boxSize);
+
+        // Draw white letter inside box
+        ctx.fillStyle = 'white';
+        ctx.font = 'bold 12px "JetBrains Mono"';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('C', offsetX + boxSize/2, row2Y + boxSize/2);
+
+        // Draw label
+        ctx.fillStyle = '#555';
+        ctx.font = '11px "DM Sans"';
+        ctx.textAlign = 'left';
+        ctx.fillText('Cytosine', offsetX + boxSize + 6, row2Y + boxSize/2);
+
+        // G (Guanine)
+        ctx.fillStyle = colors['G'];
+        ctx.fillRect(offsetX + horizontalSpacing, row2Y, boxSize, boxSize);
+
+        // Draw white letter inside box
+        ctx.fillStyle = 'white';
+        ctx.font = 'bold 12px "JetBrains Mono"';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('G', offsetX + horizontalSpacing + boxSize/2, row2Y + boxSize/2);
+
+        // Draw label
+        ctx.fillStyle = '#555';
+        ctx.font = '11px "DM Sans"';
+        ctx.textAlign = 'left';
+        ctx.fillText('Guanine', offsetX + horizontalSpacing + boxSize + 6, row2Y + boxSize/2);
+    }
+
+    function drawSequence(seq, showHighlight = false) {
+        const boxSize = 15;
+        const spacing = 2;
+        const totalWidth = (boxSize + spacing) * seq.sequence.length - spacing;
+        const startX = seq.x - totalWidth / 2;
+
+        seq.sequence.forEach((nucleotide, i) => {
+            const x = startX + i * (boxSize + spacing);
+            const y = seq.y - 5;  // Lower position to avoid hiding labels
+
+            // Draw box with slight shadow
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
+            ctx.shadowBlur = 4;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 2;
+
+            ctx.fillStyle = colors[nucleotide];
+            ctx.fillRect(x, y, boxSize, boxSize);
+
+            ctx.shadowColor = 'transparent';
+
+            // Draw nucleotide letter
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 10px "JetBrains Mono"';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(nucleotide, x + boxSize / 2, y + boxSize / 2);
+
+            // Highlight if recently mutated
+            if (seq.mutatedIndices && seq.mutatedIndices.includes(i)) {
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(x - 2, y - 2, boxSize + 4, boxSize + 4);
+            }
+
+            // Draw tracking square around first nucleotide if this sequence is tracked
+            if (showHighlight && i === 0) {
+                ctx.strokeStyle = '#2c3e50';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x - 3, y - 3, boxSize + 6, boxSize + 6);
+            }
+        });
+    }
+
+    function mutateSequence(sequence) {
+        const newSequence = [...sequence];
+        const mutatedIndices = [];
+
+        newSequence.forEach((nucleotide, i) => {
+            if (Math.random() < mutationRate * speed / 60) {
+                const otherNucleotides = nucleotides.filter(n => n !== nucleotide);
+                newSequence[i] = otherNucleotides[Math.floor(Math.random() * otherNucleotides.length)];
+                mutatedIndices.push(i);
+            }
+        });
+
+        return { sequence: newSequence, mutatedIndices };
+    }
+
+    function createSequence(x, y, targetX, targetY, sequence, parent = null, started = false, tracked = false) {
+        // Calculate distance for speed normalization
+        const startX = parent ? parent.x : x;
+        const startY = parent ? parent.y : y;
+        const distance = Math.sqrt(Math.pow(targetX - startX, 2) + Math.pow(targetY - startY, 2));
+
+        return {
+            x, y,
+            targetX, targetY,
+            sequence: [...sequence],
+            progress: 0,
+            parent: parent,
+            mutatedIndices: [],
+            started: started,
+            tracked: tracked,
+            distance: distance,
+            sequenceId: nextSequenceId++, // Assign unique ID
+            parentSequenceId: null // Will be set when splitting
+        };
+    }
+
+    function initAnimation() {
+        sequences = [];
+        nextSequenceId = 0; // Reset sequence ID counter
+
+        // Create two identical copies at the root, but don't start them moving yet
+        // Mark the first one (going to left branch) as tracked for CTMC
+        tree.children.forEach((child, index) => {
+            const seq = createSequence(tree.x, tree.y, child.x, child.y, initialSequence, null, false, index === 0);
+            // Mark which branch this is for dynamic tracking decision
+            seq.branchIndex = index; // 0 = left (to internal node), 1 = right (to tip 3)
+            // Only the left branch (going toward internal node and eventually Tip 1) is geo-tracked by default
+            seq.trackedGeo = (index === 0); // Only branch 0 is tracked for geography
+            sequences.push(seq);
+        });
+
+        // Initialize CTMC state
+        ctmcCurrentNucleotide = initialSequence[0];
+        ctmcPreviousNucleotide = null;
+        ctmcTransitionProgress = 1;
+
+        // Initialize geographic stars - create dynamically as sequences exist
+        geoStars = [];
+        sequences.forEach(seq => {
+            // Only create stars for sequences that should be tracked
+            const shouldTrack = trackAllBranches || seq.trackedGeo;
+            if (shouldTrack) {
+                const star = new GeoCTMCStar(0);
+                star.setStickyPaths(stickyPaths);
+                // Initialize head position
+                const offsetX = canvas.width - 360;
+                const offsetY = 50;
+                const mapWidth = 342;
+                const mapHeight = 200;
+                const [x, y] = projectEquirect(geoStates[0].lon, geoStates[0].lat, offsetX, offsetY, mapWidth, mapHeight);
+                star.headX = x;
+                star.headY = y;
+                geoStars.push({ sequenceId: seq.sequenceId, star });
+            }
+        });
+        lastTimeSec = null;
+
+        // Initialize host transmission CTMC
+        hostCTMC = new HostTransmissionCTMC(0); // Start with Human (index 0)
+        hostCTMC.setRate(transmissionRate);
+
+        // Draw the initial state
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawTree();
+
+        // Show initial first nucleotide in CTMC if phylogenetics is enabled
+        if (showPhylogenetics) {
+            drawCTMC(ctmcCurrentNucleotide, ctmcPreviousNucleotide, ctmcTransitionProgress);
+            drawCTMCLegend();
+        }
+
+        // Draw phylogeography map if enabled
+        if (showPhylogeography) {
+            drawPhylogeography();
+        }
+
+        // Draw host transmission panel if enabled
+        if (showHostTransmission) {
+            drawHostTransmission();
+        }
+
+        // Draw continent location badges BEFORE sequences (so they appear behind)
+        if (showPhylogeography && drawLocations && geoStars.length > 0) {
+            geoStars.forEach(({ sequenceId, star }) => {
+                const seq = sequences.find(s => s.sequenceId === sequenceId);
+                if (!seq) return;
+
+                const shouldShow = trackAllBranches || seq.trackedGeo;
+                if (shouldShow) {
+                    const continentName = star.currentStateName();
+                    drawLocationBadgeBehind(seq.x, seq.y, continentName);
+                }
+            });
+        }
+
+        if (showPhylogenetics) {
+            sequences.forEach(seq => {
+                const showHighlight = highlightTrackedNucleotide && seq.tracked;
+                drawSequence(seq, showHighlight);
+            });
+        }
+
+        // Draw continent names (simple text) if not using location badges
+        if (showPhylogeography && !drawLocations && geoStars.length > 0) {
+            geoStars.forEach(({ sequenceId, star }) => {
+                const seq = sequences.find(s => s.sequenceId === sequenceId);
+                if (!seq) return;
+
+                // If trackAllBranches is off, only show sequences with trackedGeo=true (Root → Tip 1)
+                // If trackAllBranches is on, show all sequences
+                const shouldShow = trackAllBranches || seq.trackedGeo;
+                if (shouldShow) {
+                    const continentName = star.currentStateName();
+                    ctx.fillStyle = '#555';
+                    ctx.font = '12px "DM Sans"';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(continentName, seq.x, seq.y + 21);
+                }
+            });
+        }
+
+        // Draw host icon above tracked sequence (Root → Tip 1)
+        if (showHostTransmission && hostCTMC) {
+            const trackedSeq = sequences.find(seq => seq.tracked);
+            if (trackedSeq) {
+                const currentHost = hostCTMC.currentHostName();
+                // Draw host icon above sequence - make pig 50% bigger
+                const scale = currentHost === "Pig" ? 0.525 : 0.35;
+                HOST_ICON[currentHost](ctx, trackedSeq.x, trackedSeq.y - 35, scale);
+            }
+        }
+    }
+
+    function animate() {
+        if (!isPlaying) return;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawTree();
+
+        // Find the tracked sequence and get its first nucleotide
+        let trackedNucleotide = null;
+        const trackedSequence = sequences.find(seq => seq.tracked);
+        if (trackedSequence) {
+            trackedNucleotide = trackedSequence.sequence[0];
+        }
+
+        // --- Time step for continuous simulation ---
+        const now = performance.now() / 1000;
+        if (lastTimeSec === null) lastTimeSec = now;
+        const dt = Math.min(0.05, now - lastTimeSec); // cap dt for stability
+        lastTimeSec = now;
+
+        // --- Update geo stars (only if phylogeography on) ---
+        if (showPhylogeography) {
+            const offsetX = canvas.width - 360;
+            const offsetY = 50;
+            const mapWidth = 342;
+            const mapHeight = 200;
+
+            // Create stars for any new sequences that don't have one AND should be tracked
+            sequences.forEach(seq => {
+                // Determine if this sequence should have a star
+                const shouldTrack = trackAllBranches || seq.trackedGeo;
+
+                if (shouldTrack && !geoStars.find(gs => gs.sequenceId === seq.sequenceId)) {
+                    // Find parent star to inherit state using parentSequenceId
+                    let parentStar = null;
+                    if (seq.parentSequenceId !== null) {
+                        const parentStarObj = geoStars.find(gs => gs.sequenceId === seq.parentSequenceId);
+                        if (parentStarObj) {
+                            parentStar = parentStarObj.star;
+                        }
+                    }
+
+                    // Create new star, inheriting parent's state if available
+                    const newStar = new GeoCTMCStar(0);
+                    newStar.setStickyPaths(stickyPaths);
+                    if (parentStar) {
+                        // Inherit all state from parent
+                        newStar.i = parentStar.i;
+                        newStar.j = parentStar.j;
+                        newStar.t = parentStar.t;
+                        newStar.holding = parentStar.holding;
+                        newStar.holdRemaining = parentStar.holdRemaining;
+                        newStar.headX = parentStar.headX;
+                        newStar.headY = parentStar.headY;
+                        newStar.route = parentStar.route;
+                        newStar.stickyPaths = parentStar.stickyPaths;
+                        // Clone the trail to continue from parent's position
+                        newStar.trail = parentStar.trail.map(p => ({ ...p }));
+                    } else {
+                        // Initialize headX and headY to starting position
+                        const offsetX = canvas.width - 360;
+                        const offsetY = 50;
+                        const mapWidth = 342;
+                        const mapHeight = 200;
+                        const [x, y] = projectEquirect(geoStates[0].lon, geoStates[0].lat, offsetX, offsetY, mapWidth, mapHeight);
+                        newStar.headX = x;
+                        newStar.headY = y;
+                    }
+                    geoStars.push({ sequenceId: seq.sequenceId, star: newStar });
+                }
+            });
+
+            // Remove stars for sequences that no longer exist OR shouldn't be tracked
+            geoStars = geoStars.filter(gs => {
+                const seq = sequences.find(s => s.sequenceId === gs.sequenceId);
+                if (!seq) return false;
+                const shouldTrack = trackAllBranches || seq.trackedGeo;
+                return shouldTrack;
+            });
+
+            // Update each star based on its sequence
+            geoStars.forEach(({ sequenceId, star }) => {
+                const seq = sequences.find(s => s.sequenceId === sequenceId);
+                if (!seq) return;
+
+                // Determine if we should show this star
+                // If trackAllBranches is off, only show sequences with trackedGeo=true (Root → Tip 1)
+                // If trackAllBranches is on, show all sequences
+                const shouldShow = trackAllBranches || seq.trackedGeo;
+                if (!shouldShow) return;
+
+                const shouldMove = !seq.fixated;
+
+                const offsetX = canvas.width - 360;
+                const offsetY = 50;
+                const mapWidth = 342;
+                const mapHeight = 200;
+
+                if (shouldMove) {
+                    star.setRate(diffusionRate);
+                    star.update(dt, offsetX, offsetY, mapWidth, mapHeight);
+                    star.updateTrail(dt);
+                } else {
+                    // Just age the trail, don't add new points
+                    for (const p of star.trail) p.age += dt;
+                    while (star.trail.length && star.trail[0].age > star.trailMaxAge) {
+                        star.trail.shift();
+                    }
+                }
+            });
+        }
+
+        // --- Update host transmission CTMC (only if host transmission on) ---
+        if (showHostTransmission && hostCTMC) {
+            // Only update if the tracked sequence hasn't reached the tip yet
+            const trackedSeq = sequences.find(seq => seq.tracked);
+            const shouldUpdateHost = trackedSeq && !trackedSeq.fixated;
+
+            if (shouldUpdateHost) {
+                hostCTMC.setRate(transmissionRate);
+                hostCTMC.update(dt);
+            }
+        }
+
+        // Detect nucleotide change and start transition
+        if (trackedNucleotide && trackedNucleotide !== ctmcCurrentNucleotide) {
+            if (ctmcCurrentNucleotide !== null) {
+                // Start transition
+                ctmcPreviousNucleotide = ctmcCurrentNucleotide;
+                ctmcTransitionProgress = 0;
+            }
+            ctmcCurrentNucleotide = trackedNucleotide;
+        }
+
+        // Update transition progress
+        if (ctmcTransitionProgress < 1) {
+            ctmcTransitionProgress += ctmcTransitionSpeed;
+            if (ctmcTransitionProgress >= 1) {
+                ctmcTransitionProgress = 1;
+                ctmcPreviousNucleotide = null;
+            }
+        }
+
+        if (showPhylogenetics) {
+            drawCTMC(ctmcCurrentNucleotide, ctmcPreviousNucleotide, ctmcTransitionProgress);
+            drawCTMCLegend();
+        }
+
+        // Draw phylogeography map if enabled
+        if (showPhylogeography) {
+            drawPhylogeography();
+        }
+
+        // Draw host transmission panel if enabled
+        if (showHostTransmission) {
+            drawHostTransmission();
+        }
+
+        const newSequences = [];
+
+        sequences.forEach(seq => {
+            // If sequence is fixated at a tip, just keep it there without mutating
+            if (seq.fixated) {
+                seq.mutatedIndices = []; // Clear any mutation highlights
+                newSequences.push(seq);
+                return;
+            }
+
+            // Only progress if the sequence has started
+            if (seq.started) {
+                // Use constant pixel speed (5 pixels per frame as base)
+                const basePixelSpeed = 5;
+                const progressIncrement = (basePixelSpeed * speed) / seq.distance;
+                seq.progress += progressIncrement;
+            }
+
+            if (seq.progress <= 1) {
+                // Interpolate position
+                seq.x = seq.parent ? seq.parent.x : tree.x;
+                seq.y = seq.parent ? seq.parent.y : tree.y;
+
+                seq.x += (seq.targetX - seq.x) * seq.progress;
+                seq.y += (seq.targetY - seq.y) * seq.progress;
+
+                // Only mutate if the sequence is actually moving
+                if (seq.started && seq.progress > 0) {
+                    const mutated = mutateSequence(seq.sequence);
+                    seq.sequence = mutated.sequence;
+                    seq.mutatedIndices = mutated.mutatedIndices;
+                }
+
+                newSequences.push(seq);
+            } else {
+                // Reached target - check if it's a node with children
+                let foundNode = null;
+
+                function findNode(node) {
+                    if (Math.abs(node.x - seq.targetX) < 1 && Math.abs(node.y - seq.targetY) < 1) {
+                        return node;
+                    }
+                    for (let child of node.children) {
+                        const found = findNode(child);
+                        if (found) return found;
+                    }
+                    return null;
+                }
+
+                foundNode = findNode(tree);
+
+                if (foundNode && foundNode.children.length > 0) {
+                    // Split sequence at internal node
+                    foundNode.children.forEach((child, childIndex) => {
+                        // For CTMC tracking: only first child (to Tip 1) is tracked
+                        const isTrackedForCTMC = seq.tracked && (child.x === 200 && child.y === 600);
+
+                        // For phylogeography: always only track the branch going to Tip 1
+                        const isTrackedForGeo = seq.trackedGeo && (child.x === 200 && child.y === 600);
+
+                        const newSeq = createSequence(
+                            foundNode.x,
+                            foundNode.y,
+                            child.x,
+                            child.y,
+                            seq.sequence,
+                            foundNode,
+                            true,  // New sequences from splits should start moving
+                            isTrackedForCTMC
+                        );
+                        // Propagate branch index and geo tracking flag
+                        newSeq.branchIndex = seq.branchIndex;
+                        newSeq.trackedGeo = isTrackedForGeo;
+                        newSeq.parentSequenceId = seq.sequenceId; // Track parent for star inheritance
+                        newSequences.push(newSeq);
+                    });
+                } else if (foundNode && foundNode.children.length === 0) {
+                    // Reached a tip - fixate the sequence here
+                    seq.fixated = true;
+                    seq.x = foundNode.x;
+                    seq.y = foundNode.y;
+                    newSequences.push(seq);
+                }
+            }
+        });
+
+        sequences = newSequences;
+
+        // Draw continent location badges BEFORE sequences (so they appear behind)
+        if (showPhylogeography && drawLocations && geoStars.length > 0) {
+            geoStars.forEach(({ sequenceId, star }) => {
+                const seq = sequences.find(s => s.sequenceId === sequenceId);
+                if (!seq) return;
+
+                const shouldShow = trackAllBranches || seq.trackedGeo;
+                if (shouldShow) {
+                    const continentName = star.currentStateName();
+                    drawLocationBadgeBehind(seq.x, seq.y, continentName);
+                }
+            });
+        }
+
+        // Draw all sequences if phylogenetics is enabled
+        if (showPhylogenetics) {
+            sequences.forEach(seq => {
+                const showHighlight = highlightTrackedNucleotide && seq.tracked;
+                drawSequence(seq, showHighlight);
+            });
+        }
+
+        // Draw continent names (simple text) if not using location badges
+        if (showPhylogeography && !drawLocations && geoStars.length > 0) {
+            geoStars.forEach(({ sequenceId, star }) => {
+                const seq = sequences.find(s => s.sequenceId === sequenceId);
+                if (!seq) return;
+
+                // If trackAllBranches is off, only show sequences with trackedGeo=true (Root → Tip 1)
+                // If trackAllBranches is on, show all sequences
+                const shouldShow = trackAllBranches || seq.trackedGeo;
+                if (shouldShow) {
+                    const continentName = star.currentStateName();
+                    ctx.fillStyle = '#555';
+                    ctx.font = '12px "DM Sans"';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(continentName, seq.x, seq.y + 21);
+                }
+            });
+        }
+
+        // Draw host icon above tracked sequence (Root → Tip 1)
+        if (showHostTransmission && hostCTMC) {
+            const trackedSeq = sequences.find(seq => seq.tracked);
+            if (trackedSeq) {
+                const currentHost = hostCTMC.currentHostName();
+                // Draw host icon above sequence - make pig 50% bigger
+                const scale = currentHost === "Pig" ? 0.525 : 0.35;
+                HOST_ICON[currentHost](ctx, trackedSeq.x, trackedSeq.y - 35, scale);
+            }
+        }
+
+        // Continue animation if playing
+        if (sequences.length > 0) {
+            animationFrame = requestAnimationFrame(animate);
+        }
+    }
+
+    // Controls
+    const playBtn = document.getElementById('playBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const speedSlider = document.getElementById('speedSlider');
+    const speedValue = document.getElementById('speedValue');
+    const mutationSlider = document.getElementById('mutationSlider');
+    const mutationValue = document.getElementById('mutationValue');
+    const highlightCheckbox = document.getElementById('highlightCheckbox');
+    const phylogeneticsCheckbox = document.getElementById('phylogeneticsCheckbox');
+    const phylogeneticsControls = document.getElementById('phylogeneticsControls');
+    const phylogeographyCheckbox = document.getElementById('phylogeographyCheckbox');
+    const phylogeographyControls = document.getElementById('phylogeographyControls');
+    const diffusionSlider = document.getElementById('diffusionSlider');
+    const diffusionValue = document.getElementById('diffusionValue');
+    const trackAllBranchesCheckbox = document.getElementById('trackAllBranchesCheckbox');
+    const stickyPathsCheckbox = document.getElementById('stickyPathsCheckbox');
+    const drawLocationsCheckbox = document.getElementById('drawLocationsCheckbox');
+    const hostTransmissionCheckbox = document.getElementById('hostTransmissionCheckbox');
+    const hostTransmissionControls = document.getElementById('hostTransmissionControls');
+    const transmissionSlider = document.getElementById('transmissionSlider');
+    const transmissionValue = document.getElementById('transmissionValue');
+
+    playBtn.addEventListener('click', () => {
+        if (!isPlaying) {
+            if (sequences.length === 0) {
+                initAnimation();
+            }
+            // Start all sequences moving
+            sequences.forEach(seq => {
+                seq.started = true;
+            });
+            isPlaying = true;
+            playBtn.textContent = '▶ Playing...';
+            animate();
+        }
+    });
+
+    pauseBtn.addEventListener('click', () => {
+        isPlaying = false;
+        playBtn.textContent = '▶ Play';
+        if (animationFrame) {
+            cancelAnimationFrame(animationFrame);
+        }
+    });
+
+    resetBtn.addEventListener('click', () => {
+        isPlaying = false;
+        playBtn.textContent = '▶ Play';
+        if (animationFrame) {
+            cancelAnimationFrame(animationFrame);
+        }
+        initAnimation();
+    });
+
+    speedSlider.addEventListener('input', (e) => {
+        speed = parseFloat(e.target.value);
+        speedValue.textContent = speed + 'x';
+    });
+
+    mutationSlider.addEventListener('input', (e) => {
+        mutationRate = parseFloat(e.target.value);
+        mutationValue.textContent = mutationRate.toFixed(2);
+    });
+
+    highlightCheckbox.addEventListener('change', (e) => {
+        highlightTrackedNucleotide = e.target.checked;
+    });
+
+    phylogeneticsCheckbox.addEventListener('change', (e) => {
+        showPhylogenetics = e.target.checked;
+
+        // Show/hide child controls
+        phylogeneticsControls.style.display = showPhylogenetics ? 'flex' : 'none';
+
+        // Redraw to show/hide phylogenetics immediately
+        if (!isPlaying) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawTree();
+            if (showPhylogenetics) {
+                drawCTMC(ctmcCurrentNucleotide, ctmcPreviousNucleotide, ctmcTransitionProgress);
+                drawCTMCLegend();
+            }
+            if (showPhylogeography) {
+                drawPhylogeography();
+            }
+
+            // Draw continent location badges BEFORE sequences
+            if (showPhylogeography && drawLocations && geoStars.length > 0) {
+                geoStars.forEach(({ sequenceId, star }) => {
+                    const seq = sequences.find(s => s.sequenceId === sequenceId);
+                    if (!seq) return;
+
+                    const shouldShow = trackAllBranches || seq.trackedGeo;
+                    if (shouldShow) {
+                        const continentName = star.currentStateName();
+                        drawLocationBadgeBehind(seq.x, seq.y, continentName);
+                    }
+                });
+            }
+
+            if (showPhylogenetics) {
+                sequences.forEach(seq => {
+                    const showHighlight = highlightTrackedNucleotide && seq.tracked;
+                    drawSequence(seq, showHighlight);
+                });
+            }
+
+            // Draw continent names (simple text) if not using location badges
+            if (showPhylogeography && !drawLocations && geoStars.length > 0) {
+                geoStars.forEach(({ sequenceId, star }) => {
+                    const seq = sequences.find(s => s.sequenceId === sequenceId);
+                    if (!seq) return;
+
+                    const shouldShow = trackAllBranches || seq.trackedGeo;
+                    if (shouldShow) {
+                        const continentName = star.currentStateName();
+                        ctx.fillStyle = '#555';
+                        ctx.font = '12px "DM Sans"';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(continentName, seq.x, seq.y + 21);
+                    }
+                });
+            }
+        }
+    });
+
+    phylogeographyCheckbox.addEventListener('change', (e) => {
+        showPhylogeography = e.target.checked;
+
+        // Show/hide child controls
+        phylogeographyControls.style.display = showPhylogeography ? 'flex' : 'none';
+
+        // Redraw to show/hide map immediately
+        if (!isPlaying) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawTree();
+            if (showPhylogenetics) {
+                drawCTMC(ctmcCurrentNucleotide, ctmcPreviousNucleotide, ctmcTransitionProgress);
+                drawCTMCLegend();
+            }
+            if (showPhylogeography) {
+                drawPhylogeography();
+            }
+
+            // Draw continent location badges BEFORE sequences
+            if (showPhylogeography && drawLocations && geoStars.length > 0) {
+                geoStars.forEach(({ sequenceId, star }) => {
+                    const seq = sequences.find(s => s.sequenceId === sequenceId);
+                    if (!seq) return;
+
+                    const shouldShow = trackAllBranches || seq.trackedGeo;
+                    if (shouldShow) {
+                        const continentName = star.currentStateName();
+                        drawLocationBadgeBehind(seq.x, seq.y, continentName);
+                    }
+                });
+            }
+
+            if (showPhylogenetics) {
+                sequences.forEach(seq => {
+                    const showHighlight = highlightTrackedNucleotide && seq.tracked;
+                    drawSequence(seq, showHighlight);
+                });
+            }
+
+            // Draw continent names (simple text) if not using location badges
+            if (showPhylogeography && !drawLocations && geoStars.length > 0) {
+                geoStars.forEach(({ sequenceId, star }) => {
+                    const seq = sequences.find(s => s.sequenceId === sequenceId);
+                    if (!seq) return;
+
+                    // If trackAllBranches is off, only show sequences with trackedGeo=true (Root → Tip 1)
+                    // If trackAllBranches is on, show all sequences
+                    const shouldShow = trackAllBranches || seq.trackedGeo;
+                    if (shouldShow) {
+                        const continentName = star.currentStateName();
+                        ctx.fillStyle = '#555';
+                        ctx.font = '12px "DM Sans"';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(continentName, seq.x, seq.y + 21);
+                    }
+                });
+            }
+        }
+    });
+
+    diffusionSlider.addEventListener('input', (e) => {
+        diffusionRate = parseFloat(e.target.value);
+        diffusionValue.textContent = diffusionRate.toFixed(2);
+    });
+
+    trackAllBranchesCheckbox.addEventListener('change', (e) => {
+        trackAllBranches = e.target.checked;
+
+        // Redraw immediately if not playing to show/hide second branch
+        if (!isPlaying && showPhylogeography) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawTree();
+            if (showPhylogenetics) {
+                drawCTMC(ctmcCurrentNucleotide, ctmcPreviousNucleotide, ctmcTransitionProgress);
+                drawCTMCLegend();
+            }
+            if (showPhylogeography) {
+                drawPhylogeography();
+            }
+
+            // Draw continent location badges BEFORE sequences
+            if (showPhylogeography && drawLocations && geoStars.length > 0) {
+                geoStars.forEach(({ sequenceId, star }) => {
+                    const seq = sequences.find(s => s.sequenceId === sequenceId);
+                    if (!seq) return;
+
+                    const shouldShow = trackAllBranches || seq.trackedGeo;
+                    if (shouldShow) {
+                        const continentName = star.currentStateName();
+                        drawLocationBadgeBehind(seq.x, seq.y, continentName);
+                    }
+                });
+            }
+
+            if (showPhylogenetics) {
+                sequences.forEach(seq => {
+                    const showHighlight = highlightTrackedNucleotide && seq.tracked;
+                    drawSequence(seq, showHighlight);
+                });
+            }
+
+            // Draw continent names (simple text) if not using location badges
+            if (showPhylogeography && !drawLocations && geoStars.length > 0) {
+                geoStars.forEach(({ sequenceId, star }) => {
+                    const seq = sequences.find(s => s.sequenceId === sequenceId);
+                    if (!seq) return;
+
+                    // If trackAllBranches is off, only show sequences with trackedGeo=true (Root → Tip 1)
+                    // If trackAllBranches is on, show all sequences
+                    const shouldShow = trackAllBranches || seq.trackedGeo;
+                    if (shouldShow) {
+                        const continentName = star.currentStateName();
+                        ctx.fillStyle = '#555';
+                        ctx.font = '12px "DM Sans"';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(continentName, seq.x, seq.y + 21);
+                    }
+                });
+            }
+        }
+    });
+
+    stickyPathsCheckbox.addEventListener('change', (e) => {
+        stickyPaths = e.target.checked;
+
+        // Update all stars to use sticky or fading trails
+        geoStars.forEach(({ star }) => {
+            star.setStickyPaths(stickyPaths);
+        });
+    });
+
+    drawLocationsCheckbox.addEventListener('change', (e) => {
+        drawLocations = e.target.checked;
+    });
+
+    hostTransmissionCheckbox.addEventListener('change', (e) => {
+        showHostTransmission = e.target.checked;
+
+        // Show/hide child controls
+        hostTransmissionControls.style.display = showHostTransmission ? 'flex' : 'none';
+
+        // Redraw to show/hide host transmission panel immediately
+        if (!isPlaying) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawTree();
+            if (showPhylogenetics) {
+                drawCTMC(ctmcCurrentNucleotide, ctmcPreviousNucleotide, ctmcTransitionProgress);
+                drawCTMCLegend();
+            }
+            if (showPhylogeography) {
+                drawPhylogeography();
+            }
+            if (showHostTransmission) {
+                drawHostTransmission();
+            }
+
+            // Draw continent location badges BEFORE sequences
+            if (showPhylogeography && drawLocations && geoStars.length > 0) {
+                geoStars.forEach(({ sequenceId, star }) => {
+                    const seq = sequences.find(s => s.sequenceId === sequenceId);
+                    if (!seq) return;
+
+                    const shouldShow = trackAllBranches || seq.trackedGeo;
+                    if (shouldShow) {
+                        const continentName = star.currentStateName();
+                        drawLocationBadgeBehind(seq.x, seq.y, continentName);
+                    }
+                });
+            }
+
+            if (showPhylogenetics) {
+                sequences.forEach(seq => {
+                    const showHighlight = highlightTrackedNucleotide && seq.tracked;
+                    drawSequence(seq, showHighlight);
+                });
+            }
+
+            // Draw continent names (simple text) if not using location badges
+            if (showPhylogeography && !drawLocations && geoStars.length > 0) {
+                geoStars.forEach(({ sequenceId, star }) => {
+                    const seq = sequences.find(s => s.sequenceId === sequenceId);
+                    if (!seq) return;
+
+                    const shouldShow = trackAllBranches || seq.trackedGeo;
+                    if (shouldShow) {
+                        const continentName = star.currentStateName();
+                        ctx.fillStyle = '#555';
+                        ctx.font = '12px "DM Sans"';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(continentName, seq.x, seq.y + 21);
+                    }
+                });
+            }
+
+            // Draw host icon above tracked sequence
+            if (showHostTransmission && hostCTMC) {
+                const trackedSeq = sequences.find(seq => seq.tracked);
+                if (trackedSeq) {
+                    const currentHost = hostCTMC.currentHostName();
+                    // Make pig 50% bigger
+                    const scale = currentHost === "Pig" ? 0.525 : 0.35;
+                    HOST_ICON[currentHost](ctx, trackedSeq.x, trackedSeq.y - 35, scale);
+                }
+            }
+        }
+    });
+
+    transmissionSlider.addEventListener('input', (e) => {
+        transmissionRate = parseFloat(e.target.value);
+        transmissionValue.textContent = transmissionRate.toFixed(2);
+    });
+
+    // Initial draw with async loading
+    (async function boot() {
+        await loadWorldLand();
+        await loadNaturalEarthCountries();
+        drawTree();
+        initAnimation();
+    })();
+</script>
+</body>
+</html>
