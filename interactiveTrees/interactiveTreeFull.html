@@ -4,8 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Phylogenetic Tree Evolution</title>
+
+    <meta name="author" content="Filippo Monti">
+    <meta name="creator" content="Filippo Monti">
+    <meta name="copyright" content="© 2026 Filippo Monti">
+    <meta name="description" content="Interactive visualization of sequence evolution, phylogeography, and host transmission along a phylogenetic tree.">
+
+    <!-- Optional but nice for link previews -->
+    <meta property="og:title" content="Phylogenetic Tree Evolution">
+    <meta property="og:description" content="Interactive visualization by Filippo Monti.">
+    <meta property="og:type" content="website">
+
+
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+    <script>
+        /*
+         * Phylogenetic Tree Evolution — Interactive Demo
+         * Author: Filippo Monti
+         * © 2026 Filippo Monti
+         */
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('year').textContent = new Date().getFullYear();
+        });
+        </script>
     <style>
         * {
             margin: 0;
@@ -50,6 +73,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            width: 100%;
         }
 
         #canvas {
@@ -59,6 +83,46 @@
             border-radius: 12px;
             box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
         }
+
+        .app-footer{
+    margin: 16px auto 0;
+    width: min(920px, calc(100% - 40px));
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    color: #8a8a8a;
+    font-size: 0.85rem;
+}
+
+.app-footer .sep{
+    opacity: 0.6;
+}
+
+.app-footer a{
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+}
+
+.app-footer a:hover{
+    color: #2c3e50;
+    border-bottom-color: rgba(44,62,80,0.35);
+}
+
+.signature{
+    position: absolute;
+    bottom: 15px;
+    right: 20px;
+    font-size: 0.7rem;
+    color: #9aa3ab;
+    font-weight: 500;
+    pointer-events: none;
+    z-index: 10;
+    max-width: 150px;
+    text-align: right;
+    line-height: 1.2;
+}
 
         .time-slider-container {
             position: absolute;
@@ -544,12 +608,110 @@
             font-weight: 500;
             color: #555;
         }
+
+        /* Help button and modal styles */
+        .help-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3498db;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            padding: 0;
+            margin-left: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .help-button:hover {
+            background: #2980b9;
+            transform: scale(1.1);
+        }
+
+        .help-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .help-modal.active {
+            display: flex;
+        }
+
+        .help-modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .help-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .help-modal-close:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .help-modal h2 {
+            margin: 0 0 20px 0;
+            color: #2c3e50;
+            font-size: 1.5rem;
+        }
+
+        .help-modal h3 {
+            margin: 20px 0 10px 0;
+            color: #34495e;
+            font-size: 1.1rem;
+        }
+
+        .help-modal p {
+            margin: 10px 0;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .help-modal strong {
+            color: #2c3e50;
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>Sequence Evolution on Phylogenetic Tree</h1>
-    <p class="subtitle">Watch how DNA sequences mutate and diverge along evolutionary branches</p>
+    <h1>Discrete Evolution over Phylogenetic Trees</h1>
+    <p class="subtitle">Watch viral evolution: genetic mutations, geografical diffusion, and host transmission</p>
 
     <div class="canvas-wrapper">
         <div class="time-slider-container" id="timeSliderContainer">
@@ -559,7 +721,12 @@
                 <div class="time-label">Present</div>
             </div>
         </div>
-        <canvas id="canvas" width="1000" height="700"></canvas>
+        <div style="position: relative; display: inline-block;">
+            <canvas id="canvas" width="1000" height="700"></canvas>
+            <div class="signature">
+                © Filippo Monti
+            </div>
+        </div>
     </div>
 
     <div class="button-group">
@@ -748,7 +915,7 @@
         <!-- Phylogenetics Section -->
         <div class="control-section" id="panelPhylogenetics">
             <div class="control-section-header">
-                <span class="header-title">Phylogenetics</span>
+                <span class="header-title">Phylogenetics<button class="help-button" id="phyloHelpBtn" title="Learn more">?</button></span>
                 <input type="checkbox" id="phylogeneticsCheckbox" checked>
             </div>
             <div class="control-group">
@@ -772,7 +939,7 @@
         <!-- Phylogeography Section -->
         <div class="control-section" id="panelPhylogeography">
             <div class="control-section-header">
-                <span class="header-title">Phylogeography</span>
+                <span class="header-title">Phylogeography<button class="help-button" id="geoHelpBtn" title="Learn more">?</button></span>
                 <input type="checkbox" id="phylogeographyCheckbox" checked>
             </div>
             <div class="control-group">
@@ -806,7 +973,7 @@
         <!-- Host Transmission Section -->
         <div class="control-section" id="panelHostTransmission">
             <div class="control-section-header">
-                <span class="header-title">Host transmission</span>
+                <span class="header-title">Host transmission<button class="help-button" id="hostHelpBtn" title="Learn more">?</button></span>
                 <input type="checkbox" id="hostTransmissionCheckbox" checked>
             </div>
             <div class="control-group">
@@ -828,9 +995,88 @@
         </div>
     </div>
 
-    <p class="info">Sequences split at nodes and evolve independently along each branch</p>
+    <footer class="app-footer">
+        <span>© <span id="year"></span> Created by Filippo Monti</span>
+        <!-- <span class="sep">•</span>
+        <span>Created by Filippo Monti</span> -->
+        <!-- Optional link if/when you have one:
+        <span class="sep">•</span>
+        <a href="https://github.com/yourname/yourrepo" target="_blank" rel="noopener">Source</a>
+        -->
+      </footer>
+
+    <!-- Help Modal -->
+    <div class="help-modal" id="phyloHelpModal">
+        <div class="help-modal-content">
+            <button class="help-modal-close" id="phyloHelpClose">×</button>
+            <h2>Phylogenetics: Understanding Sequence Evolution</h2>
+            
+            <h3>What is a Sequence?</h3>
+            <p>A <strong>sequence</strong> is a string of nucleotides (the building blocks of DNA). In this visualization, each sequence consists of 5 nucleotides, which can be A (Adenine), T (Thymine), G (Guanine), or C (Cytosine). These are shown as colored boxes along the tree.</p>
+            
+            <h3>What is a Site?</h3>
+            <p>A <strong>site</strong> refers to a specific position within the sequence. For example, in a 5-nucleotide sequence, there are 5 sites (positions 1 through 5). Each site can independently mutate to a different nucleotide over time.</p>
+            
+            <h3>How Evolution Works Along the Tree</h3>
+            <p>The phylogenetic tree shows evolutionary relationships. Starting from the <strong>root</strong> (the common ancestor), sequences split at internal <strong>nodes</strong> and evolve independently along each <strong>branch</strong>. As sequences travel along branches, they accumulate mutations—individual nucleotides randomly change to other nucleotides.</p>
+            
+            <h3>The CTMC Figure</h3>
+            <p>The <strong>Continuous-Time Markov Chain (CTMC)</strong> diagram in the top-left shows the mutation process. The four corners represent the four possible nucleotides (A, T, G, C). The arrows between them indicate that any nucleotide can mutate to any other nucleotide over time. The black ring tracks the first nucleotide of the sequence traveling from Root to Tip 1, showing how it changes states (mutates) as it evolves.</p>
+            
+            <p>The <strong>mutation rate</strong> slider controls how frequently these changes occur during the animation.</p>
+        </div>
+    </div>
+
+    <!-- Phylogeography Help Modal -->
+    <div class="help-modal" id="geoHelpModal">
+        <div class="help-modal-content">
+            <button class="help-modal-close" id="geoHelpClose">×</button>
+            <h2>Phylogeography: Geographic Evolution</h2>
+            
+            <h3>What is Phylogeography?</h3>
+            <p><strong>Phylogeography</strong> combines phylogenetics (evolutionary relationships) with geography (spatial locations). It tracks how organisms or pathogens spread across different geographic regions over evolutionary time.</p>
+            
+            <h3>How Geographic Locations Change</h3>
+            <p>Just as nucleotides mutate along the tree, the <strong>geographic location</strong> of each lineage also changes. The visualization uses a CTMC model where sequences can "jump" between continents (North America, South America, Europe, Africa, Middle East, East Asia, and Australia) as they evolve.</p>
+            
+            <h3>The Map Display</h3>
+            <p>The <strong>world map</strong> in the top-right shows the current geographic distribution of sequences. Colored dots represent the current location of each evolving sequence, and the <strong>comet trails</strong> show the path taken across the globe.</p>
+            
+            <h3>Understanding the Options</h3>
+            <p><strong>Diffusion Rate:</strong> Controls how frequently geographic jumps occur between continents.</p>
+            <p><strong>All branches:</strong> When enabled, shows all three lineages on the map (color-coded: red, yellow, orange). When disabled, shows only the main tracked lineage (Root → Tip 1).</p>
+            <p><strong>Sticky paths:</strong> When enabled, geographic trails remain permanently visible. When disabled, they gradually fade over time.</p>
+            <p><strong>Draw locations:</strong> When enabled, shows continent silhouettes behind sequences. When disabled, shows continent names as simple text.</p>
+        </div>
+    </div>
+
+    <!-- Host Transmission Help Modal -->
+    <div class="help-modal" id="hostHelpModal">
+        <div class="help-modal-content">
+            <button class="help-modal-close" id="hostHelpClose">×</button>
+            <h2>Host Transmission: Cross-Species Jumps</h2>
+            
+            <h3>What is Host Transmission?</h3>
+            <p><strong>Host transmission</strong> (also called host-switching or spillover) occurs when a pathogen jumps from one host species to another. This is a critical process in disease emergence—many viral diseases affecting humans originated in animal hosts.</p>
+            
+            <h3>How Viruses Jump Between Hosts</h3>
+            <p>Similar to geographic diffusion, the visualization models host transmission as a CTMC process. Viruses can jump between five different host species: <strong>Human, Monkey, Bat, Pig, and Mosquito</strong>. Each jump represents a transmission event where the virus successfully infects a new host species.</p>
+            
+            <h3>The Host Transmission Panel</h3>
+            <p>The circular panel in the middle-right shows all five host species arranged in a ring. The <strong>colored viruses</strong> move between hosts over time, with dashed lines showing active transmission events. The virus icons are color-coded to match the evolutionary lineages (red, yellow, orange).</p>
+            
+            <h3>Real-World Examples</h3>
+            <p>Many important diseases have emerged through host transmission: COVID-19 (bat → human), influenza (birds/pigs → human), Ebola (bat → human), and dengue fever (mosquito → human). This visualization demonstrates how pathogens can switch hosts as they evolve along the phylogenetic tree.</p>
+            
+            <h3>Understanding the Options</h3>
+            <p><strong>Transmission Rate:</strong> Controls how frequently host-switching events occur.</p>
+            <p><strong>All branches:</strong> When enabled, shows viruses from all three lineages. When disabled, shows only the main tracked lineage (Root → Tip 1).</p>
+        </div>
+    </div>
+      
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
@@ -2406,7 +2652,7 @@
         ctx.fillStyle = '#555';
         ctx.font = 'bold 14px "DM Sans"';
         ctx.textAlign = 'center';
-        ctx.fillText('Geographic Distribution', offsetX + mapWidth/2, offsetY - 12);
+        ctx.fillText('Spatial Diffusion', offsetX + mapWidth/2, offsetY - 12);
     }
 
     function drawHostTransmission() {
@@ -3704,6 +3950,7 @@
     const panelPhyloZVal = document.getElementById('panelPhyloZVal');
     const panelGeoXVal = document.getElementById('panelGeoXVal');
     const panelGeoYVal = document.getElementById('panelGeoYVal');
+    const panelGeoZVal = document.getElementById('panelGeoZVal');
     const panelHostXVal = document.getElementById('panelHostXVal');
     const panelHostYVal = document.getElementById('panelHostYVal');
     const panelHostZVal = document.getElementById('panelHostZVal');
@@ -4003,6 +4250,82 @@
     timeSlider.addEventListener('input', (e) => {
         if (timeTravelMode) {
             handleTimeTravel(parseFloat(e.target.value));
+        }
+    });
+
+    // Help modal controls
+    const phyloHelpBtn = document.getElementById('phyloHelpBtn');
+    const phyloHelpModal = document.getElementById('phyloHelpModal');
+    const phyloHelpClose = document.getElementById('phyloHelpClose');
+
+    phyloHelpBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        phyloHelpModal.classList.add('active');
+    });
+
+    phyloHelpClose.addEventListener('click', () => {
+        phyloHelpModal.classList.remove('active');
+    });
+
+    // Close modal when clicking outside the content
+    phyloHelpModal.addEventListener('click', (e) => {
+        if (e.target === phyloHelpModal) {
+            phyloHelpModal.classList.remove('active');
+        }
+    });
+
+    // Phylogeography help modal
+    const geoHelpBtn = document.getElementById('geoHelpBtn');
+    const geoHelpModal = document.getElementById('geoHelpModal');
+    const geoHelpClose = document.getElementById('geoHelpClose');
+
+    geoHelpBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        geoHelpModal.classList.add('active');
+    });
+
+    geoHelpClose.addEventListener('click', () => {
+        geoHelpModal.classList.remove('active');
+    });
+
+    geoHelpModal.addEventListener('click', (e) => {
+        if (e.target === geoHelpModal) {
+            geoHelpModal.classList.remove('active');
+        }
+    });
+
+    // Host transmission help modal
+    const hostHelpBtn = document.getElementById('hostHelpBtn');
+    const hostHelpModal = document.getElementById('hostHelpModal');
+    const hostHelpClose = document.getElementById('hostHelpClose');
+
+    hostHelpBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        hostHelpModal.classList.add('active');
+    });
+
+    hostHelpClose.addEventListener('click', () => {
+        hostHelpModal.classList.remove('active');
+    });
+
+    hostHelpModal.addEventListener('click', (e) => {
+        if (e.target === hostHelpModal) {
+            hostHelpModal.classList.remove('active');
+        }
+    });
+
+    // Close any modal with Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            if (phyloHelpModal.classList.contains('active')) {
+                phyloHelpModal.classList.remove('active');
+            }
+            if (geoHelpModal.classList.contains('active')) {
+                geoHelpModal.classList.remove('active');
+            }
+            if (hostHelpModal.classList.contains('active')) {
+                hostHelpModal.classList.remove('active');
+            }
         }
     });
 
