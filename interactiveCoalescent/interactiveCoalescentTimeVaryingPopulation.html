@@ -40,6 +40,7 @@
       grid-template-columns: 280px 1fr;
       gap: 14px;
       align-items: start;
+      position: relative;
     }
 
     .sidebar {
@@ -50,13 +51,43 @@
       box-shadow: 0 10px 24px rgba(0,0,0,0.06);
       padding: 12px;
       display: none;
+      position: relative;
+    }
+    .sidebar-toggle {
+      background: transparent;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #6b7280;
+      font-size: 11px;
+      width: 22px;
+      height: 22px;
+      padding: 0;
+      transition: all 0.2s ease;
+      margin-left: 8px;
+    }
+    .sidebar-toggle:hover {
+      background: #f3f4f6;
+      border-color: #9ca3af;
+      color: #374151;
+    }
+    .sidebar.collapsed {
+      display: none !important;
+    }
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 6px;
     }
     .sidebar .title {
       font-family: 'JetBrains Mono', monospace;
       font-weight: 800;
       font-size: 0.95rem;
       color: #2c3e50;
-      margin-bottom: 6px;
+      margin-bottom: 0;
     }
     .sidebar .hint {
       font-size: 0.86rem;
@@ -115,20 +146,37 @@
       border-radius: 12px;
       border: 1px solid #edf0f2;
       background: #ffffff;
+      flex-wrap: wrap;
     }
     .radio strong {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.86rem;
       color: #2c3e50;
-    }
-    .radio .params {
-      margin-left: auto;
+      flex: 0 0 auto;
+      min-width: 90px;
       display: flex;
-      gap: 8px;
       align-items: center;
     }
+    .radio .params {
+      margin-left: 0;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .radio .params .param-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .radio .params .param-item span {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #64748b;
+    }
     .radio .params input[type="number"] {
-      width: 90px;
+      width: 100%;
       padding: 8px 10px;
       border-radius: 10px;
       border: 1px solid #e6e6e6;
@@ -136,30 +184,95 @@
       font-weight: 700;
       font-size: 0.88rem;
     }
-    /* Allow param blocks to wrap nicely in narrow sidebar */
-.radio { 
-  flex-wrap: wrap; 
-  align-items: flex-start; 
-}
-
-.radio strong { 
-  flex: 1 1 auto; 
-  min-width: 90px; 
-}
-
-.radio .params {
-  margin-left: 0;          /* was pushing to the far right */
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  gap: 8px;
-}
-
-.radio .params input[type="number"] {
-  width: 70px;             /* 90px is too wide for 3 params */
-}
-
+    .help-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #e5e7eb;
+      color: #6b7280;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      border: 1px solid #d1d5db;
+      cursor: pointer;
+      margin-left: 6px;
+      padding: 0;
+      box-shadow: none;
+      transition: all 0.2s ease;
+      transform: none;
+    }
+    .help-btn:hover {
+      background: #d1d5db;
+      color: #374151;
+      transform: none;
+      box-shadow: none;
+    }
+    .model-help-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+      padding: 20px;
+      max-width: 420px;
+      max-height: 80vh;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+    }
+    .model-help-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 999;
+      display: none;
+    }
+    .model-help-popup h3 {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 900;
+      font-size: 1.1rem;
+      color: #2c3e50;
+      margin-bottom: 12px;
+    }
+    .model-help-popup p {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #374151;
+      margin-bottom: 12px;
+    }
+    .model-help-popup .param-desc {
+      margin-left: 16px;
+      margin-bottom: 8px;
+    }
+    .model-help-popup .param-desc strong {
+      font-family: 'JetBrains Mono', monospace;
+      color: #2c3e50;
+      font-size: 0.88rem;
+    }
+    .model-help-popup .close-help {
+      float: right;
+      background: #e5e7eb;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #374151;
+    }
+    .model-help-popup .close-help:hover {
+      background: #d1d5db;
+    }
 
     .poplist {
       max-height: 360px;
@@ -221,6 +334,8 @@
       padding: 12px;
       display: none;
       z-index: 10;
+      max-height: calc(100vh - 120px);
+      overflow-y: auto;
     }
     .settings-header {
       display: flex;
@@ -396,12 +511,38 @@
 
 <body>
   <div class="container">
+    <!-- Help popup overlay and modal -->
+    <div class="model-help-overlay" id="helpOverlay"></div>
+    <div class="model-help-popup" id="helpPopup">
+      <button class="close-help" id="closeHelp">Close</button>
+      <div id="helpContent"></div>
+    </div>
+
+    <!-- Paste vector dialog -->
+    <div class="model-help-overlay" id="pasteOverlay" style="display:none;"></div>
+    <div class="model-help-popup" id="pasteDialog" style="display:none;">
+      <h3 style="font-family: 'JetBrains Mono', monospace; font-weight: 900; font-size: 1.1rem; color: #2c3e50; margin-bottom: 12px;">Paste Population Vector</h3>
+      <p style="font-size: 0.88rem; color: #6b7280; margin-bottom: 10px;">
+        Enter population sizes separated by commas, spaces, or newlines. The vector should match the number of grid points.
+      </p>
+      <textarea id="pasteVectorInput" style="width:100%; height:120px; padding:10px; border:1px solid #d1d5db; border-radius:8px; font-family:'JetBrains Mono',monospace; font-size:0.85rem; resize:vertical;" placeholder="e.g., 20, 25, 30, 35, 40"></textarea>
+      <div style="margin-top:12px; display:flex; gap:8px; justify-content:flex-end;">
+        <button id="cancelPaste" style="background:#e5e7eb; color:#374151; padding:8px 16px; border-radius:8px; font-size:0.88rem; border:none; cursor:pointer; font-family:'DM Sans',sans-serif; font-weight:600;">Cancel</button>
+        <button id="applyPaste" style="padding:8px 16px; border-radius:8px; font-size:0.88rem; background:#2c3e50; color:#fff; border:none; cursor:pointer; font-family:'DM Sans',sans-serif; font-weight:600;">Apply</button>
+      </div>
+    </div>
+
     <h1>Discrete-Time Coalescent on a Grid</h1>
-    <p class="subtitle">Fluctuating population sizes: the “river basin” widens/narrows backward in time.</p>
+    <p class="subtitle">Fluctuating population sizes: the "river basin" widens/narrows backward in time.</p>
 
     <div class="stage">
+      <button class="sidebar-toggle" id="sidebarToggleStandalone" title="Expand sidebar" style="position: absolute; left: 0; top: 20px; display: none; width: 28px; height: 28px; z-index: 10;">▶</button>
+      
       <div class="sidebar" id="sidebar">
-        <div class="title">Time varying population</div>
+        <div class="sidebar-header">
+          <div class="title">Time varying population</div>
+          <button class="sidebar-toggle" id="sidebarToggle" title="Collapse sidebar">◀</button>
+        </div>
         <div class="hint">
           N₀ is the population at present (bottom). Other generations may be larger or smaller.
         </div>
@@ -421,47 +562,63 @@
             <div class="radio-group">
               <div class="radio">
                 <input type="radio" name="popModel" id="modelLin" value="lin" />
-                <strong>Linear</strong>
-                <div class="params">
-                  <span style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:#64748b;">slope</span>
-                  <input id="linSlope" type="number" step="1" value="-1" />
+                <strong>Linear<button class="help-btn" data-help="lin">?</button></strong>
+                <div class="params" id="paramsLin">
+                  <div class="param-item">
+                    <span>slope</span>
+                    <input id="linSlope" type="number" step="1" value="-1" />
+                  </div>
                 </div>
               </div>
 
               <div class="radio">
                 <input type="radio" name="popModel" id="modelExp" value="exp" />
-                <strong>Exponential</strong>
-                <div class="params">
-                  <span style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:#64748b;">rate</span>
-                  <input id="expRate" type="number" step="0.05" value="0.10" />
+                <strong>Exponential<button class="help-btn" data-help="exp">?</button></strong>
+                <div class="params" id="paramsExp">
+                  <div class="param-item">
+                    <span>rate</span>
+                    <input id="expRate" type="number" step="0.05" value="0.10" />
+                  </div>
                 </div>
               </div>
 
               <!-- Seasonal forcing -->
               <div class="radio">
                 <input type="radio" name="popModel" id="modelSeas" value="seas" />
-                <strong>Seasonal</strong>
-                <div class="params">
-                  <span style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:#64748b;">β</span>
-                  <input id="seasBeta" type="number" step="0.05" value="0.40" />
-                  <span style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:#64748b;">P</span>
-                  <input id="seasPeriod" type="number" step="1" value="20" />
-                  <span style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:#64748b;">φ</span>
-                  <input id="seasPhase" type="number" step="0.1" value="0.0" />
+                <strong>Seasonal<button class="help-btn" data-help="seas">?</button></strong>
+                <div class="params" id="paramsSeas">
+                  <div class="param-item">
+                    <span>β (beta)</span>
+                    <input id="seasBeta" type="number" step="0.05" value="0.40" />
+                  </div>
+                  <div class="param-item">
+                    <span>P (period)</span>
+                    <input id="seasPeriod" type="number" step="1" value="20" />
+                  </div>
+                  <div class="param-item">
+                    <span>φ (phase)</span>
+                    <input id="seasPhase" type="number" step="0.1" value="0.0" />
+                  </div>
                 </div>
               </div>
 
               <!-- Boom-bust -->
               <div class="radio">
                 <input type="radio" name="popModel" id="modelBoom" value="boom" />
-                <strong>Boom–bust</strong>
-                <div class="params">
-                  <span style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:#64748b;">t₍b₎</span>
-                  <input id="boomTb" type="number" step="1" value="20" />
-                  <span style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:#64748b;">r₁</span>
-                  <input id="boomR1" type="number" step="0.05" value="0.10" />
-                  <span style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:#64748b;">r₂</span>
-                  <input id="boomR2" type="number" step="0.05" value="-0.10" />
+                <strong>Boom–bust<button class="help-btn" data-help="boom">?</button></strong>
+                <div class="params" id="paramsBoom">
+                  <div class="param-item">
+                    <span>t_b (breakpoint)</span>
+                    <input id="boomTb" type="number" step="1" value="20" />
+                  </div>
+                  <div class="param-item">
+                    <span>r₁ (rate 1)</span>
+                    <input id="boomR1" type="number" step="0.05" value="0.10" />
+                  </div>
+                  <div class="param-item">
+                    <span>r₂ (rate 2)</span>
+                    <input id="boomR2" type="number" step="0.05" value="-0.10" />
+                  </div>
                 </div>
               </div>
 
@@ -470,14 +627,29 @@
             
 
             <button id="applyParamBtn" style="width:100%;padding:10px 12px;border-radius:12px;">Apply function</button>
-            <div class="toggleline" style="margin-top:10px;">
-              <input id="piecewiseToggle" type="checkbox" />
-              <span>Piecewise-constant</span>
-            </div>
-            
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="toggleline">
+            <input id="piecewiseToggle" type="checkbox" />
+            <span>Piecewise-constant</span>
+          </div>
+          
+          <div id="piecewisePanel" style="display:none;">
             <div class="row" style="margin-top:6px;">
               <label for="piecewiseK">Grid points</label>
               <input id="piecewiseK" type="number" min="2" max="200" value="10" />
+            </div>
+
+            <div id="manualGridPanel" style="display:none; margin-top:10px;">
+              <div class="title" style="margin-bottom:8px; font-size:0.88rem;">Population at grid points</div>
+              
+              <div style="margin-bottom:8px;">
+                <button id="pasteVectorBtn" style="width:100%;padding:8px 10px;border-radius:10px;font-size:0.85rem;background:#2c3e50;color:#fff;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;border:none;box-shadow:0 2px 8px rgba(44,62,80,0.2);">Paste Vector</button>
+              </div>
+
+              <div class="poplist" id="gridPointsList" style="max-height:280px;"></div>
             </div>
           </div>
         </div>
@@ -507,6 +679,15 @@
 
           <div class="settings-grid">
             <div class="card">
+              <div class="t">Adaptable Aesthetic</div>
+              <div class="toggleline" style="margin-bottom:4px;">
+                <input id="adaptableToggle" type="checkbox" checked />
+                <span style="font-size:0.84rem;">Auto-adjust for complexity</span>
+              </div>
+              <div class="minihelp">Automatically optimize visual settings based on generations and population size. When enabled, manually adjusted settings will be overridden on reset/apply.</div>
+            </div>
+
+            <div class="card">
               <div class="t">Playback</div>
               <div class="srow">
                 <label>Max speed (×)</label>
@@ -515,24 +696,73 @@
               </div>
               <div class="minihelp">This sets the maximum value of the Speed slider.</div>
             </div>
+
             <div class="card">
-              <div class="t">Group (1): taxa + chosen ancestors</div>
+              <div class="t">Branches</div>
 
               <div class="srow">
                 <label>Color</label>
-                <input type="color" id="g1Color" value="#111111" />
+                <input type="color" id="branchColor" value="#111111" />
+              </div>
+
+              <div class="srow">
+                <label>Width</label>
+                <input type="range" id="branchWidth" min="0.5" max="5.0" step="0.1" value="2.0" />
+              </div>
+
+              <div class="minihelp">Customize the appearance of connecting branches.</div>
+            </div>
+
+            <div class="card">
+              <div class="t">Tips (sampled taxa)</div>
+
+              <div class="srow">
+                <label>Color</label>
+                <input type="color" id="tipsColor" value="#111111" />
               </div>
 
               <div class="srow">
                 <label>Size</label>
-                <input type="range" id="g1Size" min="0.6" max="2.4" step="0.05" value="1.25" />
+                <input type="range" id="tipsSize" min="0.2" max="2.4" step="0.05" value="1.25" />
               </div>
 
-              <div class="minihelp">This group is what you want to “pop out” when the grid is dense.</div>
+              <div class="minihelp">The sampled lineages at the present generation.</div>
             </div>
 
             <div class="card">
-              <div class="t">Group (2): all other nodes</div>
+              <div class="t">Coalescent nodes (MRCAs)</div>
+
+              <div class="srow">
+                <label>Color</label>
+                <input type="color" id="coalColor" value="#111111" />
+              </div>
+
+              <div class="srow">
+                <label>Size</label>
+                <input type="range" id="coalSize" min="0.2" max="2.4" step="0.05" value="1.35" />
+              </div>
+
+              <div class="minihelp">Nodes where 2+ lineages coalesce (common ancestors).</div>
+            </div>
+
+            <div class="card">
+              <div class="t">Other ancestors</div>
+
+              <div class="srow">
+                <label>Color</label>
+                <input type="color" id="ancestorColor" value="#111111" />
+              </div>
+
+              <div class="srow">
+                <label>Size</label>
+                <input type="range" id="ancestorSize" min="0.2" max="2.4" step="0.05" value="0.25" />
+              </div>
+
+              <div class="minihelp">Ancestors that are not coalescent nodes.</div>
+            </div>
+
+            <div class="card">
+              <div class="t">All other nodes</div>
 
               <div class="srow">
                 <label>Color</label>
@@ -541,7 +771,7 @@
 
               <div class="srow">
                 <label>Size</label>
-                <input type="range" id="g2Size" min="0.4" max="2.0" step="0.05" value="0.90" />
+                <input type="range" id="g2Size" min="0.2" max="2.0" step="0.05" value="0.90" />
               </div>
 
               <div class="srow">
@@ -557,7 +787,7 @@
                 </select>
               </div>
 
-              <div class="minihelp">Use “Empty hole” + low transparency to reduce clutter.</div>
+              <div class="minihelp">Use "Empty hole" + low transparency to reduce clutter.</div>
             </div>
           </div>
         </div>
@@ -609,8 +839,8 @@
       </div>
     </div>
 
-    <div class="info">Settings lets you emphasize taxa + ancestors when the grid becomes dense.</div>
-    <div class="small-note">Group (2) nodes can be shown as “holes” with high transparency to reduce clutter.</div>
+    <div class="info">Settings: "Adaptable Aesthetic" auto-adjusts visuals for complex simulations. Customize branches, tips, coalescent nodes, and ancestors.</div>
+    <div class="small-note">All node groups have independent color and size controls. Other nodes can use "holes" with transparency.</div>
   </div>
 
 <script>
@@ -652,8 +882,8 @@
     ctx.beginPath();
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = "#111";
+    ctx.lineWidth = params.style.branchWidth;
+    ctx.strokeStyle = params.style.branchColor;
     ctx.stroke();
     ctx.restore();
   }
@@ -724,21 +954,33 @@
 
     piecewise: false,
     piecewiseK: 10,
+    gridPointValues: [], // Manual values for grid points when piecewise + !parametric
 
     personalize: false,
     displayTree: false,
     stopAtMRCA: true,
     maxSpeed: 3.0,
 
-    // --- NEW: display settings ---
+    // --- NEW: display settings with 3 groups for active lineage + coalescent/other + background ---
     style: {
-      g1Color: "#111111",
-      g1SizeMul: 1.25,
+      adaptableAesthetic: true, // Auto-adjust based on complexity
+      
+      tipsColor: "#111111",
+      tipsSizeMul: 1.25,
+
+      coalColor: "#111111",  // black for coalescent nodes
+      coalSizeMul: 1.35,
+
+      ancestorColor: "#111111",
+      ancestorSizeMul: 0.25,  // 1/5 of tips size
 
       g2Color: "#111111",
       g2SizeMul: 0.90,
       g2Alpha: 0.18,
-      g2Style: "hole" // "hole" or "point"
+      g2Style: "hole", // "hole" or "point"
+
+      branchColor: "#111111",
+      branchWidth: 2.0
     }
   };
 
@@ -768,72 +1010,153 @@
   }
 
   function applyParametricPopulation() {
-  if (!params.parametric) return;
+    const N0 = params.N0;
+    const T  = params.rows - 1;
 
-  const N0 = params.N0;
-  const T  = params.rows - 1;
+    // 1) Build parametric sequence if parametric mode is on
+    const NhatByG = new Array(params.rows).fill(N0);
 
-  // 1) build an "imaginary" parametric sequence by generation index g (g=0 present, g=T oldest)
-  const NhatByG = new Array(params.rows).fill(N0);
+    if (params.parametric) {
+      for (let g = 0; g <= T; g++) {
+        let Ng = N0;
 
-  for (let g = 0; g <= T; g++) {
-    let Ng = N0;
+        if (params.popModel === 'exp') {
+          Ng = Math.round(N0 * Math.exp((+params.expRate || 0) * g));
 
-    if (params.popModel === 'exp') {
-      Ng = Math.round(N0 * Math.exp((+params.expRate || 0) * g));
+        } else if (params.popModel === 'lin') {
+          Ng = Math.round(N0 + (+params.linSlope || 0) * g);
 
-    } else if (params.popModel === 'lin') {
-      Ng = Math.round(N0 + (+params.linSlope || 0) * g);
+        } else if (params.popModel === 'seas') {
+          const beta = +params.seasBeta || 0;
+          const P    = Math.max(1e-6, +params.seasPeriod || 1);
+          const phi  = +params.seasPhase || 0;
+          Ng = Math.round(N0 * Math.exp(beta * Math.sin((2*Math.PI*g)/P + phi)));
 
-    } else if (params.popModel === 'seas') {
-      const beta = +params.seasBeta || 0;
-      const P    = Math.max(1e-6, +params.seasPeriod || 1);
-      const phi  = +params.seasPhase || 0;
-      Ng = Math.round(N0 * Math.exp(beta * Math.sin((2*Math.PI*g)/P + phi)));
+        } else if (params.popModel === 'boom') {
+          const tb = clamp(Math.round(+params.boomTb || 0), 0, T);
+          const r1 = +params.boomR1 || 0;
+          const r2 = +params.boomR2 || 0;
+          const part1 = Math.min(g, tb);
+          const part2 = Math.max(0, g - tb);
+          Ng = Math.round(N0 * Math.exp(r1 * part1 + r2 * part2));
+        }
 
-    } else if (params.popModel === 'boom') {
-      const tb = clamp(Math.round(+params.boomTb || 0), 0, T);
-      const r1 = +params.boomR1 || 0;
-      const r2 = +params.boomR2 || 0; // typically negative
-      const part1 = Math.min(g, tb);
-      const part2 = Math.max(0, g - tb);
-      Ng = Math.round(N0 * Math.exp(r1 * part1 + r2 * part2));
+        NhatByG[g] = clamp(Ng, 1, HARD_MAX_N);
+      }
     }
 
-    NhatByG[g] = clamp(Ng, 1, HARD_MAX_N);
-  }
+    // 2) Apply piecewise-constant transformation
+    let NusedByG = NhatByG;
 
-  // 2) optionally make it piecewise-constant using equally spaced grid points in g
-  let NusedByG = NhatByG;
+    if (params.piecewise) {
+      const K = clamp(Math.round(+params.piecewiseK || 2), 2, params.rows);
+      const knots = [];
+      for (let i = 0; i < K; i++) {
+        knots.push(Math.round(i * T / (K - 1)));
+      }
+      const uniqKnots = Array.from(new Set(knots)).sort((a,b)=>a-b);
 
-  if (params.piecewise) {
-    const K = clamp(Math.round(+params.piecewiseK || 2), 2, params.rows);
-    const knots = [];
-    for (let i = 0; i < K; i++) {
-      knots.push(Math.round(i * T / (K - 1)));
+      NusedByG = new Array(params.rows).fill(N0);
+
+      if (params.parametric) {
+        // Parametric mode: sample from parametric function
+        for (let i = 0; i < uniqKnots.length; i++) {
+          const a = uniqKnots[i];
+          const b = (i + 1 < uniqKnots.length) ? uniqKnots[i + 1] : (T + 1);
+          const val = NhatByG[a];
+          for (let g = a; g < b; g++) NusedByG[g] = val;
+        }
+      } else {
+        // Manual mode: use gridPointValues
+        for (let i = 0; i < uniqKnots.length; i++) {
+          const a = uniqKnots[i];
+          const b = (i + 1 < uniqKnots.length) ? uniqKnots[i + 1] : (T + 1);
+          const val = params.gridPointValues[i] ?? N0;
+          for (let g = a; g < b; g++) NusedByG[g] = clamp(val, 1, HARD_MAX_N);
+        }
+      }
     }
-    // unique + sorted
-    const uniqKnots = Array.from(new Set(knots)).sort((a,b)=>a-b);
 
-    NusedByG = new Array(params.rows).fill(N0);
-    for (let i = 0; i < uniqKnots.length; i++) {
-      const a = uniqKnots[i];
-      const b = (i + 1 < uniqKnots.length) ? uniqKnots[i + 1] : (T + 1);
-      const val = NhatByG[a]; // step holds value until next grid point
-      for (let g = a; g < b; g++) NusedByG[g] = val;
+    // 3) Write back to popCaps by row index r
+    for (let r = 0; r < params.rows; r++) {
+      const g = gFromRow(r);
+      params.popCaps[r] = clamp(NusedByG[g], 1, HARD_MAX_N);
     }
+
+    // Force present exactly N0
+    params.popCaps[params.rows - 1] = params.N0;
   }
 
-  // 3) write back to popCaps by row index r (r=rows-1 is present => g=0)
-  for (let r = 0; r < params.rows; r++) {
-    const g = gFromRow(r);
-    params.popCaps[r] = clamp(NusedByG[g], 1, HARD_MAX_N);
+  // ---------------------------
+  // Adaptable Aesthetic - auto-adjust based on complexity
+  // ---------------------------
+  function applyAdaptableAesthetic() {
+    if (!params.style.adaptableAesthetic) return;
+
+    const maxPop = params.varyPop ? globalMaxNodes() : params.N0;
+    const complexity = params.rows * maxPop;
+    
+    // Complexity thresholds based on total grid size
+    // Low: < 10000 (e.g., 50 generations × 200 pop, or 100 × 100)
+    // Medium: 10000 - 100000 (e.g., 200 generations × 500 pop)
+    // High: 100000 - 1000000 (e.g., 500 generations × 1000 pop)
+    // Very High: > 1000000 (e.g., 2000 generations × 2000 pop)
+
+    let tipSize, coalSize, ancestorSize, g2Size, g2Alpha, branchWidth, defaultSpeed;
+
+    if (complexity < 10000) {
+      // Low complexity - default comfortable settings
+      tipSize = 1.25;
+      coalSize = 1.35;
+      ancestorSize = 0.25;
+      g2Size = 0.90;
+      g2Alpha = 0.18;
+      branchWidth = 2.0;
+      defaultSpeed = 1.0;
+    } else if (complexity < 100000) {
+      // Medium complexity - moderate reduction
+      tipSize = 0.90;
+      coalSize = 1.0;
+      ancestorSize = 0.22;
+      g2Size = 0.65;
+      g2Alpha = 0.12;
+      branchWidth = 1.5;
+      defaultSpeed = 1.5;
+    } else if (complexity < 1000000) {
+      // High complexity - significant reduction
+      tipSize = 0.60;
+      coalSize = 0.70;
+      ancestorSize = 0.20;
+      g2Size = 0.40;
+      g2Alpha = 0.08;
+      branchWidth = 1.0;
+      defaultSpeed = 2.5;
+    } else {
+      // Very high complexity - minimal sizes
+      tipSize = 0.35;
+      coalSize = 0.45;
+      ancestorSize = 0.20;
+      g2Size = 0.25;
+      g2Alpha = 0.04;
+      branchWidth = 0.6;
+      defaultSpeed = 3.5;
+    }
+
+    // Apply settings
+    params.style.tipsSizeMul = tipSize;
+    params.style.coalSizeMul = coalSize;
+    params.style.ancestorSizeMul = ancestorSize;
+    params.style.g2SizeMul = g2Size;
+    params.style.g2Alpha = g2Alpha;
+    params.style.branchWidth = branchWidth;
+
+    // Update speed slider
+    speedSlider.value = String(defaultSpeed);
+    speedValue.textContent = `${defaultSpeed.toFixed(1)}×`;
+
+    // Sync UI
+    syncSettingsToUI();
   }
-
-  // force present exactly N0
-  params.popCaps[params.rows - 1] = params.N0;
-}
-
 
   // ---------------------------
   // Geometry: basin layout
@@ -885,6 +1208,8 @@
       }
       nodes.push(row);
     }
+
+    applyAdaptableAesthetic();
   }
 
   // ---------------------------
@@ -895,6 +1220,7 @@
   let currentRow = 0;
   let finished = false;
   let taxaIdxCache = [];
+  let coalescent = new Set(); // stores keys "r:c" of coalescent nodes
 
   function evenlySpacedTaxaIndices() {
     const K = params.taxa;
@@ -955,11 +1281,14 @@
     displayTreeWrap.style.display = "flex";
   }
 
+  function keyOf(r,c) { return `${r}:${c}`; }
+
   function resetSimulation() {
     edges = [];
     active = Array.from({length: params.rows}, () => new Set());
     currentRow = params.rows - 1;
     finished = false;
+    coalescent = new Set();
 
     params.displayTree = false;
     displayTreeToggle.checked = false;
@@ -967,7 +1296,7 @@
 
     if (params.varyPop) params.popCaps[params.rows - 1] = params.N0;
 
-    buildGrid();
+    buildGrid(); // This calls applyAdaptableAesthetic
 
     taxaIdxCache = evenlySpacedTaxaIndices();
     for (const c of taxaIdxCache) active[currentRow].add(c);
@@ -989,10 +1318,23 @@
     if (children.length === 0) { markFinished(); render(); return; }
 
     const parentSet = new Set();
+    const parentChildCount = new Map(); // count how many children each parent receives
+
     for (const childCol of children) {
       const parentCol = chooseParentColByX({r, c: childCol}, parentsRow);
       parentSet.add(parentCol);
       edges.push({ child: { r, c: childCol }, parent: { r: parentsRow, c: parentCol } });
+      
+      // Track children per parent
+      const pKey = keyOf(parentsRow, parentCol);
+      parentChildCount.set(pKey, (parentChildCount.get(pKey) || 0) + 1);
+    }
+
+    // Mark coalescent nodes (parents that receive 2+ children)
+    for (const [pKey, count] of parentChildCount) {
+      if (count >= 2) {
+        coalescent.add(pKey);
+      }
     }
 
     active[parentsRow] = parentSet;
@@ -1010,7 +1352,6 @@
   // ---------------------------
   // Tree (planar leaf ordering; tips filled black)
   // ---------------------------
-  function keyOf(r,c) { return `${r}:${c}`; }
   function parseKey(k) { const [rs, cs] = k.split(':'); return { r: +rs, c: +cs }; }
 
   function buildParentMap() {
@@ -1143,8 +1484,8 @@
       }
     })(root);
 
-    const g1 = buildGroup1Style();
-    const g2 = buildGroup2Style(); // not used for tree nodes, but kept consistent
+    const tipStyle = buildTipsStyle();
+    const coalStyle = buildCoalStyle();
 
     (function drawNodes(n){
       const p = pos.get(n.id);
@@ -1152,8 +1493,10 @@
       const isLeaf = (n.children.length === 0);
       const isCoal = (n.children.length >= 2);
 
-      if (isLeaf || isCoal) {
-        circleStyled(p.x, p.y, Math.max(2.4, params.baseRadius*0.85) * params.style.g1SizeMul, g1);
+      if (isLeaf) {
+        circleStyled(p.x, p.y, Math.max(2.4, params.baseRadius*0.85) * params.style.tipsSizeMul, tipStyle);
+      } else if (isCoal) {
+        circleStyled(p.x, p.y, Math.max(2.4, params.baseRadius*0.85) * params.style.coalSizeMul, coalStyle);
       }
 
       for (const ch of n.children) drawNodes(ch);
@@ -1163,14 +1506,36 @@
   // ---------------------------
   // Settings-aware styling
   // ---------------------------
-  function buildGroup1Style() {
-    const rgb = hexToRgb(params.style.g1Color);
+  function buildTipsStyle() {
+    const rgb = hexToRgb(params.style.tipsColor);
     const stroke = `rgba(${rgb.r},${rgb.g},${rgb.b},1)`;
     const fill = `rgba(${rgb.r},${rgb.g},${rgb.b},1)`;
     return {
       strokeRGBA: stroke,
       fillRGBA: fill,
-      lineWidth: Math.max(1.0, (params.baseRadius * 0.26) * params.style.g1SizeMul)
+      lineWidth: Math.max(1.0, (params.baseRadius * 0.26) * params.style.tipsSizeMul)
+    };
+  }
+
+  function buildCoalStyle() {
+    const rgb = hexToRgb(params.style.coalColor);
+    const stroke = `rgba(${rgb.r},${rgb.g},${rgb.b},1)`;
+    const fill = `rgba(${rgb.r},${rgb.g},${rgb.b},1)`;
+    return {
+      strokeRGBA: stroke,
+      fillRGBA: fill,
+      lineWidth: Math.max(1.0, (params.baseRadius * 0.26) * params.style.coalSizeMul)
+    };
+  }
+
+  function buildAncestorStyle() {
+    const rgb = hexToRgb(params.style.ancestorColor);
+    const stroke = `rgba(${rgb.r},${rgb.g},${rgb.b},1)`;
+    const fill = `rgba(${rgb.r},${rgb.g},${rgb.b},1)`;
+    return {
+      strokeRGBA: stroke,
+      fillRGBA: fill,
+      lineWidth: Math.max(1.0, (params.baseRadius * 0.26) * params.style.ancestorSizeMul)
     };
   }
 
@@ -1216,7 +1581,7 @@
     const treeBox = { x0: showTree ? (fullX0 + fullW*gridFrac + gap/2) : 0, y0: fullY0, w: showTree ? (fullW*(1-gridFrac) - gap/2) : 0, h: fullH };
 
     text("Past", gridBox.x0 - 50, fullY0 + 10, { font: "700 13px JetBrains Mono", fill: "#6b7280" });
-    text("Present", gridBox.x0 - 50, fullY0 + fullH - 5, { font: "700 13px JetBrains Mono", fill: "#6b7280" });
+    text("Present", gridBox.x0 - 50, fullY0 + fullH + 28, { font: "700 13px JetBrains Mono", fill: "#6b7280" });
 
     const scaleX = gridBox.w / fullW;
     function mapGridX(x) { return gridBox.x0 + (x - fullX0) * scaleX; }
@@ -1230,19 +1595,40 @@
       line(mapGridX(A.x), mapGridY(A.y), mapGridX(B.x), mapGridY(B.y), 0.75);
     }
 
-    const g1 = buildGroup1Style();
+    const tipStyle = buildTipsStyle();
+    const coalStyle = buildCoalStyle();
+    const ancestorStyle = buildAncestorStyle();
     const g2 = buildGroup2Style();
 
-    // draw nodes: group (1) = active ancestors + taxa; group (2) = others
+    // Determine which nodes are tips
+    const tipSet = new Set(taxaIdxCache.map(c => keyOf(params.rows - 1, c)));
+
+    // draw nodes: classify as tips, coalescent, other ancestors, or background
     for (let r = 0; r < params.rows; r++) {
       const cap = rowCap(r);
       for (let c = 0; c < cap; c++) {
-        const isSelected = active[r].has(c);
+        const k = keyOf(r, c);
+        const isActive = active[r].has(c);
         const p = nodes[r][c];
 
-        if (isSelected) {
-          const rr = params.baseRadius * params.style.g1SizeMul;
-          circleStyled(mapGridX(p.x), mapGridY(p.y), rr, g1);
+        if (isActive) {
+          const isTip = tipSet.has(k);
+          const isCoal = coalescent.has(k);
+
+          let style, sizeMul;
+          if (isTip) {
+            style = tipStyle;
+            sizeMul = params.style.tipsSizeMul;
+          } else if (isCoal) {
+            style = coalStyle;
+            sizeMul = params.style.coalSizeMul;
+          } else {
+            style = ancestorStyle;
+            sizeMul = params.style.ancestorSizeMul;
+          }
+
+          const rr = params.baseRadius * sizeMul;
+          circleStyled(mapGridX(p.x), mapGridY(p.y), rr, style);
         } else {
           const rr = params.baseRadius * params.style.g2SizeMul;
           circleStyled(mapGridX(p.x), mapGridY(p.y), rr, g2);
@@ -1274,21 +1660,19 @@
   const maxSpeedInput = document.getElementById('maxSpeedInput');
 
   function setMaxSpeed(v) {
-  const maxV = clamp(parseFloat(v) || 3.0, 0.5, 1000.0);
-  params.maxSpeed = maxV;                 // <-- store it
-  speedSlider.max = String(maxV);
-  if (parseFloat(speedSlider.value) > maxV) {
-    speedSlider.value = String(maxV);
-    speedValue.textContent = `${maxV.toFixed(1)}×`;
+    const maxV = clamp(parseFloat(v) || 3.0, 0.5, 1000.0);
+    params.maxSpeed = maxV;
+    speedSlider.max = String(maxV);
+    if (parseFloat(speedSlider.value) > maxV) {
+      speedSlider.value = String(maxV);
+      speedValue.textContent = `${maxV.toFixed(1)}×`;
+    }
+    rebuildTimerIfNeeded();
   }
-  rebuildTimerIfNeeded();
-}
 
-
-maxSpeedInput.addEventListener('input', () => {
-  setMaxSpeed(maxSpeedInput.value);
-});
-
+  maxSpeedInput.addEventListener('input', () => {
+    setMaxSpeed(maxSpeedInput.value);
+  });
 
   function getIntervalMs() {
     const s = parseFloat(speedSlider.value);
@@ -1323,12 +1707,13 @@ maxSpeedInput.addEventListener('input', () => {
   const parametricPanel  = document.getElementById('parametricPanel');
   const modelLin = document.getElementById('modelLin');
   const modelExp = document.getElementById('modelExp');
+  const modelSeas = document.getElementById('modelSeas');
+  const modelBoom = document.getElementById('modelBoom');
+
   const N0Input  = document.getElementById('N0Input');
   const linSlope = document.getElementById('linSlope');
   const expRate  = document.getElementById('expRate');
   const applyParamBtn = document.getElementById('applyParamBtn');
-  const modelSeas = document.getElementById('modelSeas');
-  const modelBoom = document.getElementById('modelBoom');
   const seasBeta  = document.getElementById('seasBeta');
   const seasPeriod= document.getElementById('seasPeriod');
   const seasPhase = document.getElementById('seasPhase');
@@ -1339,16 +1724,133 @@ maxSpeedInput.addEventListener('input', () => {
 
   const piecewiseToggle = document.getElementById('piecewiseToggle');
   const piecewiseK      = document.getElementById('piecewiseK');
-
+  const piecewisePanel  = document.getElementById('piecewisePanel');
+  const manualGridPanel = document.getElementById('manualGridPanel');
+  const gridPointsList  = document.getElementById('gridPointsList');
+  const pasteVectorBtn  = document.getElementById('pasteVectorBtn');
+  const pasteOverlay    = document.getElementById('pasteOverlay');
+  const pasteDialog     = document.getElementById('pasteDialog');
+  const pasteVectorInput = document.getElementById('pasteVectorInput');
+  const applyPaste      = document.getElementById('applyPaste');
+  const cancelPaste     = document.getElementById('cancelPaste');
 
   const personalizeToggle = document.getElementById('personalizeToggle');
   const popListBlock = document.getElementById('popListBlock');
+
+  // Get param divs
+  const paramsLin = document.getElementById('paramsLin');
+  const paramsExp = document.getElementById('paramsExp');
+  const paramsSeas = document.getElementById('paramsSeas');
+  const paramsBoom = document.getElementById('paramsBoom');
+
+  // Function to show/hide params based on selected model
+  function updateParamsVisibility() {
+    const selectedModel = params.popModel;
+    
+    paramsLin.style.display = (selectedModel === 'lin') ? 'flex' : 'none';
+    paramsExp.style.display = (selectedModel === 'exp') ? 'flex' : 'none';
+    paramsSeas.style.display = (selectedModel === 'seas') ? 'flex' : 'none';
+    paramsBoom.style.display = (selectedModel === 'boom') ? 'flex' : 'none';
+  }
 
   function generationLabel(r) {
     const g = gFromRow(r);
     if (r === params.rows - 1) return `Gen 0 (present)`;
     if (r === 0) return `Gen ${g} (oldest)`;
     return `Gen ${g}`;
+  }
+
+  function rebuildGridPointsList() {
+    gridPointsList.innerHTML = "";
+    const K = clamp(Math.round(+params.piecewiseK || 2), 2, params.rows);
+    
+    // Initialize gridPointValues if needed
+    if (params.gridPointValues.length !== K) {
+      params.gridPointValues = Array.from({length: K}, () => params.N0);
+    }
+
+    const T = params.rows - 1;
+    for (let i = 0; i < K; i++) {
+      const g = Math.round(i * T / (K - 1));
+      
+      const rowDiv = document.createElement('div');
+      rowDiv.className = 'poprow';
+
+      const lab = document.createElement('label');
+      lab.textContent = `Grid ${i} (gen ${g})`;
+
+      const inp = document.createElement('input');
+      inp.type = "number";
+      inp.min = "1";
+      inp.max = String(HARD_MAX_N);
+      inp.value = String(params.gridPointValues[i] || params.N0);
+
+      inp.addEventListener('input', () => {
+        const v = clamp(parseInt(inp.value, 10) || params.N0, 1, HARD_MAX_N);
+        params.gridPointValues[i] = v;
+        stop();
+        applyParametricPopulation();
+        resetSimulation();
+      });
+
+      rowDiv.appendChild(lab);
+      rowDiv.appendChild(inp);
+      gridPointsList.appendChild(rowDiv);
+    }
+  }
+
+  function updatePiecewiseVisibility() {
+    piecewisePanel.style.display = params.piecewise ? "block" : "none";
+    manualGridPanel.style.display = (params.piecewise && !params.parametric) ? "block" : "none";
+    
+    if (params.piecewise && !params.parametric) {
+      rebuildGridPointsList();
+    }
+  }
+
+  function showPasteDialog() {
+    pasteVectorInput.value = params.gridPointValues.join(', ');
+    pasteOverlay.style.display = 'block';
+    pasteDialog.style.display = 'block';
+    pasteVectorInput.focus();
+    pasteVectorInput.select();
+  }
+
+  function hidePasteDialog() {
+    pasteOverlay.style.display = 'none';
+    pasteDialog.style.display = 'none';
+  }
+
+  function applyPastedVector() {
+    const text = pasteVectorInput.value.trim();
+    if (!text) {
+      hidePasteDialog();
+      return;
+    }
+
+    // Parse vector - split by commas, spaces, newlines, or any combination
+    const values = text.split(/[\s,;]+/).map(s => {
+      const num = parseFloat(s);
+      return isNaN(num) ? params.N0 : clamp(Math.round(num), 1, HARD_MAX_N);
+    }).filter(n => !isNaN(n));
+
+    const K = clamp(Math.round(+params.piecewiseK || 2), 2, params.rows);
+    
+    // Resize to match K
+    if (values.length > K) {
+      params.gridPointValues = values.slice(0, K);
+    } else {
+      params.gridPointValues = [...values];
+      while (params.gridPointValues.length < K) {
+        params.gridPointValues.push(params.N0);
+      }
+    }
+
+    hidePasteDialog();
+    rebuildGridPointsList();
+    stop();
+    applyParametricPopulation();
+    resetSimulation();
   }
 
   function rebuildPopList() {
@@ -1385,19 +1887,41 @@ maxSpeedInput.addEventListener('input', () => {
 
   function setVaryPop(on) {
     params.varyPop = on;
-    sidebar.style.display = on ? "block" : "none";
-
+    
     if (on) {
+      // Respect collapsed state
+      if (!sidebarCollapsed) {
+        sidebar.style.display = "block";
+        sidebar.classList.remove('collapsed');
+        stage.style.gridTemplateColumns = "280px 1fr";
+        sidebarToggleStandalone.style.display = "none";
+      } else {
+        sidebar.style.display = "block";
+        sidebar.classList.add('collapsed');
+        stage.style.gridTemplateColumns = "1fr";
+        sidebarToggleStandalone.style.display = "flex";
+      }
+      
       params.parametric = true;
       params.popModel = 'lin';
       parametricToggle.checked = true;
       modelLin.checked = true;
       modelExp.checked = false;
+      modelSeas.checked = false;
+      modelBoom.checked = false;
       parametricPanel.style.display = "block";
+      updateParamsVisibility();
 
       ensureConsistency();
       applyParametricPopulation();
       if (params.personalize) rebuildPopList();
+    } else {
+      // Hide sidebar completely
+      sidebar.style.display = "none";
+      sidebar.classList.remove('collapsed');
+      sidebarToggleStandalone.style.display = "none";
+      stage.style.gridTemplateColumns = "1fr";
+      sidebarCollapsed = false; // Reset collapsed state
     }
     resetSimulation();
   }
@@ -1405,7 +1929,11 @@ maxSpeedInput.addEventListener('input', () => {
   function setParametric(on) {
     params.parametric = on;
     parametricPanel.style.display = on ? "block" : "none";
-    if (on) applyParametricPopulation();
+    if (on) {
+      applyParametricPopulation();
+      updateParamsVisibility();
+    }
+    updatePiecewiseVisibility();
     if (params.personalize) rebuildPopList();
     resetSimulation();
   }
@@ -1431,10 +1959,11 @@ maxSpeedInput.addEventListener('input', () => {
     params.piecewise  = !!piecewiseToggle.checked;
     params.piecewiseK = parseInt(piecewiseK.value, 10) || 10;
 
-
     ensureConsistency();
     applyParametricPopulation();
+    updatePiecewiseVisibility();
     if (params.personalize) rebuildPopList();
+    applyAdaptableAesthetic();
     resetSimulation();
     piecewiseToggle.checked = params.piecewise;
     piecewiseK.value = String(params.piecewiseK);
@@ -1458,6 +1987,7 @@ maxSpeedInput.addEventListener('input', () => {
     if (params.varyPop && params.parametric) applyParametricPopulation();
     if (params.personalize) rebuildPopList();
 
+    buildGrid(); // This will call applyAdaptableAesthetic
     resetSimulation();
   }
 
@@ -1483,30 +2013,64 @@ maxSpeedInput.addEventListener('input', () => {
 
   parametricToggle.addEventListener('change', (e) => setParametric(e.target.checked));
 
+  // Model radio buttons - update params.popModel and visibility
   modelLin.addEventListener('change', () => {
-    if (modelLin.checked) { params.popModel = 'lin'; modelExp.checked = false; }
+    if (modelLin.checked) { 
+      params.popModel = 'lin'; 
+      updateParamsVisibility();
+    }
   });
   modelExp.addEventListener('change', () => {
-    if (modelExp.checked) { params.popModel = 'exp'; modelLin.checked = false; }
+    if (modelExp.checked) { 
+      params.popModel = 'exp'; 
+      updateParamsVisibility();
+    }
   });
   modelSeas.addEventListener('change', () => {
-  if (modelSeas.checked) { params.popModel = 'seas'; modelLin.checked=false; modelExp.checked=false; modelBoom.checked=false; }
-});
+    if (modelSeas.checked) { 
+      params.popModel = 'seas'; 
+      updateParamsVisibility();
+    }
+  });
   modelBoom.addEventListener('change', () => {
-    if (modelBoom.checked) { params.popModel = 'boom'; modelLin.checked=false; modelExp.checked=false; modelSeas.checked=false; }
+    if (modelBoom.checked) { 
+      params.popModel = 'boom'; 
+      updateParamsVisibility();
+    }
   });
 
-  // piecewise can be used together with parametric
+  // piecewise can be used together with parametric OR independently
   piecewiseToggle.addEventListener('change', () => {
     params.piecewise = piecewiseToggle.checked;
-    stop(); applyParametricPopulation(); if (params.personalize) rebuildPopList(); resetSimulation();
+    updatePiecewiseVisibility();
+    stop();
+    if (params.piecewise || params.parametric) {
+      applyParametricPopulation();
+    }
+    if (params.personalize) rebuildPopList();
+    resetSimulation();
   });
+
   piecewiseK.addEventListener('input', () => {
     params.piecewiseK = parseInt(piecewiseK.value, 10) || 10;
     if (!params.piecewise) return;
-    stop(); applyParametricPopulation(); if (params.personalize) rebuildPopList(); resetSimulation();
+    
+    // Rebuild grid points list if in manual mode
+    if (!params.parametric) {
+      rebuildGridPointsList();
+    }
+    
+    stop();
+    applyParametricPopulation();
+    if (params.personalize) rebuildPopList();
+    resetSimulation();
   });
 
+  // Paste vector functionality
+  pasteVectorBtn.addEventListener('click', showPasteDialog);
+  applyPaste.addEventListener('click', applyPastedVector);
+  cancelPaste.addEventListener('click', hidePasteDialog);
+  pasteOverlay.addEventListener('click', hidePasteDialog);
 
   personalizeToggle.addEventListener('change', (e) => setPersonalize(e.target.checked));
   applyParamBtn.addEventListener('click', applyParametricFromUI);
@@ -1539,16 +2103,35 @@ maxSpeedInput.addEventListener('input', () => {
   });
 
   // Bind settings controls
-  const g1Color = document.getElementById('g1Color');
-  const g1Size  = document.getElementById('g1Size');
+  const adaptableToggle = document.getElementById('adaptableToggle');
+  const branchColor = document.getElementById('branchColor');
+  const branchWidth = document.getElementById('branchWidth');
+  const tipsColor = document.getElementById('tipsColor');
+  const tipsSize  = document.getElementById('tipsSize');
+  const coalColor = document.getElementById('coalColor');
+  const coalSize  = document.getElementById('coalSize');
+  const ancestorColor = document.getElementById('ancestorColor');
+  const ancestorSize  = document.getElementById('ancestorSize');
   const g2Color = document.getElementById('g2Color');
   const g2Size  = document.getElementById('g2Size');
   const g2Alpha = document.getElementById('g2Alpha');
   const g2Style = document.getElementById('g2Style');
 
   function syncSettingsToUI() {
-    g1Color.value = params.style.g1Color;
-    g1Size.value  = String(params.style.g1SizeMul);
+    adaptableToggle.checked = params.style.adaptableAesthetic;
+    
+    branchColor.value = params.style.branchColor;
+    branchWidth.value = String(params.style.branchWidth);
+
+    tipsColor.value = params.style.tipsColor;
+    tipsSize.value  = String(params.style.tipsSizeMul);
+    
+    coalColor.value = params.style.coalColor;
+    coalSize.value  = String(params.style.coalSizeMul);
+    
+    ancestorColor.value = params.style.ancestorColor;
+    ancestorSize.value  = String(params.style.ancestorSizeMul);
+
     maxSpeedInput.value = String(params.maxSpeed);
 
     g2Color.value = params.style.g2Color;
@@ -1559,14 +2142,174 @@ maxSpeedInput.addEventListener('input', () => {
   }
 
   function attachSettingsHandlers() {
-    g1Color.addEventListener('input', () => { params.style.g1Color = g1Color.value; render(); });
-    g1Size.addEventListener('input', () => { params.style.g1SizeMul = parseFloat(g1Size.value); render(); });
+    adaptableToggle.addEventListener('change', () => { 
+      params.style.adaptableAesthetic = adaptableToggle.checked;
+      if (params.style.adaptableAesthetic) {
+        applyAdaptableAesthetic();
+        render();
+      }
+    });
+
+    branchColor.addEventListener('input', () => { params.style.branchColor = branchColor.value; render(); });
+    branchWidth.addEventListener('input', () => { params.style.branchWidth = parseFloat(branchWidth.value); render(); });
+
+    tipsColor.addEventListener('input', () => { params.style.tipsColor = tipsColor.value; render(); });
+    tipsSize.addEventListener('input', () => { params.style.tipsSizeMul = parseFloat(tipsSize.value); render(); });
+
+    coalColor.addEventListener('input', () => { params.style.coalColor = coalColor.value; render(); });
+    coalSize.addEventListener('input', () => { params.style.coalSizeMul = parseFloat(coalSize.value); render(); });
+
+    ancestorColor.addEventListener('input', () => { params.style.ancestorColor = ancestorColor.value; render(); });
+    ancestorSize.addEventListener('input', () => { params.style.ancestorSizeMul = parseFloat(ancestorSize.value); render(); });
 
     g2Color.addEventListener('input', () => { params.style.g2Color = g2Color.value; render(); });
     g2Size.addEventListener('input', () => { params.style.g2SizeMul = parseFloat(g2Size.value); render(); });
     g2Alpha.addEventListener('input', () => { params.style.g2Alpha = parseFloat(g2Alpha.value); render(); });
     g2Style.addEventListener('change', () => { params.style.g2Style = g2Style.value; render(); });
   }
+
+  // ---------------------------
+  // Sidebar collapse/expand functionality
+  // ---------------------------
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const sidebarToggleStandalone = document.getElementById('sidebarToggleStandalone');
+  const stage = document.querySelector('.stage');
+  let sidebarCollapsed = false;
+
+  function toggleSidebar() {
+    if (!params.varyPop) return; // Only allow toggle when time varying population is enabled
+    
+    sidebarCollapsed = !sidebarCollapsed;
+    
+    if (sidebarCollapsed) {
+      sidebar.classList.add('collapsed');
+      stage.style.gridTemplateColumns = "1fr";
+      sidebarToggleStandalone.style.display = "flex";
+    } else {
+      sidebar.classList.remove('collapsed');
+      stage.style.gridTemplateColumns = "280px 1fr";
+      sidebarToggleStandalone.style.display = "none";
+    }
+  }
+
+  sidebarToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleSidebar();
+  });
+
+  sidebarToggleStandalone.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleSidebar();
+  });
+
+  // ---------------------------
+  // Help popup system
+  // ---------------------------
+  const helpOverlay = document.getElementById('helpOverlay');
+  const helpPopup = document.getElementById('helpPopup');
+  const helpContent = document.getElementById('helpContent');
+  const closeHelp = document.getElementById('closeHelp');
+
+  const helpTexts = {
+    lin: {
+      title: 'Linear Population Model',
+      description: 'The population changes linearly going backward in time.',
+      formula: 'N(g) = N₀ + slope × g',
+      note: 'where g is the generation index (g=0 at present, increasing backward in time)',
+      params: [
+        { name: 'slope', desc: 'Rate of population change per generation. Negative values decrease population going backward in time (smaller ancient populations), positive values increase it.' }
+      ]
+    },
+    exp: {
+      title: 'Exponential Population Model',
+      description: 'The population grows or shrinks exponentially going backward in time.',
+      formula: 'N(g) = N₀ × exp(rate × g)',
+      note: 'where g is the generation index (g=0 at present, increasing backward in time)',
+      params: [
+        { name: 'rate', desc: 'Exponential growth/decline rate. Positive values create exponential growth going backward (larger ancient populations), negative values create decline.' }
+      ]
+    },
+    seas: {
+      title: 'Seasonal Population Model',
+      description: 'The population oscillates periodically going backward in time, simulating seasonal or cyclical patterns.',
+      formula: 'N(g) = N₀ × exp(β × sin(2πg/P + φ))',
+      note: 'where g is the generation index (g=0 at present, increasing backward in time)',
+      params: [
+        { name: 'β (beta)', desc: 'Amplitude of oscillation. Larger values create bigger population swings between peaks and troughs.' },
+        { name: 'P (period)', desc: 'Number of generations per cycle. Determines how frequently the population oscillates.' },
+        { name: 'φ (phase)', desc: 'Phase shift in radians. Adjusts where in the cycle the population starts.' }
+      ]
+    },
+    boom: {
+      title: 'Boom–Bust Population Model',
+      description: 'The population has two distinct phases: an initial boom period followed by a bust, creating a "broken stick" pattern.',
+      formula: 'N(g) = N₀ × exp(r₁ × min(g, t_b) + r₂ × max(0, g - t_b))',
+      note: 'where g is the generation index (g=0 at present, increasing backward in time)',
+      params: [
+        { name: 't_b (breakpoint)', desc: 'Generation where the boom transitions to bust. Before this point, rate r₁ applies; after, rate r₂ applies.' },
+        { name: 'r₁ (rate 1)', desc: 'Growth rate during the boom phase (typically positive).' },
+        { name: 'r₂ (rate 2)', desc: 'Growth rate during the bust phase (typically negative).' }
+      ]
+    }
+  };
+
+  function showHelp(modelType) {
+    const help = helpTexts[modelType];
+    if (!help) return;
+
+    let html = `
+      <h3>${help.title}</h3>
+      <p>${help.description}</p>
+      <p style="font-family: 'JetBrains Mono', monospace; background: #f3f4f6; padding: 8px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 4px;">
+        ${help.formula}
+      </p>
+      <p style="font-size: 0.8rem; color: #6b7280; font-style: italic; margin-bottom: 12px;">
+        ${help.note}
+      </p>
+      <p style="margin-top: 12px; margin-bottom: 8px; font-weight: 600; color: #2c3e50;">Parameters:</p>
+    `;
+
+    help.params.forEach(param => {
+      html += `
+        <div class="param-desc">
+          <strong>${param.name}:</strong> ${param.desc}
+        </div>
+      `;
+    });
+
+    helpContent.innerHTML = html;
+    helpOverlay.style.display = 'block';
+    helpPopup.style.display = 'block';
+  }
+
+  function hideHelp() {
+    helpOverlay.style.display = 'none';
+    helpPopup.style.display = 'none';
+  }
+
+  // Attach help button listeners
+  document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('help-btn')) {
+      e.preventDefault();
+      e.stopPropagation();
+      const modelType = e.target.getAttribute('data-help');
+      showHelp(modelType);
+    }
+  });
+
+  closeHelp.addEventListener('click', hideHelp);
+  helpOverlay.addEventListener('click', hideHelp);
+
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (pasteDialog.style.display === 'block') {
+        hidePasteDialog();
+      } else if (helpPopup.style.display === 'block') {
+        hideHelp();
+      }
+    }
+  });
 
   // ---------------------------
   // Init defaults
@@ -1584,6 +2327,8 @@ maxSpeedInput.addEventListener('input', () => {
 
   setVaryPop(true);
   setPersonalize(false);
+  updateParamsVisibility(); // Show only params for selected model
+  updatePiecewiseVisibility(); // Initialize piecewise panel visibility
   buildGrid();
   resetSimulation();
 
