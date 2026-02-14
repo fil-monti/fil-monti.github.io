@@ -369,7 +369,7 @@
                     </div>
 
                     <div class="control-item-inline">
-                        <input type="checkbox" id="trackAllBranchesCheckbox">
+                        <input type="checkbox" id="trackAllBranchesCheckbox" checked>
                         <label for="trackAllBranchesCheckbox">Track all branches</label>
                     </div>
 
@@ -447,7 +447,7 @@
     let showPhylogenetics = true;
     let stickyPaths = false;
     let drawLocations = true;
-    let trackAllBranches = false;
+    let trackAllBranches = true;
     let diffusionRate = 0.5; // Controls CTMC rate
 
     // World map GeoJSON data
@@ -463,12 +463,130 @@
     const geoStates = [
         { name: "North America", lon: -100, lat: 40 },
         { name: "South America", lon:  -60, lat: -15 },
-        { name: "Europe",        lon:   10, lat:  50 },
+        { name: "Europe",        lon:   0, lat:  50 },
         { name: "Africa",        lon:   20, lat:   5 },
         { name: "Middle East",   lon:   50, lat:  25 },
         { name: "East Asia",     lon:  110, lat:  35 },
         { name: "Australia",     lon:  135, lat: -25 },
     ];
+
+    const regionCountries = {
+        "North America": ["Canada", "United States of America", "Mexico"],
+        "South America": [
+            "Argentina","Bolivia","Brazil","Chile","Colombia","Ecuador","Guyana","Paraguay","Peru",
+            "Suriname","Uruguay","Venezuela","French Guiana"
+        ],
+        "Europe": [
+            "Albania","Andorra","Austria","Belarus","Belgium","Bosnia and Herz.","Bulgaria","Croatia",
+            "Czechia","Denmark","Estonia","Finland","France","Germany","Greece","Hungary",
+            "Ireland","Italy","Kosovo","Latvia","Liechtenstein","Lithuania","Luxembourg","Macedonia",
+            "Moldova","Monaco","Montenegro","Netherlands","Norway","Poland","Portugal","Romania",
+            "San Marino","Serbia","Slovakia","Slovenia","Spain","Sweden","Switzerland",
+            "Ukraine","United Kingdom","Vatican"
+        ],
+        // "Africa": [
+        //     "Algeria","Angola","Benin","Botswana","Burkina Faso","Burundi","Cameroon","Central African Rep.",
+        //     "Chad","Congo","Côte d'Ivoire","Dem. Rep. Congo","Djibouti","Egypt","Eq. Guinea","Eritrea",
+        //     "Ethiopia","Gabon","Gambia","Ghana","Guinea","Guinea-Bissau","Kenya","Lesotho","Liberia","Libya",
+        //     "Madagascar","Malawi","Mali","Mauritania","Morocco","Mozambique","Namibia","Niger","Nigeria",
+        //     "Rwanda","S. Sudan","Senegal","Sierra Leone","Somalia","South Africa","Sudan","Tanzania",
+        //     "Togo","Tunisia","Uganda","Zambia","Zimbabwe","W. Sahara"
+        // ],
+        // "Africa": [
+        //     "Algeria","Angola","Benin","Botswana","Burkina Faso","Burundi","Cabo Verde","Cameroon",
+        //     "Central African Republic","Chad","Comoros","Congo","Côte d'Ivoire",
+        //     "Democratic Republic of the Congo","Djibouti","Egypt","Equatorial Guinea","Eritrea",
+        //     "Eswatini","Ethiopia","Gabon","Gambia","Ghana","Guinea","Guinea-Bissau",
+        //     "Kenya","Lesotho","Liberia","Libya", "Lesotho", "Madagascar","Malawi","Mali",
+        //     "Mauritania","Mauritius","Morocco","Mozambique","Namibia","Niger","Nigeria",
+        //     "Rwanda","Sao Tome and Principe","Senegal","Seychelles","Sierra Leone",
+        //     "Somalia","South Africa","South Sudan","Sudan","Tanzania, United Republic of",
+        //     "Togo","Tunisia","Uganda","Zambia","Zimbabwe"
+        // ],
+        // ---- custom Asia subregions ----
+        "Middle East": [
+            "Turkey","Cyprus","Syria","Lebanon","Israel","Jordan","Iraq","Iran","Saudi Arabia","Yemen",
+            "Oman","United Arab Emirates","Qatar","Bahrain","Kuwait","Palestine"
+        ],
+        "East Asia": [
+            "China","Mongolia","Japan","North Korea","South Korea","Taiwan"
+        ],
+
+        "Australia": ["Australia", "New Zealand", "Papua New Guinea"]
+    };
+
+    // function featuresForRegion(regionName) {
+    //     if (!neCountries) return [];
+    //     const wanted = regionCountries[regionName];
+    //     if (!wanted) return [];
+    //
+    //     const wantedSet = new Set(wanted);
+    //     return neCountries.features.filter(f => wantedSet.has(f?.properties?.ADMIN));
+    // }
+    function featuresForRegion(regionName) {
+        if (!neCountries) return [];
+
+        // --- Custom subregions (manual override) ---
+        if (regionCountries[regionName]) {
+            const wanted = new Set(regionCountries[regionName]);
+            return neCountries.features.filter(f =>
+                wanted.has(f?.properties?.ADMIN)
+            );
+        }
+
+        // --- Automatic continent selection ---
+        return neCountries.features.filter(f =>
+            f?.properties?.CONTINENT === regionName
+        );
+    }
+
+
+    function ringBBox(ring) {
+        let minLon = +Infinity, maxLon = -Infinity, minLat = +Infinity, maxLat = -Infinity;
+        for (const [lon, lat] of ring) {
+            if (lon < minLon) minLon = lon;
+            if (lon > maxLon) maxLon = lon;
+            if (lat < minLat) minLat = lat;
+            if (lat > maxLat) maxLat = lat;
+        }
+        return { minLon, maxLon, minLat, maxLat };
+    }
+
+    function ringCentroid(ring) {
+        // simple average is fine for this purpose
+        let lon = 0, lat = 0;
+        for (const p of ring) { lon += p[0]; lat += p[1]; }
+        return { lon: lon / ring.length, lat: lat / ring.length };
+    }
+
+    function keepRingForRegion(regionName, ring) {
+        const bb = ringBBox(ring);
+        const c = ringCentroid(ring);
+
+        if (regionName === "Europe") {
+            // Keep only "Europe-ish" rings; this drops Greenland, Caribbean, etc.
+            // You can tweak these numbers, but this works well in practice.
+            const EURO = { minLon: -31, maxLon: 45, minLat: 34, maxLat: 72 };
+
+            const inside =
+                c.lon >= EURO.minLon && c.lon <= EURO.maxLon &&
+                c.lat >= EURO.minLat && c.lat <= EURO.maxLat;
+
+            if (!inside) return false;
+
+            // Optional: also drop rings that are mostly outside even if centroid is inside
+            const overlap =
+                bb.minLon <= EURO.maxLon && bb.maxLon >= EURO.minLon &&
+                bb.minLat <= EURO.maxLat && bb.maxLat >= EURO.minLat;
+
+            return overlap;
+        }
+
+        return true;
+    }
+
+
+
 
     // Row-stochastic transition matrix for jumps (discrete-time jump kernel)
     const P = [
@@ -917,38 +1035,164 @@
         if (!neCountries) return null;
         if (silhouetteCache.has(continentName)) return silhouetteCache.get(continentName);
 
-        const feats = neCountries.features.filter(f => f?.properties?.CONTINENT === continentName);
+        const feats = featuresForRegion(continentName);
         if (!feats.length) return null;
 
-        // compute bbox over all features
+        // -----------------------------
+        // 1) Compute per-feature bboxes
+        // -----------------------------
+        const boxes = feats.map(lonLatBBoxOfFeature);
+
+        // Global bbox (all features)
+        let gMinLon = +Infinity, gMaxLon = -Infinity, gMinLat = +Infinity, gMaxLat = -Infinity;
+        for (const bb of boxes) {
+            gMinLon = Math.min(gMinLon, bb.minLon);
+            gMaxLon = Math.max(gMaxLon, bb.maxLon);
+            gMinLat = Math.min(gMinLat, bb.minLat);
+            gMaxLat = Math.max(gMaxLat, bb.maxLat);
+        }
+
+        const gLonSpan = Math.max(1e-9, gMaxLon - gMinLon);
+        const gLatSpan = Math.max(1e-9, gMaxLat - gMinLat);
+
+        // Center of global bbox
+        const gCx = (gMinLon + gMaxLon) / 2;
+        const gCy = (gMinLat + gMaxLat) / 2;
+
+        // Feature is an outlier if it's tiny AND far from the main mass
+        function isOutlier(bb) {
+            const lonSpan = bb.maxLon - bb.minLon;
+            const latSpan = bb.maxLat - bb.minLat;
+
+            // relative "area" proxy (unitless)
+            const relArea = (lonSpan / gLonSpan) * (latSpan / gLatSpan);
+
+            // normalized distance of bbox center to global center
+            const cx = (bb.minLon + bb.maxLon) / 2;
+            const cy = (bb.minLat + bb.maxLat) / 2;
+            const d = Math.hypot((cx - gCx) / gLonSpan, (cy - gCy) / gLatSpan);
+
+            return (relArea < 0.003) && (d > 0.55);
+        }
+
+        function isCanariesRing(ring) {
+            // Canaries approx box: lon [-19, -12], lat [27, 30]
+            let inside = 0;
+            for (const [lon, lat] of ring) {
+                if (lon >= -19 && lon <= -12 && lat >= 27 && lat <= 30) inside++;
+            }
+            return inside / ring.length > 0.6; // most points in the box
+        }
+
+        // ------------------------------------------
+        // 2) Recompute bbox ignoring bbox-outliers
+        // ------------------------------------------
         let minLon = +Infinity, maxLon = -Infinity, minLat = +Infinity, maxLat = -Infinity;
-        for (const f of feats) {
-            const bb = lonLatBBoxOfFeature(f);
+        let kept = 0;
+
+        for (let k = 0; k < feats.length; k++) {
+            const bb = boxes[k];
+            if (isOutlier(bb)) continue;
+            kept++;
+
             minLon = Math.min(minLon, bb.minLon);
             maxLon = Math.max(maxLon, bb.maxLon);
             minLat = Math.min(minLat, bb.minLat);
             maxLat = Math.max(maxLat, bb.maxLat);
         }
 
-        // offscreen canvas
+        // Fallback: if we removed too many, revert to global bbox
+        if (kept < Math.max(2, Math.floor(0.6 * feats.length))) {
+            minLon = gMinLon; maxLon = gMaxLon; minLat = gMinLat; maxLat = gMaxLat;
+        }
+
+        // -----------------------------
+        // 3) Render silhouette normally
+        // -----------------------------
         const c = document.createElement("canvas");
         c.width = targetW;
         c.height = targetH;
         const g = c.getContext("2d");
 
-        // map lon/lat in bbox -> pixel
+        // function projLocal(lon, lat) {
+        //     const x = ((lon - minLon) / Math.max(1e-9, (maxLon - minLon))) * targetW;
+        //     const y = ((maxLat - lat) / Math.max(1e-9, (maxLat - minLat))) * targetH;
+        //     return [x, y];
+        // }
         function projLocal(lon, lat) {
             const x = ((lon - minLon) / Math.max(1e-9, (maxLon - minLon))) * targetW;
             const y = ((maxLat - lat) / Math.max(1e-9, (maxLat - minLat))) * targetH;
+
+            if (continentName === "Middle East") {
+                const s = 0.62;            // < 1 shrinks the shape
+                const cx = targetW / 2, cy = targetH / 2;
+                return [cx + (x - cx) * s, cy + (y - cy) * s];
+            }
+            if (continentName === "South America") {
+                const s = 0.7;            // < 1 shrinks the shape
+                const cx = targetW / 2, cy = targetH / 2;
+                return [cx + (x - cx) * s, y];
+            }
+            // --- Europe: shift slightly left (optional fine tuning) ---
+            if (continentName === "Europe") {
+                const shiftX = -30;   // tweak between -4 and -10 if needed
+                return [x + shiftX, y];
+            }
             return [x, y];
         }
 
-        // draw filled polygons with no stroke (so it looks like one silhouette)
         g.clearRect(0, 0, targetW, targetH);
-        g.fillStyle = "rgba(0,0,0,0.12)";  // semi-transparent silhouette
+        g.fillStyle = "rgba(165, 214, 167, 0.85)";
         g.beginPath();
 
+        // function drawRing(ring) {
+        //     if (continentName === "Europe" && isCanariesRing(ring)) return;
+        //     for (let i = 0; i < ring.length; i++) {
+        //         const [x, y] = projLocal(ring[i][0], ring[i][1]);
+        //         if (i === 0) g.moveTo(x, y);
+        //         else g.lineTo(x, y);
+        //     }
+        //     g.closePath();
+        // }
+        function ringBBox(ring) {
+            let minLon = +Infinity, maxLon = -Infinity;
+            let minLat = +Infinity, maxLat = -Infinity;
+
+            for (const [lon, lat] of ring) {
+                if (lon < minLon) minLon = lon;
+                if (lon > maxLon) maxLon = lon;
+                if (lat < minLat) minLat = lat;
+                if (lat > maxLat) maxLat = lat;
+            }
+            return { minLon, maxLon, minLat, maxLat };
+        }
+
+        function shouldDropRing(ring) {
+            const bb = ringBBox(ring);
+
+            const lonSpan = bb.maxLon - bb.minLon;
+            const latSpan = bb.maxLat - bb.minLat;
+
+            const relArea =
+                (lonSpan / gLonSpan) *
+                (latSpan / gLatSpan);
+
+            const cx = (bb.minLon + bb.maxLon) / 2;
+            const cy = (bb.minLat + bb.maxLat) / 2;
+
+            const d = Math.hypot(
+                (cx - gCx) / gLonSpan,
+                (cy - gCy) / gLatSpan
+            );
+
+            return (relArea < 0.002) && (d > 0.5);
+        }
+
         function drawRing(ring) {
+            if (!keepRingForRegion(continentName, ring)) return;
+            // (your existing Canaries filter can stay, but it becomes mostly unnecessary)
+            // if (continentName === "Europe" && isCanariesRing(ring)) return;
+
             for (let i = 0; i < ring.length; i++) {
                 const [x, y] = projLocal(ring[i][0], ring[i][1]);
                 if (i === 0) g.moveTo(x, y);
@@ -960,32 +1204,55 @@
         for (const f of feats) {
             const geom = f.geometry;
             if (!geom) continue;
+
             if (geom.type === "Polygon") {
-                for (const ring of geom.coordinates) drawRing(ring);
+                // ONLY outer ring (skip holes)
+                drawRing(geom.coordinates[0]);
             } else if (geom.type === "MultiPolygon") {
                 for (const poly of geom.coordinates) {
-                    for (const ring of poly) drawRing(ring);
+                    // poly[0] is outer ring
+                    drawRing(poly[0]);
                 }
             }
         }
 
+// use normal fill (not evenodd)
         g.fill();
+
+
+        // for (const f of feats) {
+        //     const geom = f.geometry;
+        //     if (!geom) continue;
+        //     if (geom.type === "Polygon") {
+        //         for (const ring of geom.coordinates) drawRing(ring);
+        //     } else if (geom.type === "MultiPolygon") {
+        //         for (const poly of geom.coordinates) {
+        //             for (const ring of poly) drawRing(ring);
+        //         }
+        //     }
+        // }
+        //
+        // g.fill("evenodd");
 
         const out = { canvas: c, w: targetW, h: targetH };
         silhouetteCache.set(continentName, out);
         return out;
     }
 
+
     function drawLocationBadgeBehind(seqX, seqY, locationName) {
-        // place behind the label region
+        // Badge extends behind sequence and below label
         const badgeW = Math.max(110, locationName.length * 7.5);
-        const badgeH = 34;
+        const sequenceHeight = 18; // approximate height of sequence boxes
+        const badgeH = sequenceHeight + 34 + 30; // cover sequence + label area
 
         const x0 = seqX - badgeW / 2;
-        const y0 = seqY + 6; // under sequence boxes
+        const y0 = seqY - sequenceHeight + 20; // start above sequence
 
-        // silhouette (background)
+        // silhouette (background) - green with high opacity
         const sil = buildSilhouetteForContinent(locationName, Math.round(badgeW), Math.round(badgeH));
+        // const key = NE_CONTINENT_KEY[locationName] ?? locationName;
+        // const sil = buildSilhouetteForContinent(key, Math.round(badgeW), Math.round(badgeH));
         if (sil) {
             ctx.save();
             ctx.globalAlpha = 1.0;              // alpha already in silhouette fillStyle
@@ -993,9 +1260,9 @@
             ctx.restore();
         }
 
-        // optional very subtle rounded rect behind to improve readability
+        // very subtle white overlay only for text readability (minimal opacity)
         ctx.save();
-        ctx.fillStyle = "rgba(255,255,255,0.55)";
+        ctx.fillStyle = "rgba(255,255,255,0.15)";
         const r = 6;
         ctx.beginPath();
         ctx.moveTo(x0 + r, y0);
@@ -1008,10 +1275,10 @@
         ctx.restore();
 
         // foreground label (text)
-        ctx.fillStyle = "#555";
-        ctx.font = '12px "DM Sans"';
+        ctx.fillStyle = "#2e4d2e"; // darker green for better contrast
+        ctx.font = 'bold 12px "DM Sans"';
         ctx.textAlign = "center";
-        ctx.fillText(locationName, seqX, y0 + badgeH/2 + 4);
+        ctx.fillText(locationName, seqX, y0 + badgeH - 13 - 40);
     }
 
     // Project lon/lat to canvas x/y (simple equirectangular projection)
@@ -1495,6 +1762,20 @@
             drawPhylogeography();
         }
 
+        // Draw continent location badges BEFORE sequences (so they appear behind)
+        if (showPhylogeography && drawLocations && geoStars.length > 0) {
+            geoStars.forEach(({ sequenceId, star }) => {
+                const seq = sequences.find(s => s.sequenceId === sequenceId);
+                if (!seq) return;
+
+                const shouldShow = trackAllBranches || seq.trackedGeo;
+                if (shouldShow) {
+                    const continentName = star.currentStateName();
+                    drawLocationBadgeBehind(seq.x, seq.y, continentName);
+                }
+            });
+        }
+
         if (showPhylogenetics) {
             sequences.forEach(seq => {
                 const showHighlight = highlightTrackedNucleotide && seq.tracked;
@@ -1502,8 +1783,8 @@
             });
         }
 
-        // Draw continent names below tracked sequences
-        if (showPhylogeography && geoStars.length > 0) {
+        // Draw continent names (simple text) if not using location badges
+        if (showPhylogeography && !drawLocations && geoStars.length > 0) {
             geoStars.forEach(({ sequenceId, star }) => {
                 const seq = sequences.find(s => s.sequenceId === sequenceId);
                 if (!seq) return;
@@ -1513,14 +1794,10 @@
                 const shouldShow = trackAllBranches || seq.trackedGeo;
                 if (shouldShow) {
                     const continentName = star.currentStateName();
-                    if (drawLocations) {
-                        drawLocationBadgeBehind(seq.x, seq.y, continentName);
-                    } else {
-                        ctx.fillStyle = '#555';
-                        ctx.font = '12px "DM Sans"';
-                        ctx.textAlign = 'center';
-                        ctx.fillText(continentName, seq.x, seq.y + 21);
-                    }
+                    ctx.fillStyle = '#555';
+                    ctx.font = '12px "DM Sans"';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(continentName, seq.x, seq.y + 21);
                 }
             });
         }
@@ -1754,6 +2031,20 @@
 
         sequences = newSequences;
 
+        // Draw continent location badges BEFORE sequences (so they appear behind)
+        if (showPhylogeography && drawLocations && geoStars.length > 0) {
+            geoStars.forEach(({ sequenceId, star }) => {
+                const seq = sequences.find(s => s.sequenceId === sequenceId);
+                if (!seq) return;
+
+                const shouldShow = trackAllBranches || seq.trackedGeo;
+                if (shouldShow) {
+                    const continentName = star.currentStateName();
+                    drawLocationBadgeBehind(seq.x, seq.y, continentName);
+                }
+            });
+        }
+
         // Draw all sequences if phylogenetics is enabled
         if (showPhylogenetics) {
             sequences.forEach(seq => {
@@ -1762,8 +2053,8 @@
             });
         }
 
-        // Draw continent name below tracked sequences
-        if (showPhylogeography && geoStars.length > 0) {
+        // Draw continent names (simple text) if not using location badges
+        if (showPhylogeography && !drawLocations && geoStars.length > 0) {
             geoStars.forEach(({ sequenceId, star }) => {
                 const seq = sequences.find(s => s.sequenceId === sequenceId);
                 if (!seq) return;
@@ -1773,14 +2064,10 @@
                 const shouldShow = trackAllBranches || seq.trackedGeo;
                 if (shouldShow) {
                     const continentName = star.currentStateName();
-                    if (drawLocations) {
-                        drawLocationBadgeBehind(seq.x, seq.y, continentName);
-                    } else {
-                        ctx.fillStyle = '#555';
-                        ctx.font = '12px "DM Sans"';
-                        ctx.textAlign = 'center';
-                        ctx.fillText(continentName, seq.x, seq.y + 21);
-                    }
+                    ctx.fillStyle = '#555';
+                    ctx.font = '12px "DM Sans"';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(continentName, seq.x, seq.y + 21);
                 }
             });
         }
@@ -1809,6 +2096,17 @@
     const trackAllBranchesCheckbox = document.getElementById('trackAllBranchesCheckbox');
     const stickyPathsCheckbox = document.getElementById('stickyPathsCheckbox');
     const drawLocationsCheckbox = document.getElementById('drawLocationsCheckbox');
+
+    const NE_CONTINENT_KEY = {
+        "North America": "North America",
+        "South America": "South America",
+        "Europe": "Europe",
+        "Africa": "Africa",
+        "Middle East": "Asia",
+        "East Asia": "Asia",
+        "Australia": "Oceania",
+    };
+
 
     playBtn.addEventListener('click', () => {
         if (!isPlaying) {
@@ -1873,15 +2171,9 @@
             if (showPhylogeography) {
                 drawPhylogeography();
             }
-            if (showPhylogenetics) {
-                sequences.forEach(seq => {
-                    const showHighlight = highlightTrackedNucleotide && seq.tracked;
-                    drawSequence(seq, showHighlight);
-                });
-            }
 
-            // Draw continent names below tracked sequences
-            if (showPhylogeography && geoStars.length > 0) {
+            // Draw continent location badges BEFORE sequences
+            if (showPhylogeography && drawLocations && geoStars.length > 0) {
                 geoStars.forEach(({ sequenceId, star }) => {
                     const seq = sequences.find(s => s.sequenceId === sequenceId);
                     if (!seq) return;
@@ -1889,14 +2181,31 @@
                     const shouldShow = trackAllBranches || seq.trackedGeo;
                     if (shouldShow) {
                         const continentName = star.currentStateName();
-                        if (drawLocations) {
-                            drawLocationBadgeBehind(seq.x, seq.y, continentName);
-                        } else {
-                            ctx.fillStyle = '#555';
-                            ctx.font = '12px "DM Sans"';
-                            ctx.textAlign = 'center';
-                            ctx.fillText(continentName, seq.x, seq.y + 21);
-                        }
+                        drawLocationBadgeBehind(seq.x, seq.y, continentName);
+                    }
+                });
+            }
+
+            if (showPhylogenetics) {
+                sequences.forEach(seq => {
+                    const showHighlight = highlightTrackedNucleotide && seq.tracked;
+                    drawSequence(seq, showHighlight);
+                });
+            }
+
+            // Draw continent names (simple text) if not using location badges
+            if (showPhylogeography && !drawLocations && geoStars.length > 0) {
+                geoStars.forEach(({ sequenceId, star }) => {
+                    const seq = sequences.find(s => s.sequenceId === sequenceId);
+                    if (!seq) return;
+
+                    const shouldShow = trackAllBranches || seq.trackedGeo;
+                    if (shouldShow) {
+                        const continentName = star.currentStateName();
+                        ctx.fillStyle = '#555';
+                        ctx.font = '12px "DM Sans"';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(continentName, seq.x, seq.y + 21);
                     }
                 });
             }
@@ -1920,6 +2229,21 @@
             if (showPhylogeography) {
                 drawPhylogeography();
             }
+
+            // Draw continent location badges BEFORE sequences
+            if (showPhylogeography && drawLocations && geoStars.length > 0) {
+                geoStars.forEach(({ sequenceId, star }) => {
+                    const seq = sequences.find(s => s.sequenceId === sequenceId);
+                    if (!seq) return;
+
+                    const shouldShow = trackAllBranches || seq.trackedGeo;
+                    if (shouldShow) {
+                        const continentName = star.currentStateName();
+                        drawLocationBadgeBehind(seq.x, seq.y, continentName);
+                    }
+                });
+            }
+
             if (showPhylogenetics) {
                 sequences.forEach(seq => {
                     const showHighlight = highlightTrackedNucleotide && seq.tracked;
@@ -1927,8 +2251,8 @@
                 });
             }
 
-            // Draw continent names below tracked sequences
-            if (showPhylogeography && geoStars.length > 0) {
+            // Draw continent names (simple text) if not using location badges
+            if (showPhylogeography && !drawLocations && geoStars.length > 0) {
                 geoStars.forEach(({ sequenceId, star }) => {
                     const seq = sequences.find(s => s.sequenceId === sequenceId);
                     if (!seq) return;
@@ -1938,14 +2262,10 @@
                     const shouldShow = trackAllBranches || seq.trackedGeo;
                     if (shouldShow) {
                         const continentName = star.currentStateName();
-                        if (drawLocations) {
-                            drawLocationBadgeBehind(seq.x, seq.y, continentName);
-                        } else {
-                            ctx.fillStyle = '#555';
-                            ctx.font = '12px "DM Sans"';
-                            ctx.textAlign = 'center';
-                            ctx.fillText(continentName, seq.x, seq.y + 21);
-                        }
+                        ctx.fillStyle = '#555';
+                        ctx.font = '12px "DM Sans"';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(continentName, seq.x, seq.y + 21);
                     }
                 });
             }
@@ -1971,6 +2291,21 @@
             if (showPhylogeography) {
                 drawPhylogeography();
             }
+
+            // Draw continent location badges BEFORE sequences
+            if (showPhylogeography && drawLocations && geoStars.length > 0) {
+                geoStars.forEach(({ sequenceId, star }) => {
+                    const seq = sequences.find(s => s.sequenceId === sequenceId);
+                    if (!seq) return;
+
+                    const shouldShow = trackAllBranches || seq.trackedGeo;
+                    if (shouldShow) {
+                        const continentName = star.currentStateName();
+                        drawLocationBadgeBehind(seq.x, seq.y, continentName);
+                    }
+                });
+            }
+
             if (showPhylogenetics) {
                 sequences.forEach(seq => {
                     const showHighlight = highlightTrackedNucleotide && seq.tracked;
@@ -1978,8 +2313,8 @@
                 });
             }
 
-            // Draw continent names below tracked sequences
-            if (showPhylogeography && geoStars.length > 0) {
+            // Draw continent names (simple text) if not using location badges
+            if (showPhylogeography && !drawLocations && geoStars.length > 0) {
                 geoStars.forEach(({ sequenceId, star }) => {
                     const seq = sequences.find(s => s.sequenceId === sequenceId);
                     if (!seq) return;
@@ -1989,14 +2324,10 @@
                     const shouldShow = trackAllBranches || seq.trackedGeo;
                     if (shouldShow) {
                         const continentName = star.currentStateName();
-                        if (drawLocations) {
-                            drawLocationBadgeBehind(seq.x, seq.y, continentName);
-                        } else {
-                            ctx.fillStyle = '#555';
-                            ctx.font = '12px "DM Sans"';
-                            ctx.textAlign = 'center';
-                            ctx.fillText(continentName, seq.x, seq.y + 21);
-                        }
+                        ctx.fillStyle = '#555';
+                        ctx.font = '12px "DM Sans"';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(continentName, seq.x, seq.y + 21);
                     }
                 });
             }
@@ -2020,6 +2351,7 @@
     (async function boot() {
         await loadWorldLand();
         await loadNaturalEarthCountries();
+        // silhouetteCache.clear();
         drawTree();
         initAnimation();
     })();
