@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Discrete-Time Coalescent (Fluctuating Pop + Basin Layout)</title>
+  <title>Discrete-Time Coalescent (Settings + Fluctuating Pop)</title>
 
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 
@@ -20,6 +20,7 @@
       color: #1a1a1a;
     }
     .container { width: 100%; max-width: 1280px; }
+
     h1 {
       text-align: center;
       font-weight: 800;
@@ -33,12 +34,14 @@
       font-size: 1.05rem;
       margin-bottom: 1.15rem;
     }
+
     .stage {
       display: grid;
       grid-template-columns: 280px 1fr;
       gap: 14px;
       align-items: start;
     }
+
     .sidebar {
       width: 280px;
       border: 1px solid #edf0f2;
@@ -133,6 +136,30 @@
       font-weight: 700;
       font-size: 0.88rem;
     }
+    /* Allow param blocks to wrap nicely in narrow sidebar */
+.radio { 
+  flex-wrap: wrap; 
+  align-items: flex-start; 
+}
+
+.radio strong { 
+  flex: 1 1 auto; 
+  min-width: 90px; 
+}
+
+.radio .params {
+  margin-left: 0;          /* was pushing to the far right */
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.radio .params input[type="number"] {
+  width: 70px;             /* 90px is too wide for 3 params */
+}
+
 
     .poplist {
       max-height: 360px;
@@ -168,12 +195,8 @@
       background: #fff;
     }
 
-    .canvas-wrapper {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-    }
+    .canvas-wrapper { position: relative; display: flex; justify-content: center; align-items: center; width: 100%; }
+
     canvas {
       display: block;
       background: #ffffff;
@@ -183,6 +206,97 @@
       width: 100%;
       max-width: 980px;
       height: auto;
+    }
+
+    /* SETTINGS POPUP */
+    .settings-panel {
+      position: absolute;
+      right: 16px;
+      top: 16px;
+      width: 320px;
+      background: #ffffff;
+      border: 1px solid #edf0f2;
+      border-radius: 14px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.14);
+      padding: 12px;
+      display: none;
+      z-index: 10;
+    }
+    .settings-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .settings-header .h {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 900;
+      font-size: 0.92rem;
+      color: #2c3e50;
+    }
+    .xbtn {
+      border: 1px solid #edf0f2;
+      background: #fbfcfd;
+      border-radius: 10px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 900;
+    }
+    .settings-grid {
+      display: grid;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .card {
+      border: 1px solid #edf0f2;
+      border-radius: 12px;
+      padding: 10px;
+      background: #fbfcfd;
+    }
+    .card .t {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 900;
+      font-size: 0.86rem;
+      color: #334155;
+      margin-bottom: 8px;
+    }
+    .srow {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .srow label {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 0.82rem;
+      color: #475569;
+    }
+    .srow input[type="color"] {
+      width: 46px;
+      height: 34px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+    }
+    .srow input[type="range"] { width: 150px; }
+    .srow select {
+      width: 150px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #e6e6e6;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 0.84rem;
+      background: #fff;
+    }
+    .minihelp {
+      font-size: 0.82rem;
+      color: #6b7280;
+      line-height: 1.25;
+      margin-top: 4px;
     }
 
     .controls {
@@ -275,18 +389,8 @@
     }
     .toggle input { transform: scale(1.1); }
 
-    .info {
-      text-align: center;
-      margin-top: 10px;
-      color: #777;
-      font-size: 0.95rem;
-    }
-    .small-note {
-      text-align: center;
-      margin-top: 6px;
-      color: #999;
-      font-size: 0.85rem;
-    }
+    .info { text-align: center; margin-top: 10px; color: #777; font-size: 0.95rem; }
+    .small-note { text-align: center; margin-top: 6px; color: #999; font-size: 0.85rem; }
   </style>
 </head>
 
@@ -300,7 +404,6 @@
         <div class="title">Time varying population</div>
         <div class="hint">
           N₀ is the population at present (bottom). Other generations may be larger or smaller.
-          Rows are always centered in a common width so the basin can expand/contract over time.
         </div>
 
         <div class="section">
@@ -333,9 +436,49 @@
                   <input id="expRate" type="number" step="0.05" value="0.10" />
                 </div>
               </div>
+
+              <!-- Seasonal forcing -->
+              <div class="radio">
+                <input type="radio" name="popModel" id="modelSeas" value="seas" />
+                <strong>Seasonal</strong>
+                <div class="params">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:#64748b;">β</span>
+                  <input id="seasBeta" type="number" step="0.05" value="0.40" />
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:#64748b;">P</span>
+                  <input id="seasPeriod" type="number" step="1" value="20" />
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:#64748b;">φ</span>
+                  <input id="seasPhase" type="number" step="0.1" value="0.0" />
+                </div>
+              </div>
+
+              <!-- Boom-bust -->
+              <div class="radio">
+                <input type="radio" name="popModel" id="modelBoom" value="boom" />
+                <strong>Boom–bust</strong>
+                <div class="params">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:#64748b;">t₍b₎</span>
+                  <input id="boomTb" type="number" step="1" value="20" />
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:#64748b;">r₁</span>
+                  <input id="boomR1" type="number" step="0.05" value="0.10" />
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:#64748b;">r₂</span>
+                  <input id="boomR2" type="number" step="0.05" value="-0.10" />
+                </div>
+              </div>
+
             </div>
 
+            
+
             <button id="applyParamBtn" style="width:100%;padding:10px 12px;border-radius:12px;">Apply function</button>
+            <div class="toggleline" style="margin-top:10px;">
+              <input id="piecewiseToggle" type="checkbox" />
+              <span>Piecewise-constant</span>
+            </div>
+            
+            <div class="row" style="margin-top:6px;">
+              <label for="piecewiseK">Grid points</label>
+              <input id="piecewiseK" type="number" min="2" max="200" value="10" />
+            </div>
           </div>
         </div>
 
@@ -352,8 +495,73 @@
         </div>
       </div>
 
-      <div class="canvas-wrapper">
+      <div class="canvas-wrapper" id="canvasWrap">
         <canvas id="canvas" width="980" height="640"></canvas>
+
+        <!-- Settings menu -->
+        <div class="settings-panel" id="settingsPanel" role="dialog" aria-label="Settings">
+          <div class="settings-header">
+            <div class="h">⚙ Settings</div>
+            <button class="xbtn" id="settingsCloseBtn">✕</button>
+          </div>
+
+          <div class="settings-grid">
+            <div class="card">
+              <div class="t">Playback</div>
+              <div class="srow">
+                <label>Max speed (×)</label>
+                <input id="maxSpeedInput" type="number" step="0.1" min="0.5" max="10" value="3.0"
+                       style="width:150px;padding:8px 10px;border-radius:10px;border:1px solid #e6e6e6;font-family:'JetBrains Mono', monospace;font-weight:800;font-size:0.84rem;background:#fff;" />
+              </div>
+              <div class="minihelp">This sets the maximum value of the Speed slider.</div>
+            </div>
+            <div class="card">
+              <div class="t">Group (1): taxa + chosen ancestors</div>
+
+              <div class="srow">
+                <label>Color</label>
+                <input type="color" id="g1Color" value="#111111" />
+              </div>
+
+              <div class="srow">
+                <label>Size</label>
+                <input type="range" id="g1Size" min="0.6" max="2.4" step="0.05" value="1.25" />
+              </div>
+
+              <div class="minihelp">This group is what you want to “pop out” when the grid is dense.</div>
+            </div>
+
+            <div class="card">
+              <div class="t">Group (2): all other nodes</div>
+
+              <div class="srow">
+                <label>Color</label>
+                <input type="color" id="g2Color" value="#111111" />
+              </div>
+
+              <div class="srow">
+                <label>Size</label>
+                <input type="range" id="g2Size" min="0.4" max="2.0" step="0.05" value="0.90" />
+              </div>
+
+              <div class="srow">
+                <label>Transparency</label>
+                <input type="range" id="g2Alpha" min="0.02" max="1.0" step="0.02" value="0.18" />
+              </div>
+
+              <div class="srow">
+                <label>Style</label>
+                <select id="g2Style">
+                  <option value="hole" selected>Empty hole</option>
+                  <option value="point">Filled point</option>
+                </select>
+              </div>
+
+              <div class="minihelp">Use “Empty hole” + low transparency to reduce clutter.</div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -362,10 +570,12 @@
       <button id="pauseBtn">⏸ Pause</button>
       <button id="stepBtn">⤴ Step</button>
       <button id="resetBtn">↻ Reset</button>
+      <!-- NEW: settings wheel button -->
+      <button id="settingsBtn" title="Settings">⚙</button>
 
       <div class="pill">
         <label for="speedSlider">Speed</label>
-        <input type="range" id="speedSlider" min="0.2" max="3.0" step="0.1" value="1.0" />
+        <input type="range" id="speedSlider" min="0.2" max="10.0" step="0.1" value="1.0" />
         <div class="value" id="speedValue">1.0×</div>
       </div>
 
@@ -399,8 +609,8 @@
       </div>
     </div>
 
-    <div class="info">Rows may increase or decrease over time; the basin is centered in a common width so the river metaphor still holds.</div>
-    <div class="small-note">Parent assignment uses x-position matching so fluctuations do not produce unnatural “index jumps”.</div>
+    <div class="info">Settings lets you emphasize taxa + ancestors when the grid becomes dense.</div>
+    <div class="small-note">Group (2) nodes can be shown as “holes” with high transparency to reduce clutter.</div>
   </div>
 
 <script>
@@ -412,13 +622,28 @@
 
   function clear() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
 
-  function circle(x, y, r, filled) {
+  function hexToRgb(hex) {
+    const h = hex.replace('#','').trim();
+    const full = h.length === 3 ? h.split('').map(ch=>ch+ch).join('') : h;
+    const n = parseInt(full, 16);
+    return { r: (n>>16)&255, g: (n>>8)&255, b: n&255 };
+  }
+
+  function circleStyled(x, y, r, style) {
+    // style: { strokeRGBA, fillRGBA, lineWidth }
+    ctx.save();
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.lineWidth = Math.max(1.0, r * 0.26);
-    ctx.strokeStyle = "#111";
+
+    ctx.lineWidth = style.lineWidth;
+    ctx.strokeStyle = style.strokeRGBA;
     ctx.stroke();
-    if (filled) { ctx.fillStyle = "#111"; ctx.fill(); }
+
+    if (style.fillRGBA) {
+      ctx.fillStyle = style.fillRGBA;
+      ctx.fill();
+    }
+    ctx.restore();
   }
 
   function line(x1, y1, x2, y2, alpha = 1) {
@@ -479,6 +704,7 @@
 
     padX: 70,
     padY: 70,
+    baseRadius: 7,   // computed
     radius: 7,
 
     varyPop: true,
@@ -488,18 +714,38 @@
     popModel: 'lin',
     linSlope: -1,
     expRate: 0.10,
+    seasBeta: 0.40,
+    seasPeriod: 20,
+    seasPhase: 0.0,
+
+    boomTb: 20,
+    boomR1: 0.10,
+    boomR2: -0.10,
+
+    piecewise: false,
+    piecewiseK: 10,
 
     personalize: false,
     displayTree: false,
-    stopAtMRCA: true
+    stopAtMRCA: true,
+    maxSpeed: 3.0,
+
+    // --- NEW: display settings ---
+    style: {
+      g1Color: "#111111",
+      g1SizeMul: 1.25,
+
+      g2Color: "#111111",
+      g2SizeMul: 0.90,
+      g2Alpha: 0.18,
+      g2Style: "hole" // "hole" or "point"
+    }
   };
 
   function clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
   function gFromRow(r) { return (params.rows - 1) - r; }
 
-  function rowCap(r) {
-    return params.varyPop ? params.popCaps[r] : params.N0;
-  }
+  function rowCap(r) { return params.varyPop ? params.popCaps[r] : params.N0; }
 
   function globalMaxNodes() {
     if (!params.varyPop) return params.N0;
@@ -511,43 +757,88 @@
   function ensureConsistency() {
     params.rows = clamp(params.rows, 2, 200);
     params.taxa = clamp(params.taxa, 1, 500);
-
-    // present population (N0) must be >= taxa
     params.N0 = clamp(params.N0, params.taxa, HARD_MAX_N);
 
-    // popCaps can fluctuate and can be > N0, but must be >=1
     params.popCaps = Array.from({length: params.rows}, (_, r) => {
       const v = params.popCaps[r] ?? params.N0;
       return clamp(parseInt(v, 10) || params.N0, 1, HARD_MAX_N);
     });
 
-    // enforce present row exactly N0
     params.popCaps[params.rows - 1] = params.N0;
-
-    // also ensure any row is at least 1 and not insane; done by clamp above
   }
 
   function applyParametricPopulation() {
-    if (!params.parametric) return;
-    const N0 = params.N0;
+  if (!params.parametric) return;
 
-    for (let r = 0; r < params.rows; r++) {
-      const g = gFromRow(r);
-      let Ng;
-      if (params.popModel === 'exp') {
-        Ng = Math.round(N0 * Math.exp((+params.expRate || 0) * g));
-      } else {
-        Ng = Math.round(N0 + (+params.linSlope || 0) * g);
-      }
-      params.popCaps[r] = clamp(Ng, 1, HARD_MAX_N);
+  const N0 = params.N0;
+  const T  = params.rows - 1;
+
+  // 1) build an "imaginary" parametric sequence by generation index g (g=0 present, g=T oldest)
+  const NhatByG = new Array(params.rows).fill(N0);
+
+  for (let g = 0; g <= T; g++) {
+    let Ng = N0;
+
+    if (params.popModel === 'exp') {
+      Ng = Math.round(N0 * Math.exp((+params.expRate || 0) * g));
+
+    } else if (params.popModel === 'lin') {
+      Ng = Math.round(N0 + (+params.linSlope || 0) * g);
+
+    } else if (params.popModel === 'seas') {
+      const beta = +params.seasBeta || 0;
+      const P    = Math.max(1e-6, +params.seasPeriod || 1);
+      const phi  = +params.seasPhase || 0;
+      Ng = Math.round(N0 * Math.exp(beta * Math.sin((2*Math.PI*g)/P + phi)));
+
+    } else if (params.popModel === 'boom') {
+      const tb = clamp(Math.round(+params.boomTb || 0), 0, T);
+      const r1 = +params.boomR1 || 0;
+      const r2 = +params.boomR2 || 0; // typically negative
+      const part1 = Math.min(g, tb);
+      const part2 = Math.max(0, g - tb);
+      Ng = Math.round(N0 * Math.exp(r1 * part1 + r2 * part2));
     }
-    params.popCaps[params.rows - 1] = params.N0;
+
+    NhatByG[g] = clamp(Ng, 1, HARD_MAX_N);
   }
 
+  // 2) optionally make it piecewise-constant using equally spaced grid points in g
+  let NusedByG = NhatByG;
+
+  if (params.piecewise) {
+    const K = clamp(Math.round(+params.piecewiseK || 2), 2, params.rows);
+    const knots = [];
+    for (let i = 0; i < K; i++) {
+      knots.push(Math.round(i * T / (K - 1)));
+    }
+    // unique + sorted
+    const uniqKnots = Array.from(new Set(knots)).sort((a,b)=>a-b);
+
+    NusedByG = new Array(params.rows).fill(N0);
+    for (let i = 0; i < uniqKnots.length; i++) {
+      const a = uniqKnots[i];
+      const b = (i + 1 < uniqKnots.length) ? uniqKnots[i + 1] : (T + 1);
+      const val = NhatByG[a]; // step holds value until next grid point
+      for (let g = a; g < b; g++) NusedByG[g] = val;
+    }
+  }
+
+  // 3) write back to popCaps by row index r (r=rows-1 is present => g=0)
+  for (let r = 0; r < params.rows; r++) {
+    const g = gFromRow(r);
+    params.popCaps[r] = clamp(NusedByG[g], 1, HARD_MAX_N);
+  }
+
+  // force present exactly N0
+  params.popCaps[params.rows - 1] = params.N0;
+}
+
+
   // ---------------------------
-  // Geometry: basin layout (center each row in global width = max_r popCaps[r])
+  // Geometry: basin layout
   // ---------------------------
-  let nodes = [];       // nodes[r][c] for c<rowCap(r)
+  let nodes = [];
   let baseDx = 0;
 
   function computeDynamicRadius() {
@@ -561,10 +852,10 @@
     const dy = usableH / Math.max(1, (params.rows - 1));
     const spacing = Math.min(dx, dy);
 
-    // rescale with total drawn nodes scale proxy: W*rows
     const scaleFactor = Math.sqrt((W * params.rows) / 500);
     const r = (0.24 * spacing) / Math.max(1, scaleFactor);
-    params.radius = clamp(r, 2.0, 9.0);
+    params.baseRadius = clamp(r, 2.0, 9.0);
+    params.radius = params.baseRadius;
   }
 
   function buildGrid() {
@@ -586,11 +877,10 @@
       const y = params.padY + r * dy;
 
       const row = [];
-      if (cap === 1) {
-        row.push({ x: params.padX + usableW / 2, y });
-      } else {
+      if (cap === 1) row.push({ x: params.padX + usableW / 2, y });
+      else {
         const rowWidth = baseDx * (cap - 1);
-        const startX = params.padX + (usableW - rowWidth) / 2; // center basin
+        const startX = params.padX + (usableW - rowWidth) / 2;
         for (let c = 0; c < cap; c++) row.push({ x: startX + c * baseDx, y });
       }
       nodes.push(row);
@@ -600,8 +890,8 @@
   // ---------------------------
   // Simulation state
   // ---------------------------
-  let active = [];      // active[r] = Set of row-local indices
-  let edges = [];       // {child:{r,c}, parent:{r,c}}
+  let active = [];
+  let edges = [];
   let currentRow = 0;
   let finished = false;
   let taxaIdxCache = [];
@@ -624,7 +914,6 @@
     return row[rc.c] ?? null;
   }
 
-  // IMPORTANT: parent choice based on x-position matching (works under fluctuating caps)
   function chooseParentColByX(childRC, parentRow) {
     const childP = safeNodeAt(childRC);
     if (!childP) return 0;
@@ -632,7 +921,6 @@
     const parentCap = rowCap(parentRow);
     if (parentCap <= 1) return 0;
 
-    // nearest x among parent nodes
     let nearest = 0;
     let bestD = Infinity;
     for (let pc = 0; pc < parentCap; pc++) {
@@ -641,7 +929,6 @@
       if (d < bestD) { bestD = d; nearest = pc; }
     }
 
-    // local jitter around nearest to keep paths organic
     const u = rng();
     let proposal = nearest;
     if (u < 0.20) proposal = nearest + (rng() < 0.5 ? -1 : 1);
@@ -651,13 +938,16 @@
     return clamp(proposal, 0, parentCap - 1);
   }
 
+  let isPlaying = false;
+  let timer = null;
+
+  const displayTreeWrap = document.getElementById('displayTreeWrap');
+  const displayTreeToggle = document.getElementById('displayTreeToggle');
+
   function stop() {
     isPlaying = false;
     if (timer) { clearInterval(timer); timer = null; }
   }
-
-  const displayTreeWrap = document.getElementById('displayTreeWrap');
-  const displayTreeToggle = document.getElementById('displayTreeToggle');
 
   function markFinished() {
     finished = true;
@@ -688,14 +978,8 @@
   function stepOnce() {
     if (finished) return;
 
-    if (params.stopAtMRCA && active[currentRow].size <= 1) {
-      markFinished(); render(); return;
-    }
-
-    if (!params.stopAtMRCA && currentRow === 0) {
-      markFinished(); render(); return;
-    }
-
+    if (params.stopAtMRCA && active[currentRow].size <= 1) { markFinished(); render(); return; }
+    if (!params.stopAtMRCA && currentRow === 0) { markFinished(); render(); return; }
     if (currentRow === 0) { markFinished(); render(); return; }
 
     const r = currentRow;
@@ -859,20 +1143,57 @@
       }
     })(root);
 
+    const g1 = buildGroup1Style();
+    const g2 = buildGroup2Style(); // not used for tree nodes, but kept consistent
+
     (function drawNodes(n){
       const p = pos.get(n.id);
       if (!p) return;
       const isLeaf = (n.children.length === 0);
       const isCoal = (n.children.length >= 2);
 
-      if (isLeaf) {
-        circle(p.x,p.y,Math.max(2.4, params.radius*0.85), true); // tips filled black
-      } else if (isCoal) {
-        circle(p.x,p.y,Math.max(2.6, params.radius*0.95), true);
+      if (isLeaf || isCoal) {
+        circleStyled(p.x, p.y, Math.max(2.4, params.baseRadius*0.85) * params.style.g1SizeMul, g1);
       }
 
       for (const ch of n.children) drawNodes(ch);
     })(root);
+  }
+
+  // ---------------------------
+  // Settings-aware styling
+  // ---------------------------
+  function buildGroup1Style() {
+    const rgb = hexToRgb(params.style.g1Color);
+    const stroke = `rgba(${rgb.r},${rgb.g},${rgb.b},1)`;
+    const fill = `rgba(${rgb.r},${rgb.g},${rgb.b},1)`;
+    return {
+      strokeRGBA: stroke,
+      fillRGBA: fill,
+      lineWidth: Math.max(1.0, (params.baseRadius * 0.26) * params.style.g1SizeMul)
+    };
+  }
+
+  function buildGroup2Style() {
+    const rgb = hexToRgb(params.style.g2Color);
+    const a = clamp(params.style.g2Alpha, 0.0, 1.0);
+    const stroke = `rgba(${rgb.r},${rgb.g},${rgb.b},${a})`;
+
+    if (params.style.g2Style === "point") {
+      const fill = `rgba(${rgb.r},${rgb.g},${rgb.b},${a})`;
+      return {
+        strokeRGBA: stroke,
+        fillRGBA: fill,
+        lineWidth: Math.max(1.0, (params.baseRadius * 0.22) * params.style.g2SizeMul)
+      };
+    }
+
+    // hole: ring only, no fill
+    return {
+      strokeRGBA: stroke,
+      fillRGBA: null,
+      lineWidth: Math.max(1.0, (params.baseRadius * 0.24) * params.style.g2SizeMul)
+    };
   }
 
   // ---------------------------
@@ -891,18 +1212,8 @@
     const gap = 28;
     const gridFrac = showTree ? 0.52 : 1.0;
 
-    const gridBox = {
-      x0: fullX0,
-      y0: fullY0,
-      w: showTree ? (fullW*gridFrac - gap/2) : fullW,
-      h: fullH
-    };
-    const treeBox = {
-      x0: showTree ? (fullX0 + fullW*gridFrac + gap/2) : 0,
-      y0: fullY0,
-      w: showTree ? (fullW*(1-gridFrac) - gap/2) : 0,
-      h: fullH
-    };
+    const gridBox = { x0: fullX0, y0: fullY0, w: showTree ? (fullW*gridFrac - gap/2) : fullW, h: fullH };
+    const treeBox = { x0: showTree ? (fullX0 + fullW*gridFrac + gap/2) : 0, y0: fullY0, w: showTree ? (fullW*(1-gridFrac) - gap/2) : 0, h: fullH };
 
     text("Past", gridBox.x0 - 50, fullY0 + 10, { font: "700 13px JetBrains Mono", fill: "#6b7280" });
     text("Present", gridBox.x0 - 50, fullY0 + fullH - 5, { font: "700 13px JetBrains Mono", fill: "#6b7280" });
@@ -911,19 +1222,31 @@
     function mapGridX(x) { return gridBox.x0 + (x - fullX0) * scaleX; }
     function mapGridY(y) { return y; }
 
+    // draw edges
     for (const e of edges) {
       const A = safeNodeAt(e.child);
       const B = safeNodeAt(e.parent);
       if (!A || !B) continue;
-      line(mapGridX(A.x), mapGridY(A.y), mapGridX(B.x), mapGridY(B.y), 0.85);
+      line(mapGridX(A.x), mapGridY(A.y), mapGridX(B.x), mapGridY(B.y), 0.75);
     }
 
+    const g1 = buildGroup1Style();
+    const g2 = buildGroup2Style();
+
+    // draw nodes: group (1) = active ancestors + taxa; group (2) = others
     for (let r = 0; r < params.rows; r++) {
       const cap = rowCap(r);
       for (let c = 0; c < cap; c++) {
-        const filled = active[r].has(c);
+        const isSelected = active[r].has(c);
         const p = nodes[r][c];
-        circle(mapGridX(p.x), mapGridY(p.y), params.radius, filled);
+
+        if (isSelected) {
+          const rr = params.baseRadius * params.style.g1SizeMul;
+          circleStyled(mapGridX(p.x), mapGridY(p.y), rr, g1);
+        } else {
+          const rr = params.baseRadius * params.style.g2SizeMul;
+          circleStyled(mapGridX(p.x), mapGridY(p.y), rr, g2);
+        }
       }
     }
 
@@ -946,11 +1269,26 @@
   // ---------------------------
   // Animation
   // ---------------------------
-  let isPlaying = false;
-  let timer = null;
-
   const speedSlider = document.getElementById('speedSlider');
   const speedValue  = document.getElementById('speedValue');
+  const maxSpeedInput = document.getElementById('maxSpeedInput');
+
+  function setMaxSpeed(v) {
+  const maxV = clamp(parseFloat(v) || 3.0, 0.5, 1000.0);
+  params.maxSpeed = maxV;                 // <-- store it
+  speedSlider.max = String(maxV);
+  if (parseFloat(speedSlider.value) > maxV) {
+    speedSlider.value = String(maxV);
+    speedValue.textContent = `${maxV.toFixed(1)}×`;
+  }
+  rebuildTimerIfNeeded();
+}
+
+
+maxSpeedInput.addEventListener('input', () => {
+  setMaxSpeed(maxSpeedInput.value);
+});
+
 
   function getIntervalMs() {
     const s = parseFloat(speedSlider.value);
@@ -989,6 +1327,19 @@
   const linSlope = document.getElementById('linSlope');
   const expRate  = document.getElementById('expRate');
   const applyParamBtn = document.getElementById('applyParamBtn');
+  const modelSeas = document.getElementById('modelSeas');
+  const modelBoom = document.getElementById('modelBoom');
+  const seasBeta  = document.getElementById('seasBeta');
+  const seasPeriod= document.getElementById('seasPeriod');
+  const seasPhase = document.getElementById('seasPhase');
+
+  const boomTb = document.getElementById('boomTb');
+  const boomR1 = document.getElementById('boomR1');
+  const boomR2 = document.getElementById('boomR2');
+
+  const piecewiseToggle = document.getElementById('piecewiseToggle');
+  const piecewiseK      = document.getElementById('piecewiseK');
+
 
   const personalizeToggle = document.getElementById('personalizeToggle');
   const popListBlock = document.getElementById('popListBlock');
@@ -1021,7 +1372,7 @@
       inp.addEventListener('input', () => {
         const v = clamp(parseInt(inp.value, 10) || params.N0, 1, HARD_MAX_N);
         params.popCaps[r] = v;
-        params.popCaps[params.rows - 1] = params.N0; // keep present fixed
+        params.popCaps[params.rows - 1] = params.N0;
         stop();
         resetSimulation();
       });
@@ -1069,11 +1420,24 @@
     params.N0 = parseInt(N0Input.value, 10) || 20;
     params.linSlope = parseFloat(linSlope.value) || 0;
     params.expRate = parseFloat(expRate.value) || 0;
+    params.seasBeta   = parseFloat(seasBeta.value)  || 0;
+    params.seasPeriod = parseFloat(seasPeriod.value)|| 1;
+    params.seasPhase  = parseFloat(seasPhase.value) || 0;
+
+    params.boomTb = parseInt(boomTb.value, 10) || 0;
+    params.boomR1 = parseFloat(boomR1.value) || 0;
+    params.boomR2 = parseFloat(boomR2.value) || 0;
+
+    params.piecewise  = !!piecewiseToggle.checked;
+    params.piecewiseK = parseInt(piecewiseK.value, 10) || 10;
+
 
     ensureConsistency();
     applyParametricPopulation();
     if (params.personalize) rebuildPopList();
     resetSimulation();
+    piecewiseToggle.checked = params.piecewise;
+    piecewiseK.value = String(params.piecewiseK);
   }
 
   function applySeed() {
@@ -1125,6 +1489,24 @@
   modelExp.addEventListener('change', () => {
     if (modelExp.checked) { params.popModel = 'exp'; modelLin.checked = false; }
   });
+  modelSeas.addEventListener('change', () => {
+  if (modelSeas.checked) { params.popModel = 'seas'; modelLin.checked=false; modelExp.checked=false; modelBoom.checked=false; }
+});
+  modelBoom.addEventListener('change', () => {
+    if (modelBoom.checked) { params.popModel = 'boom'; modelLin.checked=false; modelExp.checked=false; modelSeas.checked=false; }
+  });
+
+  // piecewise can be used together with parametric
+  piecewiseToggle.addEventListener('change', () => {
+    params.piecewise = piecewiseToggle.checked;
+    stop(); applyParametricPopulation(); if (params.personalize) rebuildPopList(); resetSimulation();
+  });
+  piecewiseK.addEventListener('input', () => {
+    params.piecewiseK = parseInt(piecewiseK.value, 10) || 10;
+    if (!params.piecewise) return;
+    stop(); applyParametricPopulation(); if (params.personalize) rebuildPopList(); resetSimulation();
+  });
+
 
   personalizeToggle.addEventListener('change', (e) => setPersonalize(e.target.checked));
   applyParamBtn.addEventListener('click', applyParametricFromUI);
@@ -1135,12 +1517,67 @@
   });
 
   // ---------------------------
+  // SETTINGS UI wiring
+  // ---------------------------
+  const settingsPanel = document.getElementById('settingsPanel');
+  const settingsBtn = document.getElementById('settingsBtn');
+  const settingsCloseBtn = document.getElementById('settingsCloseBtn');
+
+  function toggleSettings(force) {
+    const open = (force !== undefined) ? force : (settingsPanel.style.display !== "block");
+    settingsPanel.style.display = open ? "block" : "none";
+  }
+
+  settingsBtn.addEventListener('click', () => toggleSettings());
+  settingsCloseBtn.addEventListener('click', () => toggleSettings(false));
+
+  // Close settings when clicking outside (only inside canvas wrapper region)
+  document.addEventListener('mousedown', (ev) => {
+    if (settingsPanel.style.display !== "block") return;
+    const within = settingsPanel.contains(ev.target) || settingsBtn.contains(ev.target);
+    if (!within) toggleSettings(false);
+  });
+
+  // Bind settings controls
+  const g1Color = document.getElementById('g1Color');
+  const g1Size  = document.getElementById('g1Size');
+  const g2Color = document.getElementById('g2Color');
+  const g2Size  = document.getElementById('g2Size');
+  const g2Alpha = document.getElementById('g2Alpha');
+  const g2Style = document.getElementById('g2Style');
+
+  function syncSettingsToUI() {
+    g1Color.value = params.style.g1Color;
+    g1Size.value  = String(params.style.g1SizeMul);
+    maxSpeedInput.value = String(params.maxSpeed);
+
+    g2Color.value = params.style.g2Color;
+    g2Size.value  = String(params.style.g2SizeMul);
+    g2Alpha.value = String(params.style.g2Alpha);
+    g2Style.value = params.style.g2Style;
+    maxSpeedInput.value = speedSlider.max || "3.0";
+  }
+
+  function attachSettingsHandlers() {
+    g1Color.addEventListener('input', () => { params.style.g1Color = g1Color.value; render(); });
+    g1Size.addEventListener('input', () => { params.style.g1SizeMul = parseFloat(g1Size.value); render(); });
+
+    g2Color.addEventListener('input', () => { params.style.g2Color = g2Color.value; render(); });
+    g2Size.addEventListener('input', () => { params.style.g2SizeMul = parseFloat(g2Size.value); render(); });
+    g2Alpha.addEventListener('input', () => { params.style.g2Alpha = parseFloat(g2Alpha.value); render(); });
+    g2Style.addEventListener('change', () => { params.style.g2Style = g2Style.value; render(); });
+  }
+
+  // ---------------------------
   // Init defaults
   // ---------------------------
   sidebar.style.display = "block";
   parametricToggle.checked = true;
   modelLin.checked = true;
   modelExp.checked = false;
+  modelSeas.checked = false;
+  modelBoom.checked = false;
+  setMaxSpeed(params.maxSpeed);
   personalizeToggle.checked = false;
 
   params.popCaps = Array.from({length: params.rows}, () => params.N0);
@@ -1149,6 +1586,9 @@
   setPersonalize(false);
   buildGrid();
   resetSimulation();
+
+  syncSettingsToUI();
+  attachSettingsHandlers();
 </script>
 </body>
 </html>
