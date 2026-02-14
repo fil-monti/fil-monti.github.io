@@ -2619,7 +2619,7 @@
         // Draw the stars (trail + dot) for visible sequences
         geoStars.forEach(({ sequenceId, star, color }) => {
             const seq = sequences.find(s => s.sequenceId === sequenceId);
-            if (!seq) return;
+            if (!seq || seq.hideInTimeTravel) return;
 
             // If trackAllBranches is off, only show sequences with trackedGeo=true (Root → Tip 1)
             // If trackAllBranches is on, show all sequences
@@ -3360,7 +3360,7 @@
         if (showPhylogeography && drawLocations && geoStars.length > 0) {
             geoStars.forEach(({ sequenceId, star }) => {
                 const seq = sequences.find(s => s.sequenceId === sequenceId);
-                if (!seq) return;
+                if (!seq || seq.hideInTimeTravel) return;
 
                 const shouldShow = trackAllBranches || seq.trackedGeo;
                 if (shouldShow) {
@@ -3373,6 +3373,9 @@
         // Draw sequences if phylogenetics is enabled
         if (showPhylogenetics) {
             sequences.forEach(seq => {
+                // Skip sequences that should be hidden in time travel mode
+                if (seq.hideInTimeTravel) return;
+                
                 const showHighlight = highlightTrackedNucleotide && seq.tracked;
                 drawSequence(seq, showHighlight);
             });
@@ -3382,7 +3385,7 @@
         if (showPhylogeography && !drawLocations && geoStars.length > 0) {
             geoStars.forEach(({ sequenceId, star }) => {
                 const seq = sequences.find(s => s.sequenceId === sequenceId);
-                if (!seq) return;
+                if (!seq || seq.hideInTimeTravel) return;
 
                 const shouldShow = trackAllBranches || seq.trackedGeo;
                 if (shouldShow) {
@@ -3398,6 +3401,9 @@
         // Draw host icon above sequences
         if (showHostTransmission && hostCTMCs.length > 0) {
             sequences.forEach(seq => {
+                // Skip sequences hidden in time travel
+                if (seq.hideInTimeTravel) return;
+                
                 // Only show if trackAllHostBranches is on, or if this is the tracked sequence
                 const shouldShow = trackAllHostBranches || seq.tracked;
                 if (!shouldShow) return;
@@ -3666,6 +3672,9 @@
                     // Split sequence at internal node
                     const parentHostCtmcObj = hostCTMCs.find(h => h.sequenceId === seq.sequenceId);
                     
+                    // Get parent's complete history before splitting
+                    const parentHistory = animationHistory.sequences.get(seq.sequenceId) || [];
+                    
                     foundNode.children.forEach((child, childIndex) => {
                         // Track by node identity instead of pixel coords
                         const isTip1 = (child.id === "tip1") || (child.label === "Tip 1");
@@ -3688,6 +3697,12 @@
                         newSeq.branchIndex = seq.branchIndex;
                         newSeq.trackedGeo = isTrackedForGeo;
                         newSeq.parentSequenceId = seq.sequenceId; // Track parent for star inheritance
+                        
+                        // IMPORTANT: Copy parent's history to child so it has complete history back to root
+                        if (parentHistory.length > 0) {
+                            animationHistory.sequences.set(newSeq.sequenceId, [...parentHistory]);
+                        }
+                        
                         newSequences.push(newSeq);
 
                         // Create new host CTMC for this split sequence
@@ -3819,9 +3834,48 @@
         // Map to actual progress range in history
         const timePos = (sliderValue / 100) * animationHistory.maxProgress;
 
+        // Determine coalescent point (internal node) progress
+        // We'll estimate this as the average progress where internal node sequences first appear
+        let internalNodeProgress = 0.5; // default estimate
+        
+        // Try to find the internal node progress from history
+        sequences.forEach(seq => {
+            if (seq.parentSequenceId !== null) {
+                const history = animationHistory.sequences.get(seq.sequenceId);
+                if (history && history.length > 0) {
+                    // First entry in child sequence history is at the internal node
+                    internalNodeProgress = Math.max(internalNodeProgress, history[0].progress);
+                }
+            }
+        });
+
         // Update each sequence to its historical state
         sequences.forEach(seq => {
-            const snapshot = getHistoryAtTime(seq.sequenceId, timePos);
+            let snapshot = getHistoryAtTime(seq.sequenceId, timePos);
+            
+            // Check if this sequence leads to Tip 2
+            let leadsToTip2 = false;
+            if (tree.children[0] && tree.children[0].children[1]) {
+                const tip2Node = tree.children[0].children[1];
+                leadsToTip2 = (seq.id === "tip2" || seq.label === "Tip 2" ||
+                              (Math.abs(seq.targetX - tip2Node.x) < 1 && 
+                               Math.abs(seq.targetY - tip2Node.y) < 1));
+            }
+            
+            // If this is Tip 2 and we're before the internal node split, hide it
+            if (leadsToTip2 && timePos < internalNodeProgress * 0.95) {
+                seq.hideInTimeTravel = true;
+                return; // Skip this sequence entirely
+            } else {
+                seq.hideInTimeTravel = false;
+            }
+            
+            // If no snapshot found, this sequence might not have existed at this time
+            // Try to use parent sequence's history instead (but only for Tip 1, not Tip 2)
+            if (!snapshot && seq.parentSequenceId !== null && !leadsToTip2) {
+                snapshot = getHistoryAtTime(seq.parentSequenceId, timePos);
+            }
+            
             if (snapshot) {
                 seq.x = snapshot.x;
                 seq.y = snapshot.y;
@@ -3864,7 +3918,7 @@
         });
 
         // Update CTMC display
-        const trackedSeq = sequences.find(seq => seq.tracked);
+        const trackedSeq = sequences.find(seq => seq.tracked && !seq.hideInTimeTravel);
         if (trackedSeq) {
             ctmcCurrentNucleotide = trackedSeq.sequence[0];
         }
@@ -4242,6 +4296,10 @@
             renderCurrentState();
         } else {
             timeSliderContainer.classList.remove('active');
+            // Clear hideInTimeTravel flags
+            sequences.forEach(seq => {
+                seq.hideInTimeTravel = false;
+            });
             // Just render current state, don't reset
             renderCurrentState();
         }
