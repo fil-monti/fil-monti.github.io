@@ -26,7 +26,7 @@
       font-weight: 800;
       font-size: 2.15rem;
       letter-spacing: -0.02em;
-      margin-bottom: 0.35rem;
+      margin-bottom: 0.70rem;
     }
     .subtitle {
       text-align: center;
@@ -203,6 +203,7 @@
       box-shadow: none;
       transition: all 0.2s ease;
       transform: none;
+      vertical-align: middle;
     }
     .help-btn:hover {
       background: #d1d5db;
@@ -533,7 +534,6 @@
     </div>
 
     <h1>Discrete-Time Coalescent on a Grid</h1>
-    <p class="subtitle">Fluctuating population sizes: the "river basin" widens/narrows backward in time.</p>
 
     <div class="stage">
       <button class="sidebar-toggle" id="sidebarToggleStandalone" title="Expand sidebar" style="position: absolute; left: 0; top: 20px; display: none; width: 28px; height: 28px; z-index: 10;">▶</button>
@@ -542,9 +542,6 @@
         <div class="sidebar-header">
           <div class="title">Time varying population</div>
           <button class="sidebar-toggle" id="sidebarToggle" title="Collapse sidebar">◀</button>
-        </div>
-        <div class="hint">
-          N₀ is the population at present (bottom). Other generations may be larger or smaller.
         </div>
 
         <div class="section">
@@ -555,7 +552,10 @@
 
           <div id="parametricPanel">
             <div class="row">
-              <label for="N0Input">N₀ (present)</label>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <label for="N0Input">N₀</label>
+                <button class="help-btn" data-help="N0">?</button>
+              </div>
               <input id="N0Input" type="number" min="1" value="20" />
             </div>
 
@@ -825,12 +825,12 @@
 
       <div class="toggle">
         <input id="varyPopToggle" type="checkbox" checked />
-        <span>Time varying population</span>
+        <span>Time varying population<button class="help-btn" data-help="varyPop" style="margin-left:6px;">?</button></span>
       </div>
 
       <div class="toggle">
         <input id="stopAtMRCAToggle" type="checkbox" checked />
-        <span>Stop at MRCA</span>
+        <span>Stop at MRCA<button class="help-btn" data-help="mrca" style="margin-left:6px;">?</button></span>
       </div>
 
       <div class="toggle" id="displayTreeWrap" style="display:none;">
@@ -839,8 +839,11 @@
       </div>
     </div>
 
-    <div class="info">Settings: "Adaptable Aesthetic" auto-adjusts visuals for complex simulations. Customize branches, tips, coalescent nodes, and ancestors.</div>
-    <div class="small-note">All node groups have independent color and size controls. Other nodes can use "holes" with transparency.</div>
+    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center;">
+      <p style="font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: #6b7280; margin-bottom: 4px;">
+        © Created by <strong style="color: #2c3e50;">Filippo Monti</strong> · <a href="https://fil-monti.github.io/" target="_blank" rel="noopener noreferrer" style="color: #2c3e50; text-decoration: none; font-weight: 500;">fil-monti.github.io</a>
+      </p>
+    </div>
   </div>
 
 <script>
@@ -1645,6 +1648,13 @@
       { font: "700 13px JetBrains Mono", fill: "#2c3e50", align: "right" }
     );
 
+    // Creator metadata in bottom-right corner
+    text(
+      "© Filippo Monti",
+      canvas.width - 20, canvas.height - 10,
+      { font: "500 11px DM Sans", fill: "#9ca3af", align: "right" }
+    );
+
     if (showTree) {
       const tree = buildInducedTree();
       const pos = layoutTree(tree, treeBox);
@@ -2211,6 +2221,32 @@
   const closeHelp = document.getElementById('closeHelp');
 
   const helpTexts = {
+    N0: {
+      title: 'N₀ (Present Population)',
+      description: 'The population size at the present generation (bottom row of the grid).',
+      params: [
+        { name: 'Base population', desc: 'N₀ represents the population size at generation 0 (present time). This is where your sampled taxa originate from.' },
+        { name: 'Time-varying populations', desc: 'When "Time varying population" is enabled, other generations can have different population sizes (larger or smaller than N₀). The population history is traced backward in time from this present-day value.' },
+        { name: 'Effect on simulation', desc: 'Larger N₀ values create wider grids at the bottom and generally result in slower coalescence rates, as lineages have more potential ancestors to choose from at each generation.' }
+      ]
+    },
+    varyPop: {
+      title: 'Time Varying Population',
+      description: 'Controls whether population size changes across generations going backward in time.',
+      params: [
+        { name: 'Effect on coalescence', desc: 'Population size directly affects the coalescence rate. In smaller populations, lineages are more likely to find common ancestors quickly (faster coalescence). In larger populations, lineages remain separate longer (slower coalescence).' },
+        { name: 'Visual effect', desc: 'When enabled, the "river basin" visualization widens or narrows at different time points, reflecting changing population sizes. Wider sections represent larger populations, narrower sections represent smaller populations.' },
+        { name: 'Biological interpretation', desc: 'Time-varying populations can model demographic events like population bottlenecks (sudden decreases), expansions (growth periods), or cyclical patterns (seasonal variations). These events leave distinct signatures in the genealogy of sampled lineages.' }
+      ]
+    },
+    mrca: {
+      title: 'Stop at MRCA',
+      description: 'Controls when the simulation stops as lineages coalesce going backward in time.',
+      params: [
+        { name: 'When checked (default)', desc: 'The simulation stops as soon as all sampled lineages have found their Most Recent Common Ancestor (MRCA). This is typically what you want for studying coalescent events.' },
+        { name: 'When unchecked', desc: 'The simulation continues until reaching the oldest generation (row 1), even if all lineages have already coalesced. This can be useful for visualizing the full population history.' }
+      ]
+    },
     lin: {
       title: 'Linear Population Model',
       description: 'The population changes linearly going backward in time.',
@@ -2260,14 +2296,28 @@
     let html = `
       <h3>${help.title}</h3>
       <p>${help.description}</p>
-      <p style="font-family: 'JetBrains Mono', monospace; background: #f3f4f6; padding: 8px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 4px;">
-        ${help.formula}
-      </p>
-      <p style="font-size: 0.8rem; color: #6b7280; font-style: italic; margin-bottom: 12px;">
-        ${help.note}
-      </p>
-      <p style="margin-top: 12px; margin-bottom: 8px; font-weight: 600; color: #2c3e50;">Parameters:</p>
     `;
+
+    // Only show formula and note if they exist (for parametric models)
+    if (help.formula) {
+      html += `
+        <p style="font-family: 'JetBrains Mono', monospace; background: #f3f4f6; padding: 8px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 4px;">
+          ${help.formula}
+        </p>
+      `;
+    }
+
+    if (help.note) {
+      html += `
+        <p style="font-size: 0.8rem; color: #6b7280; font-style: italic; margin-bottom: 12px;">
+          ${help.note}
+        </p>
+      `;
+    }
+
+    // Show parameters/options section
+    const sectionTitle = help.formula ? "Parameters:" : "Options:";
+    html += `<p style="margin-top: 12px; margin-bottom: 8px; font-weight: 600; color: #2c3e50;">${sectionTitle}</p>`;
 
     help.params.forEach(param => {
       html += `
