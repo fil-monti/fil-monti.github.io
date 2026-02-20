@@ -843,6 +843,10 @@
                 <option value="31">31</option>
             </select>
         </div>
+        <div class="control-item" style="margin-left: 20px;">
+            <label style="margin-right: 8px;">Seed</label>
+            <input type="number" id="seedInput" value="42" min="0" max="999999" style="padding: 6px 10px; border: 1px solid #d0d0d0; border-radius: 8px; background: #fff; font-family: inherit; width: 100px;">
+        </div>
         <div class="mode-checkboxes">
             <div class="mode-checkbox">
                 <input type="checkbox" id="observationsCheckbox">
@@ -1389,6 +1393,27 @@
     let isPlaying = false;
     let speed = 0.1;
     let mutationRate = 5; // Probability of mutation per frame
+
+    // Seeded random number generator
+    let currentSeed = 42; // Default seed
+    let rngState = currentSeed;
+    
+    // Linear Congruential Generator for deterministic randomness
+    function seededRandom() {
+        // LCG parameters (from Numerical Recipes)
+        const a = 1664525;
+        const c = 1013904223;
+        const m = Math.pow(2, 32);
+        
+        rngState = (a * rngState + c) % m;
+        return rngState / m;
+    }
+    
+    // Initialize RNG with seed
+    function setSeed(seed) {
+        currentSeed = seed;
+        rngState = seed;
+    }
 
     // CTMC transition tracking
     let ctmcCurrentNucleotide = null;
@@ -1956,7 +1981,7 @@
     ];
 
     function sampleCategorical(probs) {
-        let r = Math.random();
+        let r = seededRandom();
         for (let i = 0; i < probs.length; i++) {
             r -= probs[i];
             if (r <= 0) return i;
@@ -1966,7 +1991,7 @@
 
     function sampleExp(rate) {
         // rate > 0, return waiting time in seconds
-        return -Math.log(1 - Math.random()) / rate;
+        return -Math.log(1 - seededRandom()) / rate;
     }
 
     // One moving dot with a comet trail
@@ -3310,9 +3335,9 @@
         const mutatedIndices = [];
 
         newSequence.forEach((nucleotide, i) => {
-            if (Math.random() < mutationRate * speed / 60) {
+            if (seededRandom() < mutationRate * speed / 60) {
                 const otherNucleotides = nucleotides.filter(n => n !== nucleotide);
-                newSequence[i] = otherNucleotides[Math.floor(Math.random() * otherNucleotides.length)];
+                newSequence[i] = otherNucleotides[Math.floor(seededRandom() * otherNucleotides.length)];
                 mutatedIndices.push(i);
             }
         });
@@ -3453,10 +3478,10 @@
         
         // If all colors are used, just pick randomly from all
         if (validColors.length === 0) {
-            return availableColors[Math.floor(Math.random() * availableColors.length)];
+            return availableColors[Math.floor(seededRandom() * availableColors.length)];
         }
         
-        return validColors[Math.floor(Math.random() * validColors.length)];
+        return validColors[Math.floor(seededRandom() * validColors.length)];
     }
 
     function initAnimation() {
@@ -3716,7 +3741,7 @@
         lastTimeSec = now;
 
         // Record history snapshot every few frames
-        if (Math.random() < 0.3) { // Record ~30% of frames for smoother time travel
+        if (seededRandom() < 0.3) { // Record ~30% of frames for smoother time travel
             recordHistorySnapshot();
         }
 
@@ -4444,12 +4469,38 @@
             timeSliderContainer.classList.remove('active');
         }
         
+        // Reset seed to current value
+        const seedInput = document.getElementById('seedInput');
+        if (seedInput) {
+            setSeed(parseInt(seedInput.value) || 42);
+        }
+        
         initAnimation();
     });
 
     speedSlider.addEventListener('input', (e) => {
         speed = parseFloat(e.target.value);
         speedValue.textContent = speed + 'x';
+    });
+
+    const seedInput = document.getElementById('seedInput');
+    seedInput.addEventListener('change', (e) => {
+        const newSeed = parseInt(e.target.value) || 42;
+        setSeed(newSeed);
+        
+        // Reset animation with new seed
+        isPlaying = false;
+        playBtn.textContent = '▶ Play';
+        if (animationFrame) {
+            cancelAnimationFrame(animationFrame);
+        }
+        
+        // Clear animation history
+        animationHistory.sequences.clear();
+        animationHistory.initialized = false;
+        animationHistory.maxProgress = 0;
+        
+        initAnimation();
     });
 
     mutationSlider.addEventListener('input', (e) => {
@@ -4928,6 +4979,12 @@
                 if (tip3Settings) tip3Settings.style.display = 'block';
             }
 
+            // Reset seed to current value
+            const seedInput = document.getElementById('seedInput');
+            if (seedInput) {
+                setSeed(parseInt(seedInput.value) || 42);
+            }
+
             // Rebuild and redraw
             drawTree();
             if (typeof initAnimation === 'function') initAnimation();
@@ -4977,6 +5034,12 @@
             if (tip1Settings) tip1Settings.style.display = 'none';
             if (tip2Settings) tip2Settings.style.display = 'none';
             if (tip3Settings) tip3Settings.style.display = 'none';
+        }
+        
+        // Initialize seed from input value
+        const seedInput = document.getElementById('seedInput');
+        if (seedInput) {
+            setSeed(parseInt(seedInput.value) || 42);
         }
         
         drawTree();
