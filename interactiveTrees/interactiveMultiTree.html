@@ -3485,6 +3485,14 @@
     }
 
     function initAnimation() {
+        // Reset seed to ensure reproducibility
+        const seedInput = document.getElementById('seedInput');
+        if (seedInput) {
+            setSeed(parseInt(seedInput.value) || 42);
+        } else {
+            setSeed(42); // fallback
+        }
+        
         sequences = [];
         nextSequenceId = 0; // Reset sequence ID counter
 
@@ -4469,12 +4477,6 @@
             timeSliderContainer.classList.remove('active');
         }
         
-        // Reset seed to current value
-        const seedInput = document.getElementById('seedInput');
-        if (seedInput) {
-            setSeed(parseInt(seedInput.value) || 42);
-        }
-        
         initAnimation();
     });
 
@@ -4485,10 +4487,7 @@
 
     const seedInput = document.getElementById('seedInput');
     seedInput.addEventListener('change', (e) => {
-        const newSeed = parseInt(e.target.value) || 42;
-        setSeed(newSeed);
-        
-        // Reset animation with new seed
+        // Reset animation with new seed (seed will be applied in initAnimation)
         isPlaying = false;
         playBtn.textContent = '▶ Play';
         if (animationFrame) {
@@ -4979,12 +4978,6 @@
                 if (tip3Settings) tip3Settings.style.display = 'block';
             }
 
-            // Reset seed to current value
-            const seedInput = document.getElementById('seedInput');
-            if (seedInput) {
-                setSeed(parseInt(seedInput.value) || 42);
-            }
-
             // Rebuild and redraw
             drawTree();
             if (typeof initAnimation === 'function') initAnimation();
@@ -5034,12 +5027,6 @@
             if (tip1Settings) tip1Settings.style.display = 'none';
             if (tip2Settings) tip2Settings.style.display = 'none';
             if (tip3Settings) tip3Settings.style.display = 'none';
-        }
-        
-        // Initialize seed from input value
-        const seedInput = document.getElementById('seedInput');
-        if (seedInput) {
-            setSeed(parseInt(seedInput.value) || 42);
         }
         
         drawTree();
