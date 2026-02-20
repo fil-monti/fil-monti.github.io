@@ -3862,13 +3862,13 @@
 
                 if (shouldMove) {
                     star.setRate(diffusionRate);
-                    star.update(dt, offsetX, offsetY, mapWidth, mapHeight);
-                    star.updateTrail(dt);
+                    star.update(dt * speed, offsetX, offsetY, mapWidth, mapHeight);
+                    star.updateTrail(dt * speed);
                 } else {
                     // Fixated at tip
                     if (!stickyPaths) {
                         // If not sticky paths, age the trail and remove old points
-                        for (const p of star.trail) p.age += dt;
+                        for (const p of star.trail) p.age += dt * speed;
                         while (star.trail.length && star.trail[0].age > star.trailMaxAge) {
                             star.trail.shift();
                         }
@@ -3890,7 +3890,7 @@
 
                 if (shouldUpdate) {
                     ctmc.setRate(transmissionRate);
-                    ctmc.update(dt);
+                    ctmc.update(dt * speed);
                 }
             });
         }
@@ -3907,7 +3907,7 @@
 
         // Update transition progress
         if (ctmcTransitionProgress < 1) {
-            ctmcTransitionProgress += ctmcTransitionSpeed;
+            ctmcTransitionProgress += ctmcTransitionSpeed * speed;
             if (ctmcTransitionProgress >= 1) {
                 ctmcTransitionProgress = 1;
                 ctmcPreviousNucleotide = null;
