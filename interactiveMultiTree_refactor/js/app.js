@@ -151,6 +151,32 @@ export default function initApp() {
         let isPlaying = false;
         let speed = 0.1;
         let mutationRate = 5; // Probability of mutation per frame
+
+        // -----------------------------
+// Branch tracking 
+// -----------------------------
+// Which process to draw on the tree branches: 'none' | 'phylo' | 'geo' | 'host'
+let branchTrackMode = 'phylo';
+
+// Host-state colors (dominant colors per host icon; tweak as you wish)
+const HOST_STATE_COLORS = {
+  0: '#3498db', // Human (blue)
+  1: '#9b59b6', // Monkey (purple)
+  2: '#2ecc71', // Bat (green)
+  3: '#ff69b4', // Pig (pink)
+  4: '#f1c40f', // Mosquito (yellow)
+};
+
+// Random geo-state colors (stable within a run; seeded if you use seededRandom())
+let GEO_STATE_COLORS = null;
+function initGeoStateColors() {
+  // geoStates is defined in this file already
+  GEO_STATE_COLORS = geoStates.map((_, k) => {
+    // deterministic-ish colors (no dependence on external libs)
+    const hue = (k * 360 / Math.max(1, geoStates.length)) % 360;
+    return `hsl(${hue}, 70%, 45%)`;
+  });
+}
     
         // Seeded random number generator
         let currentSeed = 42; // Default seed
@@ -1124,6 +1150,39 @@ export default function initApp() {
                       ctx.stroke();
                   }
               }
+
+              // ==========================================================
+// ADD THIS BLOCK HERE (curve overlay while flying)
+// ==========================================================
+if (this.flight && this.flight.route) {
+    ctx.save();
+
+    // faint version of lineage color
+    if (lineColor.startsWith('rgba')) {
+        ctx.strokeStyle = lineColor.replace(/[\d.]+\)$/, '0.25)');
+    } else {
+        ctx.strokeStyle = lineColor;
+    }
+
+    ctx.lineWidth = 1.5;
+
+    ctx.beginPath();
+    const N = 30;
+    for (let k = 0; k <= N; k++) {
+        const u = k / N;
+        const p = evalRoute(this.flight.route, u);
+
+        const X = p.x + fixedOffset.x;
+        const Y = p.y + fixedOffset.y;
+
+        if (k === 0) ctx.moveTo(X, Y);
+        else ctx.lineTo(X, Y);
+    }
+
+    ctx.stroke();
+    ctx.restore();
+}
+
       
               // Head
               const drawX = this.headX + fixedOffset.x;
@@ -1246,10 +1305,48 @@ export default function initApp() {
             function drawNode(node) {
                 if (node.children.length > 0) {
                     node.children.forEach(child => {
-                        ctx.beginPath();
-                        ctx.moveTo(node.x, node.y);
-                        ctx.lineTo(child.x, child.y);
-                        ctx.stroke();
+                        // ctx.beginPath();
+                        // ctx.moveTo(node.x, node.y);
+                        // ctx.lineTo(child.x, child.y);
+                        // ctx.stroke();
+                        // Base edge
+ctx.strokeStyle = '#34495e';
+ctx.lineWidth = branchWidth;
+ctx.beginPath();
+ctx.moveTo(node.x, node.y);
+ctx.lineTo(child.x, child.y);
+ctx.stroke();
+
+// NEW: overlay tracked segments (if enabled)
+if (branchTrackMode !== 'none') {
+    const ekey = `${node.id}->${child.id}`;
+    const map = BRANCH_SEGMENTS[branchTrackMode];
+  
+    if (map && map.has(ekey)) {
+      const segs = map.get(ekey);
+  
+      // Thicker overlay so it reads well
+      const overlayW = Math.max(2, branchWidth * 1.8);
+  
+      segs.forEach(s => {
+        const p0 = Math.max(0, Math.min(1, s.p0));
+        const p1 = Math.max(0, Math.min(1, s.p1));
+        if (p1 <= p0) return;
+  
+        const x0 = node.x + (child.x - node.x) * p0;
+        const y0 = node.y + (child.y - node.y) * p0;
+        const x1 = node.x + (child.x - node.x) * p1;
+        const y1 = node.y + (child.y - node.y) * p1;
+  
+        ctx.strokeStyle = s.color;
+        ctx.lineWidth = overlayW;
+        ctx.beginPath();
+        ctx.moveTo(x0, y0);
+        ctx.lineTo(x1, y1);
+        ctx.stroke();
+      });
+    }
+  }
                         drawNode(child);
                     });
                 }
@@ -2275,9 +2372,70 @@ export default function initApp() {
       
               distance: distance,
               sequenceId: nextSequenceId++,
-              parentSequenceId: null
+              parentSequenceId: null,
+              branchSegments: { phylo: [], geo: [], host: [] },
           };
       }
+// =============================
+// GLOBAL branch-segment registry
+// (persists even after a seq is split)
+// =============================
+const BRANCH_SEGMENTS = {
+    phylo: new Map(),  // edgeKey -> [segments...]
+    geo:  new Map(),
+    host: new Map(),
+  };
+  
+  function clearBranchSegments() {
+    BRANCH_SEGMENTS.phylo.clear();
+    BRANCH_SEGMENTS.geo.clear();
+    BRANCH_SEGMENTS.host.clear();
+  }
+      function edgeKeyFromSeq(seq) {
+        if (!seq.parentNodeId || !seq.targetNodeId) return null;
+        return `${seq.parentNodeId}->${seq.targetNodeId}`;
+      }
+      
+      function upsertBranchSegment(seq, processKey, stateKey, color, progress01) {
+        const key = edgeKeyFromSeq(seq);
+        if (!key) return;
+      
+        const p = Math.max(0, Math.min(1, progress01));
+      
+        // ---- (A) write to per-seq store (optional, can keep) ----
+        const localArr = seq.branchSegments?.[processKey];
+        if (localArr) {
+          const last = localArr.length ? localArr[localArr.length - 1] : null;
+          if (last && last.edgeKey === key && last.stateKey === stateKey) {
+            last.p1 = Math.max(last.p1, p);
+          } else {
+            localArr.push({ edgeKey: key, stateKey, color, p0: p, p1: p });
+          }
+        }
+      
+        // ---- (B) write to GLOBAL store (this is the important part) ----
+        const map = BRANCH_SEGMENTS[processKey];
+        if (!map) return;
+      
+        if (!map.has(key)) map.set(key, []);
+        const arr = map.get(key);
+      
+        const last = arr.length ? arr[arr.length - 1] : null;
+        if (last && last.stateKey === stateKey) {
+          last.p1 = Math.max(last.p1, p);
+        } else {
+          arr.push({ stateKey, color, p0: p, p1: p });
+        }
+      }
+      // When a lineage finishes an edge (reaches a node), we want segments to end at 1.
+      function finalizeEdgeSegmentsAtOne(seq) {
+        if (!seq.branchSegments) return;
+        for (const k of ['phylo', 'geo', 'host']) {
+          const arr = seq.branchSegments[k];
+          if (arr && arr.length) arr[arr.length - 1].p1 = 1;
+        }
+      }
+
     
         // History tracking functions
         function recordHistorySnapshot() {
@@ -2408,6 +2566,7 @@ export default function initApp() {
             
             sequences = [];
             nextSequenceId = 0; // Reset sequence ID counter
+            clearBranchSegments();
     
             // Create sequences based on node identity (not coordinate)
             tree.children.forEach((child) => {
@@ -2927,8 +3086,54 @@ if (showPhylogeography && seq.started && seq.progress > 0) {
         st.updateTrail(dt * speed);
     }
 }
-          newSequences.push(seq);
+        //   newSequences.push(seq);
+        // ---------------------------
+// RECORD BRANCH SEGMENTS
+// ---------------------------
+
+// PHYLO: first nucleotide
+const nuc0 = seq.sequence[0];
+upsertBranchSegment(
+    seq,
+    'phylo',
+    nuc0,
+    colors[nuc0] || '#000',
+    seq.progress
+);
+
+// GEO: geographic CTMC
+const starObj = geoStars.find(gs => gs.sequenceId === seq.sequenceId);
+if (starObj && starObj.star) {
+    const gi = starObj.star.i;
+    if (!GEO_STATE_COLORS) initGeoStateColors();
+
+    upsertBranchSegment(
+        seq,
+        'geo',
+        gi,
+        GEO_STATE_COLORS[gi] || '#000',
+        seq.progress
+    );
+}
+
+// HOST: host CTMC
+const hostObj = hostCTMCs.find(h => h.sequenceId === seq.sequenceId);
+if (hostObj && hostObj.ctmc) {
+    const hi = hostObj.ctmc.i;
+
+    upsertBranchSegment(
+        seq,
+        'host',
+        hi,
+        HOST_STATE_COLORS[hi] || '#000',
+        seq.progress
+    );
+}
+
+// keep sequence
+newSequences.push(seq);
       } else {
+        finalizeEdgeSegmentsAtOne(seq);
           // Reached target - check if it's a node with children
           // Reached target - identify the node by ID (robust to rescaling/rebuild)
   let foundNode = null;
@@ -3229,8 +3434,9 @@ if (showPhylogeography && seq.started && seq.progress > 0) {
         }
     
         // Controls
+    
         const playBtn = document.getElementById('playBtn');
-        const pauseBtn = document.getElementById('pauseBtn');
+        // const pauseBtn = document.getElementById('pauseBtn');
         const resetBtn = document.getElementById('resetBtn');
         const speedSlider = document.getElementById('speedSlider');
         const speedValue = document.getElementById('speedValue');
@@ -3481,18 +3687,24 @@ if (showPhylogeography && seq.started && seq.progress > 0) {
                     seq.started = true;
                 });
                 isPlaying = true;
-                playBtn.textContent = '▶ Playing...';
+                playBtn.textContent = '⏸ Pause';
                 animate();
+            } else {
+                isPlaying = false;
+                playBtn.textContent = '▶ Play';
+                if (animationFrame) {
+                    cancelAnimationFrame(animationFrame);
+                }
             }
         });
     
-        pauseBtn.addEventListener('click', () => {
-            isPlaying = false;
-            playBtn.textContent = '▶ Play';
-            if (animationFrame) {
-                cancelAnimationFrame(animationFrame);
-            }
-        });
+        // pauseBtn.addEventListener('click', () => {
+        //     isPlaying = false;
+        //     playBtn.textContent = '▶ Play';
+        //     if (animationFrame) {
+        //         cancelAnimationFrame(animationFrame);
+        //     }
+        // });
     
         resetBtn.addEventListener('click', () => {
             isPlaying = false;
@@ -4113,5 +4325,56 @@ if (showPhylogeography && seq.started && seq.progress > 0) {
             drawTree();
             initAnimation();
         })();
+        // =============================
+// Branch tracking buttons
+// =============================
+
+function setBranchTrackMode(mode) {
+
+    branchTrackMode = mode;
+
+    // update rendering immediately
+    renderCurrentState();
+
+    // optional: highlight active button
+    const ids = {
+        phylo: 'trackPhyloBtn',
+        geo:   'trackGeoBtn',
+        host:  'trackHostBtn',
+        none:  'trackNoneBtn'
+      };
+      
+      Object.entries(ids).forEach(([m, id]) => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+      
+        const isActive = (m === mode);
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
+
+}
+
+
+// Attach listeners AFTER DOM exists
+document.getElementById('trackPhyloBtn')?.addEventListener(
+    'click',
+    () => setBranchTrackMode('phylo')
+);
+
+document.getElementById('trackGeoBtn')?.addEventListener(
+    'click',
+    () => setBranchTrackMode('geo')
+);
+
+document.getElementById('trackHostBtn')?.addEventListener(
+    'click',
+    () => setBranchTrackMode('host')
+);
+
+document.getElementById('trackNoneBtn')?.addEventListener(
+    'click',
+    () => setBranchTrackMode('none')
+);
   }
   
