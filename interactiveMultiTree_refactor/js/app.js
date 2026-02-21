@@ -6,6 +6,7 @@ export default function initApp() {
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
 
+
     // Nucleotide colors
     const colors = {
         'A': '#e74c3c',
@@ -163,21 +164,28 @@ export default function initApp() {
     const HOST_STATE_COLORS = {
         0: '#3498db', // Human (blue)
         1: '#6b4f3a', // Monkey (brown)
-        2: '#2ecc71', // Bat (green)
-        3: '#ff69b4', // Pig (pink)
+        2: '#c4c4c4', // Bat (green)
+        3: '#f7a9b', // Pig (pink)
         4: '#000000', // Mosquito (yellow)
     };
 
     // Random geo-state colors (stable within a run; seeded if you use seededRandom())
+    // let GEO_STATE_COLORS = null;
+    // function initGeoStateColors() {
+    //     // geoStates is defined in this file already
+    //     GEO_STATE_COLORS = geoStates.map((_, k) => {
+    //         // deterministic-ish colors (no dependence on external libs)
+    //         const hue = (k * 360 / Math.max(1, geoStates.length)) % 360;
+    //         return `hsl(${hue}, 70%, 45%)`;
+    //     });
+    // }
     let GEO_STATE_COLORS = null;
-    function initGeoStateColors() {
-        // geoStates is defined in this file already
-        GEO_STATE_COLORS = geoStates.map((_, k) => {
-            // deterministic-ish colors (no dependence on external libs)
-            const hue = (k * 360 / Math.max(1, geoStates.length)) % 360;
-            return `hsl(${hue}, 70%, 45%)`;
-        });
-    }
+
+function initGeoStateColors() {
+
+    GEO_STATE_COLORS = geoStates.map(s => s.color || "#999999");
+
+}
 
     // Seeded random number generator
     let currentSeed = 42; // Default seed
@@ -216,6 +224,7 @@ export default function initApp() {
     let drawLocations = true;
     let trackAllBranches = true;
     let diffusionRate = 5; // Controls CTMC rate
+    let showChoroplethMap = false;
 
     // Panel visibility (separate from feature being enabled)
     let showPhyloPanel = true;
@@ -243,6 +252,269 @@ export default function initApp() {
     let worldLandGeoJSON = null;
     let neCountries = null;
     const silhouetteCache = new Map(); // continentName -> {canvas, w, h}
+    // let WORLD_GEOJSON = null;
+
+// async function loadWorldGeoJSON() {
+//   if (WORLD_GEOJSON) return WORLD_GEOJSON;
+//   const res = await fetch("assets/world-countries.geojson");
+//   WORLD_GEOJSON = await res.json();
+//   return WORLD_GEOJSON;
+// }
+
+// let WORLD_GEOJSON = null;
+
+async function loadWorldGeoJSON() {
+    if (WORLD_GEOJSON) return WORLD_GEOJSON;
+  
+    const res = await fetch("assets/world-countries.geojson");
+    const data = await res.json();
+  
+    let gj = data;
+  
+    // If you ever switch to TopoJSON later, keep this:
+    if (gj && gj.type === "Topology") {
+      if (typeof topojson === "undefined") {
+        console.warn("TopoJSON detected but topojson library is not loaded.");
+        WORLD_GEOJSON = null;
+        return null;
+      }
+      const obj =
+        (gj.objects && (gj.objects.countries || gj.objects.ne_110m_admin_0_countries)) ||
+        (gj.objects && Object.values(gj.objects)[0]);
+  
+      WORLD_GEOJSON = topojson.feature(gj, obj);
+      return WORLD_GEOJSON;
+    }
+  
+    // Normalize GeoJSON to FeatureCollection
+    if (gj && gj.type === "Feature") {
+      gj = { type: "FeatureCollection", features: [gj] };
+    }
+  
+    // Final assignment
+    WORLD_GEOJSON = gj;
+    return WORLD_GEOJSON;
+  }
+
+// Equirectangular projection for a small inset map
+function projectLonLat(lon, lat, W, H) {
+  const x = (lon + 180) / 360 * W;
+  const y = (90 - lat) / 180 * H;
+  return { x, y };
+}
+function projectLonLatToRect(lon, lat, x, y, W, H) {
+  const px = x + (lon + 180) / 360 * W;
+  const py = y + (90 - lat) / 180 * H;
+  return { x: px, y: py };
+}
+
+function drawCountryPolygonInRect(ctx, coords, x, y, W, H) {
+  coords.forEach(ring => {
+    ring.forEach((pt, i) => {
+      const p = projectLonLatToRect(pt[0], pt[1], x, y, W, H);
+      if (i === 0) ctx.moveTo(p.x, p.y);
+      else ctx.lineTo(p.x, p.y);
+    });
+    ctx.closePath();
+  });
+}
+
+function drawCountryMapInRect(ctx, x0, y0, w, h) {
+    if (!WORLD_GEOJSON) {
+      ctx.fillStyle = "#666";
+      ctx.font = '12px "DM Sans"';
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("Loading colored map.", x0 + w/2, y0 + h/2);
+      return;
+    }
+  
+    const feats = (WORLD_GEOJSON.type === "FeatureCollection")
+      ? WORLD_GEOJSON.features
+      : (Array.isArray(WORLD_GEOJSON.features) ? WORLD_GEOJSON.features : null);
+  
+    if (!Array.isArray(feats)) {
+      // Critical: do NOT throw; just bail out for this frame
+      ctx.fillStyle = "#666";
+      ctx.font = '12px "DM Sans"';
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("Colored map not ready.", x0 + w/2, y0 + h/2);
+      return;
+    }
+
+// function drawCountryMapInRect(ctx, x, y, W, H) {
+//   if (!WORLD_GEOJSON) return;
+
+//   ctx.save();
+
+//   // clip to panel
+//   ctx.beginPath();
+//   ctx.rect(x, y, W, H);
+//   ctx.clip();
+
+//   // background
+//   ctx.fillStyle = "#fbfbfb";
+//   ctx.fillRect(x, y, W, H);
+
+  for (const feat of WORLD_GEOJSON.features) {
+    const name = feat.properties?.name || feat.properties?.ADMIN || feat.properties?.NAME || "";
+    const fill = getCountryColor(name); // your COUNTRY_TO_GEOSTATE -> geoStates colors
+
+    const geom = feat.geometry;
+    if (!geom) continue;
+
+    ctx.beginPath();
+    if (geom.type === "Polygon") {
+      drawCountryPolygonInRect(ctx, geom.coordinates, x, y, W, H);
+    } else if (geom.type === "MultiPolygon") {
+      geom.coordinates.forEach(poly => drawCountryPolygonInRect(ctx, poly, x, y, W, H));
+    } else {
+      continue;
+    }
+
+    ctx.fillStyle = fill;
+    ctx.fill();
+
+    ctx.strokeStyle = "#9aa0a6";
+    ctx.lineWidth = 1.0;
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+function projectLonLatToRect(lon, lat, x, y, W, H) {
+    const px = x + (lon + 180) / 360 * W;
+    const py = y + (90 - lat) / 180 * H;
+    return { x: px, y: py };
+  }
+  
+  function drawCountryPolygonInRect(ctx, coords, x, y, W, H) {
+    coords.forEach(ring => {
+      ring.forEach((pt, i) => {
+        const p = projectLonLatToRect(pt[0], pt[1], x, y, W, H);
+        if (i === 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+      });
+      ctx.closePath();
+    });
+  }
+  
+  function drawCountryMapInRect(ctx, x, y, W, H) {
+    if (!WORLD_GEOJSON) return;
+  
+    ctx.save();
+  
+    // clip to panel
+    ctx.beginPath();
+    ctx.rect(x, y, W, H);
+    ctx.clip();
+  
+    // background
+    ctx.fillStyle = "#fbfbfb";
+    ctx.fillRect(x, y, W, H);
+  
+    for (const feat of WORLD_GEOJSON.features) {
+      const name = feat.properties?.name || feat.properties?.ADMIN || feat.properties?.NAME || "";
+      const fill = getCountryColor(name); // your COUNTRY_TO_GEOSTATE -> geoStates colors
+  
+      const geom = feat.geometry;
+      if (!geom) continue;
+  
+      ctx.beginPath();
+      if (geom.type === "Polygon") {
+        drawCountryPolygonInRect(ctx, geom.coordinates, x, y, W, H);
+      } else if (geom.type === "MultiPolygon") {
+        geom.coordinates.forEach(poly => drawCountryPolygonInRect(ctx, poly, x, y, W, H));
+      } else {
+        continue;
+      }
+  
+      ctx.fillStyle = fill;
+      ctx.fill();
+  
+      ctx.strokeStyle = "#9aa0a6";
+      ctx.lineWidth = 1.0;
+      ctx.stroke();
+    }
+  
+    ctx.restore();
+  }
+
+function drawCountryPolygon(ctx, coords, W, H) {
+  // coords can be polygon rings: [ [ [lon,lat], ... ], [hole], ... ]
+  coords.forEach(ring => {
+    ring.forEach((pt, i) => {
+      const p = projectLonLat(pt[0], pt[1], W, H);
+      if (i === 0) ctx.moveTo(p.x, p.y);
+      else ctx.lineTo(p.x, p.y);
+    });
+    ctx.closePath();
+  });
+}
+// function getCountryColor(countryName) {
+//     // Region -> color (make sure geoStates have .color or replace these with your chosen hexes)
+//     const REGION_COLOR = {
+//       "North America": geoStates.find(s => s.name === "North America")?.color || "#f0f0f0",
+//       "South America": geoStates.find(s => s.name === "South America")?.color || "#f0f0f0",
+//       "Europe":        geoStates.find(s => s.name === "Europe")?.color || "#f0f0f0",
+//       "Africa":        geoStates.find(s => s.name === "Africa")?.color || "#f0f0f0",
+//       "Middle East":   geoStates.find(s => s.name === "Middle East")?.color || "#f0f0f0",
+//       "East Asia":     geoStates.find(s => s.name === "East Asia")?.color || "#f0f0f0",
+//       "Australia":     geoStates.find(s => s.name === "Australia")?.color || "#f0f0f0",
+//     };
+  
+//     // regionCountries already exists later in your file; if it’s above this function, great.
+//     // If regionCountries is defined *below*, move THIS function below regionCountries, or move regionCountries up.
+//     for (const regionName in regionCountries) {
+//       if (regionCountries[regionName]?.includes(countryName)) {
+//         return REGION_COLOR[regionName] || "#f0f0f0";
+//       }
+//     }
+  
+//     return "#f0f0f0";
+//   }
+
+function drawCountryMap(canvas) {
+  if (!WORLD_GEOJSON) return;
+
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width;
+  const H = canvas.height;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // background
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, W, H);
+
+  // Draw all countries
+  for (const feat of WORLD_GEOJSON.features) {
+    const name = feat.properties?.name || feat.properties?.ADMIN || feat.properties?.NAME || "";
+    // const fill = COUNTRY_FILL_COLORS[name] || "#f0f0f0";
+    const fill = getCountryColor(name);
+
+    ctx.beginPath();
+
+    const geom = feat.geometry;
+    if (!geom) continue;
+
+    if (geom.type === "Polygon") {
+      drawCountryPolygon(ctx, geom.coordinates, W, H);
+    } else if (geom.type === "MultiPolygon") {
+      geom.coordinates.forEach(poly => drawCountryPolygon(ctx, poly, W, H));
+    } else {
+      continue;
+    }
+
+    ctx.fillStyle = fill;
+    ctx.fill();
+
+    ctx.strokeStyle = "#d0d0d0";
+    ctx.lineWidth = 0.6;
+    ctx.stroke();
+  }
+}
 
     // -----------------------------
     // HOST DRAWING HELPERS
@@ -666,77 +938,153 @@ export default function initApp() {
         [0.30, 0.35, 0.20, 0.15, 0.00], // Mosquito
     ];
 
-    // Host transmission CTMC (similar to GeoCTMCStar)
-    class HostTransmissionCTMC {
-        constructor(initialHostIndex = 0) {
-            this.i = initialHostIndex;        // current host
-            this.j = initialHostIndex;        // next host
-            this.t = 1;                       // interpolation progress [0,1]
-            this.holding = true;              // true while in current host
-
-            this.lambda = 0.5;                // transmissions per second
-            this.travelTime = 0.6;            // seconds to visually "jump" between hosts
-
-            this.holdRemaining = sampleExp(this.lambda);
-        }
-
-        setRate(rateValue) {
-            // Normalize slider value (0-50) to 0-1 range, then map to lambda
-            // Divide by 10 so that slider value 10 = old maximum behavior
-            const rate01 = rateValue / 10;
-            this.lambda = 0.1 + 1.5 * rate01;
-        }
-
-        update(dt) {
-            if (this.holding) {
-                this.holdRemaining -= dt;
-                if (this.holdRemaining <= 0) {
-                    // transmission decision
-                    this.j = sampleCategorical(hostTransitionMatrix[this.i]);
-                    if (this.j === this.i) {
-                        // stay in same host
-                        this.holdRemaining = sampleExp(this.lambda);
-                    } else {
-                        // start transmission
-                        this.holding = false;
-                        this.t = 0;
-                    }
-                }
-                return;
-            }
-
-            // transmitting
-            this.t += dt / this.travelTime;
-            if (this.t >= 1) {
-                this.t = 1;
-                // arrive at new host
-                this.i = this.j;
-                this.holding = true;
-                this.holdRemaining = sampleExp(this.lambda);
-            }
-        }
-
-        currentHostName() {
-            return hostStates[this.i].name;
-        }
-
-        isTransmitting() {
-            return !this.holding;
-        }
-
-        getTransmissionProgress() {
-            return this.t;
-        }
-
-        getCurrentHostIndex() {
-            return this.i;
-        }
-
-        getTargetHostIndex() {
-            return this.j;
-        }
+// Host transmission CTMC (schedule-based, same idea as GeoCTMCStar)
+class HostTransmissionCTMC {
+    constructor(initialHostIndex = 0) {
+      this.i = initialHostIndex;   // current host (discrete CTMC state)
+      this.nextState = initialHostIndex;
+  
+      // branch-length time
+      this.time = 0;
+      this.t1 = 0;
+      this.t2 = 0;
+      this.t3 = 0;
+  
+      // visual "flight" (jump) descriptor
+      // flight = { from, to, start, end }
+      this.flight = null;
+  
+      // rate in BRANCH-LENGTH units (expected jumps per unit tree length)
+      this.lambda = 0.8;
+      this._lastRate = null;
+  
+      this._rescheduleFromCurrent();
     }
-
+  
+    // same interpretation as geo: lambda is "per unit tree length"
+    // setRate(rateValue) {
+    //     const newLambda = Math.max(1e-9, Number(rateValue));
+    
+    //     // Do nothing if rate did not change
+    //     if (this._lastRate !== null && Math.abs(newLambda - this._lastRate) < 1e-12) {
+    //         return;
+    //     }
+    
+    //     this.lambda = newLambda;
+    //     this._lastRate = newLambda;
+    
+    //     // Reschedule jumps from current time using the new rate
+    //     this._rescheduleFromCurrent();
+    // }
+    setRate(rateValue) {
+        const r = Number(rateValue);
+        const newLambda = Math.max(1e-9, isFinite(r) ? r : 0.8);
+      
+        // Avoid rescheduling every frame if unchanged
+        if (this._lastRate !== null && Math.abs(newLambda - this._lastRate) < 1e-12) return;
+      
+        this.lambda = newLambda;
+        this._lastRate = newLambda;
+      
+        // Reschedule from "now" (same spirit as geo)
+        this._rescheduleFromCurrent();
+      }
+  
+    _rescheduleFromCurrent() {
+      this.t1 = this.time;
+      const hold1 = sampleExp(this.lambda);
+      this.t2 = this.t1 + hold1;
+  
+      // sample next host at t2
+      let ns = sampleCategorical(hostTransitionMatrix[this.i]);
+      let tries = 0;
+      while (ns === this.i && tries < 20) { // avoid self-jumps (optional, matches geo style)
+        ns = sampleCategorical(hostTransitionMatrix[this.i]);
+        tries++;
+      }
+      this.nextState = ns;
+  
+      const hold2 = sampleExp(this.lambda);
+      this.t3 = this.t2 + hold2;
+  
+      this.flight = null;
+    }
+  
+    easeInOut(u) {
+      return u * u * (3 - 2 * u);
+    }
+  
+    // hostPositions: array of {x,y,name} (same one used by drawHostTransmission)
+    update(dt, hostPositions) {
+      // dt is BRANCH-LENGTH increment (same as geo)
+      if (!isFinite(dt) || dt <= 0) return;
+  
+      this.time += dt;
+  
+      // Like GeoCTMCStar: handle possibly multiple crossed jumps if dt is big
+      for (let guard = 0; guard < 100; guard++) {
+        const d12 = this.t2 - this.t1;
+        const d23 = this.t3 - this.t2;
+  
+        // same window formula as geo:
+        // [ t1 + 3/4(d12) , t2 + 1/4(d23) ]
+        const startFly = this.t1 + 0.75 * d12;
+        const endFly   = this.t2 + 0.25 * d23;
+  
+        // create flight if we just entered the window for this scheduled jump
+        if (!this.flight && this.time >= startFly && this.time < endFly) {
+          this.flight = { from: this.i, to: this.nextState, start: startFly, end: endFly };
+        }
+  
+        // if we passed the underlying jump time t2, commit discrete state and shift schedule
+        if (this.time >= this.t2) {
+          this.i = this.nextState;
+  
+          // shift (t1,t2,t3) <- (t2,t3,t4)
+          this.t1 = this.t2;
+          this.t2 = this.t3;
+  
+          // sample new nextState at new t2
+          let ns = sampleCategorical(hostTransitionMatrix[this.i]);
+          let tries = 0;
+          while (ns === this.i && tries < 20) {
+            ns = sampleCategorical(hostTransitionMatrix[this.i]);
+            tries++;
+          }
+          this.nextState = ns;
+  
+          // sample new t3
+          const hold = sampleExp(this.lambda);
+          this.t3 = this.t2 + hold;
+  
+          // this jump is done; clear flight (new one will be created for next jump)
+          this.flight = null;
+  
+          continue; // may need to process more jumps if dt was large
+        }
+  
+        break;
+      }
+  
+      // update visual position (the DRAW code will read current/target + flight progress)
+      // (we keep this class purely “state+timing”; the renderer can interpolate)
+    }
+  
+    currentHostName() { return hostStates[this.i].name; }
+    isTransmitting()  { return !!this.flight; }
+  
+    // For drawing
+    getCurrentHostIndex() { return this.i; }
+    getTargetHostIndex()  { return this.flight ? this.flight.to : this.i; }
+  
+    // For drawing: 0..1 progress along the *flight window*
+    getTransmissionProgress() {
+      if (!this.flight) return 1;
+      const denom = (this.flight.end - this.flight.start);
+      const uRaw = denom > 0 ? (this.time - this.flight.start) / denom : 1;
+      return this.easeInOut(Math.max(0, Math.min(1, uRaw)));
+    }
+  }
     // Host transmission state - array of {sequenceId, ctmc, color} objects
     let hostCTMCs = [];
 
@@ -745,17 +1093,103 @@ export default function initApp() {
     // -----------------------------
 
     // Continent anchor points (imaginary but fixed)
+    // const geoStates = [
+    //     { name: "North America", lon: -100, lat: 40 },
+    //     { name: "South America", lon: -60, lat: -15 },
+    //     { name: "Europe", lon: 10, lat: 50 },
+    //     { name: "Africa", lon: 20, lat: 5 },
+    //     { name: "Middle East", lon: 50, lat: 25 },
+    //     { name: "East Asia", lon: 110, lat: 35 },
+    //     { name: "Australia", lon: 135, lat: -25 },
+    // ];
     const geoStates = [
-        { name: "North America", lon: -100, lat: 40 },
-        { name: "South America", lon: -60, lat: -15 },
-        { name: "Europe", lon: 10, lat: 50 },
-        { name: "Africa", lon: 20, lat: 5 },
-        { name: "Middle East", lon: 50, lat: 25 },
-        { name: "East Asia", lon: 110, lat: 35 },
-        { name: "Australia", lon: 135, lat: -25 },
+
+        // --- Currently active states ---
+        { name: "North America", lon: -100, lat: 40, color: "#FDB338" },   // USA
+        { name: "South America", lon: -60, lat: -15, color: "#FF7400" },   // South America
+        { name: "Europe",        lon: 10,   lat: 50, color: "#C26A77" },   // Europe
+        { name: "Africa",        lon: 20,   lat: 5,  color: "#512888" },   // Africa
+        { name: "Middle East",   lon: 50,   lat: 25, color: "#94CBEC" },   // South & West Asia
+        { name: "East Asia",     lon: 110,  lat: 35, color: "#025196" },   // China / East Asia
+        { name: "Australia",     lon: 135,  lat: -25,color: "#337538" },   // Oceania
+    
+    
+        // --- Additional aircommunity states (currently unused) ---
+        // Uncomment if you expand geographic resolution
+    
+        // { name: "China",             lon: 105, lat: 35, color: "#025196" },
+        // { name: "Southeast Asia",   lon: 105, lat: 15, color: "#5DA899" },
+        // { name: "South & West Asia",lon: 65,  lat: 25, color: "#94CBEC" },
+        // { name: "Japan",            lon: 140, lat: 36, color: "#D1E5F0" },
+        // { name: "Taiwan",           lon: 121, lat: 24, color: "#2F67B1" },
+        // { name: "Korea",            lon: 127, lat: 36, color: "#4393C3" },
+        // { name: "Oceania",          lon: 140, lat: -20,color: "#337538" },
+        // { name: "Russia",           lon: 90,  lat: 60, color: "#9F4A96" },
+        // { name: "Canada",           lon: -95, lat: 60, color: "#6A4A3C" },
+        // { name: "Mexico",           lon: -102,lat: 23, color: "#FF0000" },
+        // { name: "Unassigned",       lon: 0,   lat: 0,  color: "#D3D3D3" },
+    
     ];
     const nGeoStates = geoStates.length;
     const P = Array.from({ length: nGeoStates }, () => Array(nGeoStates).fill(1 / nGeoStates));
+
+    const COUNTRY_TO_GEOSTATE = {
+
+        // North America
+        "United States of America": "North America",
+        "Canada": "North America",
+        "Mexico": "North America",
+    
+        // South America
+        "Brazil": "South America",
+        "Argentina": "South America",
+        "Chile": "South America",
+    
+        // Europe
+        "France": "Europe",
+        "Germany": "Europe",
+        "United Kingdom": "Europe",
+        "Italy": "Europe",
+    
+        // Africa
+        "South Africa": "Africa",
+        "Nigeria": "Africa",
+        "Egypt": "Africa",
+    
+        // Middle East
+        "Saudi Arabia": "Middle East",
+        "Iran": "Middle East",
+        "United Arab Emirates": "Middle East",
+    
+        // East Asia
+        "China": "East Asia",
+        "Japan": "East Asia",
+        "South Korea": "East Asia",
+        "Taiwan": "East Asia",
+    
+        // Australia
+        "Australia": "Australia",
+        "New Zealand": "Australia",
+    
+    };
+    function getCountryColor(countryName) {
+
+        const regionName = COUNTRY_TO_GEOSTATE[countryName];
+    
+        if (!regionName) return "#f0f0f0";
+    
+        const geo = geoStates.find(s => s.name === regionName);
+    
+        return geo ? geo.color : "#f0f0f0";
+    }
+
+    let WORLD_GEOJSON = null;
+    (async function initCountryMap() {
+        const canvas = document.getElementById("countryMapCanvas");
+        if (!canvas) return;
+        await loadWorldGeoJSON();
+        drawCountryMap(canvas);
+      })();
 
     // Row-stochastic transition matrix for jumps (discrete-time jump kernel)
     //   const P = [
@@ -1747,7 +2181,13 @@ export default function initApp() {
         if (sil) {
             ctx.save();
             ctx.globalAlpha = 1.0; // alpha already in silhouette fillStyle
-            ctx.drawImage(sil.canvas, x0, y0, badgeW, badgeH);
+            // ctx.drawImage(sil.canvas, x0, y0, badgeW, badgeH);
+            if (showChoroplethMap && WORLD_GEOJSON) {
+                drawCountryMapInRect(ctx, x0, y0, badgeW, badgeH);
+              } else {
+                ctx.drawImage(sil.canvas, x0, y0, badgeW, badgeH);
+                // ctx.drawImage(worldMapImg, panelX, panelY, panelW, panelH);
+              }
             ctx.restore();
         }
 
@@ -1827,19 +2267,41 @@ export default function initApp() {
         ctx.strokeRect(offsetX, offsetY, mapWidth, mapHeight);
 
         // Draw land masses from GeoJSON
-        if (worldLandGeoJSON) {
-            ctx.fillStyle = '#a5d6a7';
-            ctx.strokeStyle = '#66bb6a';
-            ctx.lineWidth = 0.5;
-            drawGeoJSONLand(ctx, worldLandGeoJSON, offsetX, offsetY, mapWidth, mapHeight);
-        } else {
-            // Fallback: show loading text
-            ctx.fillStyle = '#666';
-            ctx.font = '12px "DM Sans"';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('Loading map...', offsetX + mapWidth / 2, offsetY + mapHeight / 2);
-        }
+        // if (worldLandGeoJSON) {
+        //     ctx.fillStyle = '#a5d6a7';
+        //     ctx.strokeStyle = '#66bb6a';
+        //     ctx.lineWidth = 0.5;
+        //     drawGeoJSONLand(ctx, worldLandGeoJSON, offsetX, offsetY, mapWidth, mapHeight);
+        // } else {
+        //     // Fallback: show loading text
+        //     ctx.fillStyle = '#666';
+        //     ctx.font = '12px "DM Sans"';
+        //     ctx.textAlign = 'center';
+        //     ctx.textBaseline = 'middle';
+        //     ctx.fillText('Loading map...', offsetX + mapWidth / 2, offsetY + mapHeight / 2);
+        // }
+        if (showChoroplethMap) {
+            // colored countries map
+            if (!WORLD_GEOJSON) {
+              // kick off async load once
+              loadWorldGeoJSON().catch(err => console.warn("loadWorldGeoJSON failed:", err));
+            }
+            drawCountryMapInRect(ctx, offsetX, offsetY, mapWidth, mapHeight);
+          } else {
+            // original green land map
+            if (worldLandGeoJSON) {
+              ctx.fillStyle = '#a5d6a7';
+              ctx.strokeStyle = '#66bb6a';
+              ctx.lineWidth = 0.5;
+              drawGeoJSONLand(ctx, worldLandGeoJSON, offsetX, offsetY, mapWidth, mapHeight);
+            } else {
+              ctx.fillStyle = '#666';
+              ctx.font = '12px "DM Sans"';
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'middle';
+              ctx.fillText('Loading map.', offsetX + mapWidth/2, offsetY + mapHeight/2);
+            }
+          }
 
         // Clip to map bounds
         ctx.save();
@@ -1999,9 +2461,22 @@ export default function initApp() {
 
             if (ctmc.isTransmitting()) {
                 // Virus is jumping from current to target
-                const currentPos = hostPositions[ctmc.getCurrentHostIndex()];
-                const targetPos = hostPositions[ctmc.getTargetHostIndex()];
-                const t = ctmc.getTransmissionProgress();
+                // const currentPos = hostPositions[ctmc.getCurrentHostIndex()];
+                // const targetPos = hostPositions[ctmc.getTargetHostIndex()];
+                
+                const curRaw = ctmc.getCurrentHostIndex();
+const tarRaw = ctmc.getTargetHostIndex();
+
+if (!Number.isFinite(curRaw) || !Number.isFinite(tarRaw)) return;
+
+const curIdx = Math.max(0, Math.min(hostPositions.length - 1, curRaw | 0));
+const tarIdx = Math.max(0, Math.min(hostPositions.length - 1, tarRaw | 0));
+
+const currentPos = hostPositions[curIdx];
+const targetPos  = hostPositions[tarIdx];
+
+if (!currentPos || !targetPos) return;
+const t = ctmc.getTransmissionProgress();
 
                 // Ease function for smooth motion
                 const easeT = t * t * (3 - 2 * t);
@@ -2800,54 +3275,54 @@ export default function initApp() {
         }
 
         // Draw host icon above sequences
-        if (showHostTransmission && hostCTMCs.length > 0) {
-            // Calculate scaling factor based on number of tips
-            const __nTips = (typeof numTipsSelect !== 'undefined' && numTipsSelect) ? parseInt(numTipsSelect.value, 10) : 3;
-            const treeScaleFactor = __nTips <= 3 ? 1 : Math.max(0.5, 1 - (__nTips - 3) * 0.06);
+        // if (showHostTransmission && hostCTMCs.length > 0) {
+        //     // Calculate scaling factor based on number of tips
+        //     const __nTips = (typeof numTipsSelect !== 'undefined' && numTipsSelect) ? parseInt(numTipsSelect.value, 10) : 3;
+        //     const treeScaleFactor = __nTips <= 3 ? 1 : Math.max(0.5, 1 - (__nTips - 3) * 0.06);
 
-            sequences.forEach(seq => {
-                // Skip sequences hidden in time travel
-                if (seq.hideInTimeTravel) return;
+        //     sequences.forEach(seq => {
+        //         // Skip sequences hidden in time travel
+        //         if (seq.hideInTimeTravel) return;
 
-                // Only show if trackAllHostBranches is on, or if this is the tracked sequence
-                const shouldShow = trackAllHostBranches || seq.tracked;
-                if (!shouldShow) return;
+        //         // Only show if trackAllHostBranches is on, or if this is the tracked sequence
+        //         const shouldShow = trackAllHostBranches || seq.tracked;
+        //         if (!shouldShow) return;
 
-                const hostCtmcObj = hostCTMCs.find(h => h.sequenceId === seq.sequenceId);
-                if (hostCtmcObj) {
-                    const currentHost = hostCtmcObj.ctmc.currentHostName();
-                    // Make pig 50% bigger, then apply tree scale
-                    const baseScale = currentHost === "Pig" ? 0.525 : 0.35;
-                    const scale = baseScale * treeScaleFactor;
+        //         const hostCtmcObj = hostCTMCs.find(h => h.sequenceId === seq.sequenceId);
+        //         if (hostCtmcObj) {
+        //             const currentHost = hostCtmcObj.ctmc.currentHostName();
+        //             // Make pig 50% bigger, then apply tree scale
+        //             const baseScale = currentHost === "Pig" ? 0.525 : 0.35;
+        //             const scale = baseScale * treeScaleFactor;
 
-                    // Apply jitter when all branches are shown to prevent perfect overlap
-                    const jitterOffset = trackAllHostBranches ? getJitter(seq.sequenceId, 8 * treeScaleFactor) : { x: 0, y: 0 };
+        //             // Apply jitter when all branches are shown to prevent perfect overlap
+        //             const jitterOffset = trackAllHostBranches ? getJitter(seq.sequenceId, 8 * treeScaleFactor) : { x: 0, y: 0 };
 
-                    // Draw virus with color-based positioning
-                    const virusColor = hostCtmcObj.color;
+        //             // Draw virus with color-based positioning
+        //             const virusColor = hostCtmcObj.color;
 
-                    const numTips = getNumTips();
-                    let virusOffsetX;
+        //             const numTips = getNumTips();
+        //             let virusOffsetX;
 
-                    if (numTips === 3) {
-                        // Original positioning for 3-tip tree: Red on left, yellow and orange on right
-                        virusOffsetX = -30 * treeScaleFactor; // default left
-                        if (virusColor === 'rgba(234, 179, 8, 1)' || virusColor === 'rgba(249, 115, 22, 1)') {
-                            virusOffsetX = 30 * treeScaleFactor; // yellow or orange on right
-                        }
-                    } else {
-                        // For trees > 3 tips: use color hash to determine position
-                        const colorHash = virusColor.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-                        virusOffsetX = (colorHash % 2 === 0) ? -30 * treeScaleFactor : 30 * treeScaleFactor;
-                    }
+        //             if (numTips === 3) {
+        //                 // Original positioning for 3-tip tree: Red on left, yellow and orange on right
+        //                 virusOffsetX = -30 * treeScaleFactor; // default left
+        //                 if (virusColor === 'rgba(234, 179, 8, 1)' || virusColor === 'rgba(249, 115, 22, 1)') {
+        //                     virusOffsetX = 30 * treeScaleFactor; // yellow or orange on right
+        //                 }
+        //             } else {
+        //                 // For trees > 3 tips: use color hash to determine position
+        //                 const colorHash = virusColor.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        //                 virusOffsetX = (colorHash % 2 === 0) ? -30 * treeScaleFactor : 30 * treeScaleFactor;
+        //             }
 
-                    drawVirus(ctx, seq.x + jitterOffset.x + virusOffsetX, seq.y - 35 * treeScaleFactor + jitterOffset.y, 0.3 * treeScaleFactor, virusColor);
+        //             drawVirus(ctx, seq.x + jitterOffset.x + virusOffsetX, seq.y - 35 * treeScaleFactor + jitterOffset.y, 0.3 * treeScaleFactor, virusColor);
 
-                    // Draw host icon
-                    HOST_ICON[currentHost](ctx, seq.x + jitterOffset.x, seq.y - 35 * treeScaleFactor + jitterOffset.y, scale);
-                }
-            });
-        }
+        //             // Draw host icon
+        //             HOST_ICON[currentHost](ctx, seq.x + jitterOffset.x, seq.y - 35 * treeScaleFactor + jitterOffset.y, scale);
+        //         }
+        //     });
+        // }
     }
 
     function animate() {
@@ -3018,7 +3493,7 @@ export default function initApp() {
 
                 if (shouldUpdate) {
                     ctmc.setRate(transmissionRate);
-                    ctmc.update(dt * speed);
+                    // ctmc.update(dt * speed);
                 }
             });
         }
@@ -3073,6 +3548,19 @@ export default function initApp() {
             const bounds = getTreeBounds(tree);
             const TREE_HEIGHT_PX = Math.max(1e-6, bounds.maxY - tree.y);
             const dLenNorm = dLen / TREE_HEIGHT_PX;
+
+            // Host CTMC update in TREE-LENGTH time (same clock as phylogeography)
+if (showHostTransmission && dLenNorm > 0) {
+    const hc = hostCTMCs.find(h => h.sequenceId === seq.sequenceId);
+    if (hc) {
+      const shouldShow = trackAllHostBranches || seq.tracked;
+      const shouldUpdate = shouldShow && !seq.fixated;
+      if (shouldUpdate) {
+        hc.ctmc.setRate(transmissionRate);
+        hc.ctmc.update(dLenNorm);
+      }
+    }
+  }
 
             if (seq.progress <= 1) {
                 // Always refresh start/target coordinates from node IDs (tree may be rebuilt/rescaled)
@@ -3495,6 +3983,7 @@ export default function initApp() {
     const trackAllBranchesCheckbox = document.getElementById('trackAllBranchesCheckbox');
     const stickyPathsCheckbox = document.getElementById('stickyPathsCheckbox');
     const drawLocationsCheckbox = document.getElementById('drawLocationsCheckbox');
+    const choroplethCheckbox = document.getElementById('choroplethCheckbox');
     const hostTransmissionCheckbox = document.getElementById('hostTransmissionCheckbox');
     const hostTransmissionControls = document.getElementById('hostTransmissionControls');
     const transmissionSlider = document.getElementById('transmissionSlider');
@@ -3884,6 +4373,11 @@ export default function initApp() {
         drawLocations = e.target.checked;
     });
 
+    choroplethCheckbox.addEventListener("change", (e) => {
+        showChoroplethMap = e.target.checked;
+        renderCurrentState();
+    });
+
     hostTransmissionCheckbox.addEventListener('change', (e) => {
         showHostTransmission = e.target.checked;
 
@@ -3915,7 +4409,7 @@ export default function initApp() {
 
         // If enabling observations mode, stop animation
         if (observationsMode && isPlaying) {
-            pauseBtn.click();
+            // pauseBtn.click();
         }
 
         // Redraw immediately
@@ -3940,7 +4434,7 @@ export default function initApp() {
             timeSliderContainer.classList.add('active');
             // Stop animation if playing
             if (isPlaying) {
-                pauseBtn.click();
+                playBtn.click();
             }
             // Set slider to current maximum progress
             timeSlider.value = 100;

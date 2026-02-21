@@ -683,6 +683,23 @@
     width: 100%;
     height: 100%;
   }
+
+  .geo-legend-map {
+    margin: 14px auto 0 auto;
+    max-width: 720px;          /* <-- controls how big it can get */
+    width: 100%;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    padding: 10px;
+  }
+  
+  #countryMapCanvas {
+    display: block;
+    width: 100%;               /* fill wrapper width */
+    height: auto;              /* keep aspect ratio */
+  }
   
   /* Icon states */
   #showPhyloPanelBtn:not(.active) svg *,
