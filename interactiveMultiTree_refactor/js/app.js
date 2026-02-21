@@ -583,6 +583,13 @@ function drawCountryMap(canvas) {
         mosquito: "#111",
         virus: "#ef4444"
     };
+    const hostStates = [
+        { name: "Human" },
+        { name: "Bat" },
+        { name: "Pig" },
+        { name: "Monkey" },
+        { name: "Mosquito" }
+    ];
 
     // -----------------------------
     // HOST DRAWING FUNCTIONS
@@ -942,13 +949,13 @@ function drawCountryMap(canvas) {
     // -----------------------------
 
     // Host species (similar to geographic states)
-    const hostStates = [
-        { name: "Human" },
-        { name: "Monkey" },
-        { name: "Bat" },
-        { name: "Pig" },
-        { name: "Mosquito" }
-    ];
+    // const hostStates = [
+    //     { name: "Human" },
+    //     { name: "Monkey" },
+    //     { name: "Bat" },
+    //     { name: "Pig" },
+    //     { name: "Mosquito" }
+    // ];
 
     // Row-stochastic transition matrix for host jumps
     const hostTransitionMatrix = [
@@ -1059,31 +1066,63 @@ class HostTransmissionCTMC {
         }
   
         // if we passed the underlying jump time t2, commit discrete state and shift schedule
+        // if (this.time >= this.t2) {
+        //   this.i = this.nextState;
+  
+        //   // shift (t1,t2,t3) <- (t2,t3,t4)
+        //   this.t1 = this.t2;
+        //   this.t2 = this.t3;
+  
+        //   // sample new nextState at new t2
+        //   let ns = sampleCategorical(hostTransitionMatrix[this.i]);
+        //   let tries = 0;
+        //   while (ns === this.i && tries < 20) {
+        //     ns = sampleCategorical(hostTransitionMatrix[this.i]);
+        //     tries++;
+        //   }
+        //   this.nextState = ns;
+  
+        //   // sample new t3
+        //   const hold = sampleExp(this.lambda);
+        //   this.t3 = this.t2 + hold;
+  
+        //   // this jump is done; clear flight (new one will be created for next jump)
+        //   this.flight = null;
+  
+        //   continue; // may need to process more jumps if dt was large
+        // }
         if (this.time >= this.t2) {
-          this.i = this.nextState;
-  
-          // shift (t1,t2,t3) <- (t2,t3,t4)
-          this.t1 = this.t2;
-          this.t2 = this.t3;
-  
-          // sample new nextState at new t2
-          let ns = sampleCategorical(hostTransitionMatrix[this.i]);
-          let tries = 0;
-          while (ns === this.i && tries < 20) {
-            ns = sampleCategorical(hostTransitionMatrix[this.i]);
-            tries++;
+
+            // commit discrete state
+            const n = hostStates.length;
+            const committed = Number.isFinite(this.nextState) ? (this.nextState | 0) : 0;
+            this.i = Math.max(0, Math.min(n - 1, committed));
+          
+            // shift schedule
+            this.t1 = this.t2;
+            this.t2 = this.t3;
+          
+            // sample new nextState at new t2
+            let ns = sampleCategorical(hostTransitionMatrix[this.i]);
+            ns = Number.isFinite(ns) ? (ns | 0) : this.i;
+            ns = Math.max(0, Math.min(n - 1, ns));
+          
+            let tries = 0;
+            while (ns === this.i && tries < 20) {
+              ns = sampleCategorical(hostTransitionMatrix[this.i]);
+              ns = Number.isFinite(ns) ? (ns | 0) : this.i;
+              ns = Math.max(0, Math.min(n - 1, ns));
+              tries++;
+            }
+            this.nextState = ns;
+          
+            // sample new t3
+            const hold = sampleExp(this.lambda);
+            this.t3 = this.t2 + hold;
+          
+            this.flight = null;
+            continue;
           }
-          this.nextState = ns;
-  
-          // sample new t3
-          const hold = sampleExp(this.lambda);
-          this.t3 = this.t2 + hold;
-  
-          // this jump is done; clear flight (new one will be created for next jump)
-          this.flight = null;
-  
-          continue; // may need to process more jumps if dt was large
-        }
   
         break;
       }
@@ -1092,7 +1131,12 @@ class HostTransmissionCTMC {
       // (we keep this class purely “state+timing”; the renderer can interpolate)
     }
   
-    currentHostName() { return hostStates[this.i].name; }
+    currentHostName() {
+        const n = hostStates.length;
+        const idx = Number.isFinite(this.i) ? (this.i | 0) : 0;
+        const j = Math.max(0, Math.min(n - 1, idx));
+        return (hostStates[j] && hostStates[j].name) ? hostStates[j].name : "Unknown";
+      }
     isTransmitting()  { return !!this.flight; }
   
     // For drawing
