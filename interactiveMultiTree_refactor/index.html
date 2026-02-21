@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phylogenetic Tree Evolution</title>
+
+    <meta name="author" content="Filippo Monti">
+    <meta name="creator" content="Filippo Monti">
+    <meta name="copyright" content="© 2026 Filippo Monti">
+    <meta name="description" content="Interactive visualization of sequence evolution, phylogeography, and host transmission along a phylogenetic tree.">
+
+    <!-- Optional but nice for link previews -->
+    <meta property="og:title" content="Phylogenetic Tree Evolution">
+    <meta property="og:description" content="Interactive visualization by Filippo Monti.">
+    <meta property="og:type" content="website">
+
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>Evolution over Phylogenetic Trees</h1>
+    <p class="subtitle">Watch viral evolution: genetic mutations, geografical diffusion, and host transmission</p>
+
+    <div class="canvas-wrapper">
+        <div class="time-slider-container" id="timeSliderContainer">
+            <div class="time-slider-wrapper">
+                <div class="time-label">Root</div>
+                <input type="range" id="timeSlider" class="time-slider-vertical" min="0" max="100" value="100" step="0.2" orient="vertical">
+                <div class="time-label">Present</div>
+            </div>
+        </div>
+        <div style="position: relative; display: inline-block;">
+            <canvas id="canvas" width="1000" height="700"></canvas>
+            <div class="signature">
+                © Filippo Monti
+            </div>
+        </div>
+    </div>
+
+    <div class="button-group">
+        <button id="playBtn">▶ Play</button>
+        <button id="pauseBtn">⏸ Pause</button>
+        <button id="resetBtn">↻ Reset</button>
+        <button id="settingsBtn" class="icon-button" title="Settings" aria-label="Settings">⚙</button>
+        <div class="control-item" style="margin-left: 20px;">
+            <label style="margin-right: 8px;">Animation Speed</label>
+            <div class="slider-container" style="width: 180px;">
+                <input type="range" id="speedSlider" min="0" max="1" step="0.05" value="0.1">
+                <span class="slider-value" id="speedValue">0.1x</span>
+            </div>
+        </div>
+
+        <div class="control-item" style="margin-left: 20px;">
+            <label style="margin-right: 8px;">Tree size</label>
+            <select id="numTipsSelect" style="padding: 6px 10px; border: 1px solid #d0d0d0; border-radius: 8px;">
+            </select>
+            
+            <script>
+            const select = document.getElementById("numTipsSelect");
+            for (let i = 2; i <= 40; i++) {
+                const opt = document.createElement("option");
+                opt.value = i;
+                opt.textContent = i;
+                if (i === 3) opt.selected = true;
+                select.appendChild(opt);
+            }
+            </script>
+            <!-- <select id="numTipsSelect" style="padding: 6px 10px; border: 1px solid #d0d0d0; border-radius: 8px; background: #fff; font-family: inherit;">
+                <option value="3" selected>3</option>
+                <option value="5">5</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="11">11</option>
+                <option value="15">15</option>
+                <option value="21">21</option>
+                <option value="31">31</option>
+            </select> -->
+        </div>
+        <div class="control-item" style="margin-left: 20px;">
+            <label style="margin-right: 8px;">Seed</label>
+            <input type="number" id="seedInput" value="42" min="0" max="999999" style="padding: 6px 10px; border: 1px solid #d0d0d0; border-radius: 8px; background: #fff; font-family: inherit; width: 100px;">
+        </div>
+        <div class="mode-checkboxes">
+            <div class="mode-checkbox">
+                <input type="checkbox" id="observationsCheckbox">
+                <label for="observationsCheckbox">Observations</label>
+            </div>
+            <div class="mode-checkbox">
+                <input type="checkbox" id="timeTravelCheckbox">
+                <label for="timeTravelCheckbox">Time travel</label>
+            </div>
+        </div>
+    </div>
+
+    <div id="settingsPanel" class="settings-panel" style="display:none;">
+        <div class="settings-header">
+            <span class="settings-title">Node position offsets</span>
+            <button id="closeSettingsBtn" class="icon-button" title="Close" aria-label="Close">✕</button>
+        </div>
+
+        <div class="settings-grid">
+<div class="settings-group">
+                <div class="settings-group-title">Tree zoom</div>
+                <div class="settings-row">
+                    <label for="treeZoom">z</label>
+                    <input type="range" id="treeZoom" min="0.50" max="2.00" step="0.01" value="1.00">
+                    <span class="slider-value" id="treeZoomVal">1.00×</span>
+                </div>
+            </div>
+
+                        <div class="settings-group" id="rootSettingsGroup">
+                <div class="settings-group-title">Root</div>
+                <div class="settings-row">
+                    <label for="rootOffsetX">x</label>
+                    <input type="range" id="rootOffsetX" min="-300" max="300" step="1" value="0">
+                    <span class="slider-value" id="rootOffsetXVal">0</span>
+                </div>
+                <div class="settings-row">
+                    <label for="rootOffsetY">y</label>
+                    <input type="range" id="rootOffsetY" min="-300" max="300" step="1" value="0">
+                    <span class="slider-value" id="rootOffsetYVal">0</span>
+                </div>
+            </div>
+
+            <div class="settings-group" id="internalSettingsGroup">
+                <div class="settings-group-title">Internal node</div>
+                <div class="settings-row">
+                    <label for="internalOffsetX">x</label>
+                    <input type="range" id="internalOffsetX" min="-300" max="300" step="1" value="0">
+                    <span class="slider-value" id="internalOffsetXVal">0</span>
+                </div>
+                <div class="settings-row">
+                    <label for="internalOffsetY">y</label>
+                    <input type="range" id="internalOffsetY" min="-300" max="300" step="1" value="0">
+                    <span class="slider-value" id="internalOffsetYVal">0</span>
+                </div>
+            </div>
+
+            <div class="settings-group" id="tip1SettingsGroup">
+                <div class="settings-group-title">Tip 1</div>
+                <div class="settings-row">
+                    <label for="tip1OffsetX">x</label>
+                    <input type="range" id="tip1OffsetX" min="-300" max="300" step="1" value="0">
+                    <span class="slider-value" id="tip1OffsetXVal">0</span>
+                </div>
+                <div class="settings-row">
+                    <label for="tip1OffsetY">y</label>
+                    <input type="range" id="tip1OffsetY" min="-300" max="300" step="1" value="0">
+                    <span class="slider-value" id="tip1OffsetYVal">0</span>
+                </div>
+            </div>
+
+            <div class="settings-group" id="tip2SettingsGroup">
+                <div class="settings-group-title">Tip 2</div>
+                <div class="settings-row">
+                    <label for="tip2OffsetX">x</label>
+                    <input type="range" id="tip2OffsetX" min="-300" max="300" step="1" value="0">
+                    <span class="slider-value" id="tip2OffsetXVal">0</span>
+                </div>
+                <div class="settings-row">
+                    <label for="tip2OffsetY">y</label>
+                    <input type="range" id="tip2OffsetY" min="-300" max="300" step="1" value="0">
+                    <span class="slider-value" id="tip2OffsetYVal">0</span>
+                </div>
+            </div>
+
+            <div class="settings-group" id="tip3SettingsGroup">
+                <div class="settings-group-title">Tip 3</div>
+                <div class="settings-row">
+                    <label for="tip3OffsetX">x</label>
+                    <input type="range" id="tip3OffsetX" min="-300" max="300" step="1" value="0">
+                    <span class="slider-value" id="tip3OffsetXVal">0</span>
+                </div>
+                <div class="settings-row">
+                    <label for="tip3OffsetY">y</label>
+                    <input type="range" id="tip3OffsetY" min="-300" max="300" step="1" value="0">
+                    <span class="slider-value" id="tip3OffsetYVal">0</span>
+                </div>
+            </div>
+
+            
+
+                    </div> <!-- end settings-grid (node offsets) -->
+
+        <div class="settings-divider"></div>
+
+        <div class="settings-header" style="margin-top: 10px; padding-top: 0;">
+            <span class="settings-title">Panel size and location</span>
+        </div>
+
+        <div class="settings-grid">
+            <div class="settings-group">
+                <div class="settings-group-title">Phylogenetics (CTMC panel)</div>
+                <div class="settings-row">
+                    <label for="panelPhyloX">x</label>
+                    <input type="range" id="panelPhyloX" min="-300" max="300" step="1" value="0">
+                    <span class="slider-value" id="panelPhyloXVal">0</span>
+                </div>
+                <div class="settings-row">
+                    <label for="panelPhyloY">y</label>
+                    <input type="range" id="panelPhyloY" min="-300" max="300" step="1" value="0">
+                    <span class="slider-value" id="panelPhyloYVal">0</span>
+                </div>
+                <div class="settings-row">
+                    <label for="panelPhyloZ">z</label>
+                    <input type="range" id="panelPhyloZ" min="0.50" max="2.00" step="0.01" value="1.00">
+                    <span class="slider-value" id="panelPhyloZVal">1.00×</span>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <div class="settings-group-title">Phylogeography (map panel)</div>
+                <div class="settings-row">
+                    <label for="panelGeoX">x</label>
+                    <input type="range" id="panelGeoX" min="-300" max="300" step="1" value="0">
+                    <span class="slider-value" id="panelGeoXVal">0</span>
+                </div>
+                <div class="settings-row">
+                    <label for="panelGeoY">y</label>
+                    <input type="range" id="panelGeoY" min="-300" max="300" step="1" value="0">
+                    <span class="slider-value" id="panelGeoYVal">0</span>
+                </div>
+                <div class="settings-row">
+                    <label for="panelGeoZ">z</label>
+                    <input type="range" id="panelGeoZ" min="0.50" max="2.00" step="0.01" value="1.00">
+                    <span class="slider-value" id="panelGeoZVal">1.00×</span>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <div class="settings-group-title">Host transmission (panel)</div>
+                <div class="settings-row">
+                    <label for="panelHostX">x</label>
+                    <input type="range" id="panelHostX" min="-300" max="300" step="1" value="0">
+                    <span class="slider-value" id="panelHostXVal">0</span>
+                </div>
+                <div class="settings-row">
+                    <label for="panelHostY">y</label>
+                    <input type="range" id="panelHostY" min="-300" max="300" step="1" value="0">
+                    <span class="slider-value" id="panelHostYVal">0</span>
+                </div>
+                <div class="settings-row">
+                    <label for="panelHostZ">z</label>
+                    <input type="range" id="panelHostZ" min="0.50" max="2.00" step="0.01" value="1.00">
+                    <span class="slider-value" id="panelHostZVal">1.00×</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="settings-divider"></div>
+
+        <div class="settings-header" style="margin-top: 10px; padding-top: 0;">
+            <span class="settings-title">CTMC Maximum Rates</span>
+        </div>
+
+        <div class="settings-grid">
+            <div class="settings-group">
+                <div class="settings-group-title">Mutation Rate (Phylogenetics)</div>
+                <div class="settings-row">
+                    <label for="maxMutationRate">max</label>
+                    <input type="range" id="maxMutationRate" min="1" max="50" step="1" value="10">
+                    <span class="slider-value" id="maxMutationRateVal">10</span>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <div class="settings-group-title">Diffusion Rate (Phylogeography)</div>
+                <div class="settings-row">
+                    <label for="maxDiffusionRate">max</label>
+                    <input type="range" id="maxDiffusionRate" min="1" max="50" step="1" value="10">
+                    <span class="slider-value" id="maxDiffusionRateVal">10</span>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <div class="settings-group-title">Transmission Rate (Host)</div>
+                <div class="settings-row">
+                    <label for="maxTransmissionRate">max</label>
+                    <input type="range" id="maxTransmissionRate" min="1" max="50" step="1" value="10">
+                    <span class="slider-value" id="maxTransmissionRateVal">10</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="settings-actions">
+            <button id="resetOffsetsBtn" class="secondary-button">Reset offsets</button>
+        </div>
+    </div>
+
+    <div class="control-panel">
+        <!-- Phylogenetics Section -->
+        <div class="control-section" id="panelPhylogenetics">
+            <div class="control-section-header">
+                <span class="header-title">Phylogenetics<button class="help-button" id="phyloHelpBtn" title="Learn more">?</button></span>
+                <button class="panel-visibility-btn active" id="showPhyloPanelBtn" title="Toggle CTMC panel">
+                    <svg viewBox="0 0 24 24">
+                        <!-- CTMC square with circles at corners -->
+                        <rect x="6" y="6" width="12" height="12" fill="none" stroke-width="1.5"/>
+                        <circle cx="6" cy="6" r="2.5"/>
+                        <circle cx="18" cy="6" r="2.5"/>
+                        <circle cx="18" cy="18" r="2.5"/>
+                        <circle cx="6" cy="18" r="2.5"/>
+                        <!-- Diagonal lines -->
+                        <line x1="6" y1="6" x2="18" y2="18" stroke-width="1.2"/>
+                        <line x1="18" y1="6" x2="6" y2="18" stroke-width="1.2"/>
+                    </svg>
+                </button>
+                <input type="checkbox" id="phylogeneticsCheckbox" checked>
+            </div>
+            <div class="control-group">
+                <div class="child-controls" id="phylogeneticsControls">
+                    <div class="control-item">
+                        <label>Mutation Rate</label>
+                        <div class="slider-container">
+                            <input type="range" id="mutationSlider" min="0" max="10" step="0.1" value="5">
+                            <span class="slider-value" id="mutationValue">5.00</span>
+                        </div>
+                    </div>
+
+                    <div class="control-item-inline">
+                        <input type="checkbox" id="highlightCheckbox" checked>
+                        <label for="highlightCheckbox">Highlight tracked nucleotide</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phylogeography Section -->
+        <div class="control-section" id="panelPhylogeography">
+            <div class="control-section-header">
+                <span class="header-title">Phylogeography<button class="help-button" id="geoHelpBtn" title="Learn more">?</button></span>
+                <button class="panel-visibility-btn active" id="showGeoPanelBtn" title="Toggle map panel">
+                    <svg viewBox="0 0 24 24">
+                        <!-- Globe outline -->
+                        <circle cx="12" cy="12" r="9" fill="none" stroke-width="2"/>
+                        <!-- Vertical meridian -->
+                        <path d="M 12 3 Q 15 12, 12 21" fill="none" stroke-width="1.5"/>
+                        <path d="M 12 3 Q 9 12, 12 21" fill="none" stroke-width="1.5"/>
+                        <!-- Horizontal latitude lines -->
+                        <path d="M 5 12 Q 12 10, 19 12" fill="none" stroke-width="1.5"/>
+                        <path d="M 6 8 Q 12 7, 18 8" fill="none" stroke-width="1.5"/>
+                        <path d="M 6 16 Q 12 17, 18 16" fill="none" stroke-width="1.5"/>
+                    </svg>
+                </button>
+                <input type="checkbox" id="phylogeographyCheckbox" checked>
+            </div>
+            <div class="control-group">
+                <div class="child-controls" id="phylogeographyControls">
+                    <div class="control-item">
+                        <label>Diffusion Rate</label>
+                        <div class="slider-container">
+                            <input type="range" id="diffusionSlider" min="0" max="10" step="0.1" value="5">
+                            <span class="slider-value" id="diffusionValue">5.00</span>
+                        </div>
+                    </div>
+
+                    <div class="control-item-inline">
+                        <input type="checkbox" id="trackAllBranchesCheckbox" checked>
+                        <label for="trackAllBranchesCheckbox"> All branches</label>
+                    </div>
+
+                    <div class="control-item-inline">
+                        <input type="checkbox" id="stickyPathsCheckbox">
+                        <label for="stickyPathsCheckbox">Sticky paths</label>
+                    </div>
+
+                    <div class="control-item-inline">
+                        <input type="checkbox" id="drawLocationsCheckbox" checked>
+                        <label for="drawLocationsCheckbox">Draw locations</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Host Transmission Section -->
+        <div class="control-section" id="panelHostTransmission">
+            <div class="control-section-header">
+                <span class="header-title">Host transmission<button class="help-button" id="hostHelpBtn" title="Learn more">?</button></span>
+                <button class="panel-visibility-btn active" id="showHostPanelBtn" title="Toggle host panel">
+                    <svg viewBox="0 0 24 24">
+                        <!-- Human (top center) -->
+                        <circle cx="12" cy="2.5" r="1" fill="white"/>
+                        <path d="M 10.8 3.3 Q 12 2.8 13.2 3.3 L 13.4 5.2 Q 12 5.6 10.6 5.2 Z" fill="white"/>
+                        <path d="M 10.8 4 Q 9.5 4.5 9.8 5.5" stroke="white" stroke-width="0.6" fill="none" stroke-linecap="round"/>
+                        <path d="M 13.2 4 Q 14.5 4.5 14.2 5.5" stroke="white" stroke-width="0.6" fill="none" stroke-linecap="round"/>
+                        <rect x="10.9" y="5.2" width="0.9" height="1.8" rx="0.45" fill="white"/>
+                        <rect x="12.2" y="5.2" width="0.9" height="1.8" rx="0.45" fill="white"/>
+                        
+                        <!-- Monkey (left) -->
+                        <ellipse cx="4.5" cy="12.5" rx="1.6" ry="2" fill="white"/>
+                        <circle cx="4.5" cy="10.2" r="1.7" fill="white"/>
+                        <circle cx="3" cy="10" r="0.8" fill="white"/>
+                        <circle cx="6" cy="10" r="0.8" fill="white"/>
+                        
+                        <!-- Mouse (right top) -->
+                        <ellipse cx="19.5" cy="10" rx="2.5" ry="1.8" fill="white"/>
+                        <ellipse cx="17" cy="8.5" rx="1.4" ry="1.3" fill="white"/>
+                        <circle cx="16" cy="7.5" r="0.6" fill="white"/>
+                        <circle cx="18" cy="7.2" r="0.6" fill="white"/>
+                        
+                        <!-- Pig (bottom center-left) -->
+                        <ellipse cx="8.5" cy="19.5" rx="2.2" ry="1.6" fill="white"/>
+                        <circle cx="7" cy="17.5" r="1.5" fill="white"/>
+                        <path d="M 5.7 16.2 Q 6.5 15.8 6.7 17" fill="white"/>
+                        <path d="M 8.3 16.2 Q 7.5 15.8 7.3 17" fill="white"/>
+                        <ellipse cx="6" cy="17.8" rx="1.2" ry="0.9" fill="white"/>
+                        
+                        <!-- Mosquito (bottom right) -->
+                        <ellipse cx="18.5" cy="19" rx="0.7" ry="2" fill="white"/>
+                        <circle cx="18.5" cy="16.5" r="0.6" fill="white"/>
+                        <ellipse cx="17.2" cy="17.5" rx="1.8" ry="0.9" fill="none" stroke="white" stroke-width="0.3" transform="rotate(-15 17.2 17.5)"/>
+                        <ellipse cx="19.8" cy="17.5" rx="1.8" ry="0.9" fill="none" stroke="white" stroke-width="0.3" transform="rotate(15 19.8 17.5)"/>
+                        <line x1="18.5" y1="16" x2="18.5" y2="14.5" stroke="white" stroke-width="0.25"/>
+                    </svg>
+                </button>
+                <input type="checkbox" id="hostTransmissionCheckbox" checked>
+            </div>
+            <div class="control-group">
+                <div class="child-controls" id="hostTransmissionControls">
+                    <div class="control-item">
+                        <label>Transmission Rate</label>
+                        <div class="slider-container">
+                            <input type="range" id="transmissionSlider" min="0" max="10" step="0.1" value="5">
+                            <span class="slider-value" id="transmissionValue">5.00</span>
+                        </div>
+                    </div>
+
+                    <div class="control-item-inline">
+                        <input type="checkbox" id="trackAllHostBranchesCheckbox" checked>
+                        <label for="trackAllHostBranchesCheckbox">All branches</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="app-footer">
+        <span>© <span id="year"></span> Created by <a href="https://fil-monti.github.io/" target="_blank" rel="noopener">Filippo Monti</a></span>
+        <!-- Optional link if/when you have one:
+        <span class="sep">•</span>
+        <a href="https://github.com/yourname/yourrepo" target="_blank" rel="noopener">Source</a>
+        -->
+      </footer>
+
+    <!-- Help Modal -->
+    <div class="help-modal" id="phyloHelpModal">
+        <div class="help-modal-content">
+            <button class="help-modal-close" id="phyloHelpClose">×</button>
+            <h2>Phylogenetics: Understanding Sequence Evolution</h2>
+            
+            <h3>What is a Sequence?</h3>
+            <p>A <strong>sequence</strong> is a string of nucleotides (the building blocks of DNA). In this visualization, each sequence consists of 5 nucleotides, which can be A (Adenine), T (Thymine), G (Guanine), or C (Cytosine). These are shown as colored boxes along the tree.</p>
+            
+            <h3>What is a Site?</h3>
+            <p>A <strong>site</strong> refers to a specific position within the sequence. For example, in a 5-nucleotide sequence, there are 5 sites (positions 1 through 5). Each site can independently mutate to a different nucleotide over time.</p>
+            
+            <h3>How Evolution Works Along the Tree</h3>
+            <p>The phylogenetic tree shows evolutionary relationships. Starting from the <strong>root</strong> (the common ancestor), sequences split at internal <strong>nodes</strong> and evolve independently along each <strong>branch</strong>. As sequences travel along branches, they accumulate mutations—individual nucleotides randomly change to other nucleotides.</p>
+            
+            <h3>The CTMC Figure</h3>
+            <p>The <strong>Continuous-Time Markov Chain (CTMC)</strong> diagram in the top-left shows the mutation process. The four corners represent the four possible nucleotides (A, T, G, C). The arrows between them indicate that any nucleotide can mutate to any other nucleotide over time. The black ring tracks the first nucleotide of the sequence traveling from Root to Tip 1, showing how it changes states (mutates) as it evolves.</p>
+            
+            <p>The <strong>mutation rate</strong> slider controls how frequently these changes occur during the animation.</p>
+        </div>
+    </div>
+
+    <!-- Phylogeography Help Modal -->
+    <div class="help-modal" id="geoHelpModal">
+        <div class="help-modal-content">
+            <button class="help-modal-close" id="geoHelpClose">×</button>
+            <h2>Phylogeography: Geographic Evolution</h2>
+            
+            <h3>What is Phylogeography?</h3>
+            <p><strong>Phylogeography</strong> combines phylogenetics (evolutionary relationships) with geography (spatial locations). It tracks how organisms or pathogens spread across different geographic regions over evolutionary time.</p>
+            
+            <h3>How Geographic Locations Change</h3>
+            <p>Just as nucleotides mutate along the tree, the <strong>geographic location</strong> of each lineage also changes. The visualization uses a CTMC model where sequences can "jump" between continents (North America, South America, Europe, Africa, Middle East, East Asia, and Australia) as they evolve.</p>
+            
+            <h3>The Map Display</h3>
+            <p>The <strong>world map</strong> in the top-right shows the current geographic distribution of sequences. Colored dots represent the current location of each evolving sequence, and the <strong>comet trails</strong> show the path taken across the globe.</p>
+            
+            <h3>Understanding the Options</h3>
+            <p><strong>Diffusion Rate:</strong> Controls how frequently geographic jumps occur between continents.</p>
+            <p><strong>All branches:</strong> When enabled, shows all three lineages on the map (color-coded: red, yellow, orange). When disabled, shows only the main tracked lineage (Root → Tip 1).</p>
+            <p><strong>Sticky paths:</strong> When enabled, geographic trails remain permanently visible. When disabled, they gradually fade over time.</p>
+            <p><strong>Draw locations:</strong> When enabled, shows continent silhouettes behind sequences. When disabled, shows continent names as simple text.</p>
+        </div>
+    </div>
+
+    <!-- Host Transmission Help Modal -->
+    <div class="help-modal" id="hostHelpModal">
+        <div class="help-modal-content">
+            <button class="help-modal-close" id="hostHelpClose">×</button>
+            <h2>Host Transmission: Cross-Species Jumps</h2>
+            
+            <h3>What is Host Transmission?</h3>
+            <p><strong>Host transmission</strong> (also called host-switching or spillover) occurs when a pathogen jumps from one host species to another. This is a critical process in disease emergence—many viral diseases affecting humans originated in animal hosts.</p>
+            
+            <h3>How Viruses Jump Between Hosts</h3>
+            <p>Similar to geographic diffusion, the visualization models host transmission as a CTMC process. Viruses can jump between five different host species: <strong>Human, Monkey, Bat, Pig, and Mosquito</strong>. Each jump represents a transmission event where the virus successfully infects a new host species.</p>
+            
+            <h3>The Host Transmission Panel</h3>
+            <p>The circular panel in the middle-right shows all five host species arranged in a ring. The <strong>colored viruses</strong> move between hosts over time, with dashed lines showing active transmission events. The virus icons are color-coded to match the evolutionary lineages (red, yellow, orange).</p>
+            
+            <h3>Real-World Examples</h3>
+            <p>Many important diseases have emerged through host transmission: COVID-19 (bat → human), influenza (birds/pigs → human), Ebola (bat → human), and dengue fever (mosquito → human). This visualization demonstrates how pathogens can switch hosts as they evolve along the phylogenetic tree.</p>
+            
+            <h3>Understanding the Options</h3>
+            <p><strong>Transmission Rate:</strong> Controls how frequently host-switching events occur.</p>
+            <p><strong>All branches:</strong> When enabled, shows viruses from all three lineages. When disabled, shows only the main tracked lineage (Root → Tip 1).</p>
+        </div>
+    </div>
+      
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
