@@ -133,6 +133,7 @@ export default function initApp() {
     // Optional helper: rebuild and redraw quickly after tweaking TREE_PARAMS in console
     window.TREE_PARAMS = TREE_PARAMS;
     window.rebuildTree = function rebuildTree() {
+        choroplethCache = null;
         tree = buildTree(TREE_PARAMS);
         // Re-init so sequences/branches align with new geometry
         initAnimation();
@@ -383,6 +384,42 @@ function drawCountryMapInRect(ctx, x0, y0, w, h) {
 
   ctx.restore();
 }
+function buildChoroplethCache(w, h) {
+    if (!WORLD_GEOJSON || !Array.isArray(WORLD_GEOJSON.features)) return null;
+  
+    const c = document.createElement("canvas");
+    c.width = Math.max(1, Math.floor(w));
+    c.height = Math.max(1, Math.floor(h));
+    const cctx = c.getContext("2d");
+  
+    // Draw the map ONCE into the offscreen canvas at (0,0,w,h)
+    cctx.fillStyle = "#fbfbfb";
+    cctx.fillRect(0, 0, c.width, c.height);
+  
+    for (const feat of WORLD_GEOJSON.features) {
+      const name = feat.properties?.name || feat.properties?.ADMIN || feat.properties?.NAME || "";
+      const fill = getCountryColor(name);
+  
+      const geom = feat.geometry;
+      if (!geom) continue;
+  
+      cctx.beginPath();
+      if (geom.type === "Polygon") {
+        drawCountryPolygonInRect(cctx, geom.coordinates, 0, 0, c.width, c.height);
+      } else if (geom.type === "MultiPolygon") {
+        geom.coordinates.forEach(poly => drawCountryPolygonInRect(cctx, poly, 0, 0, c.width, c.height));
+      } else continue;
+  
+      cctx.fillStyle = fill;
+      cctx.fill();
+  
+      cctx.strokeStyle = "#9aa0a6";
+      cctx.lineWidth = 1.0;
+      cctx.stroke();
+    }
+  
+    return { canvas: c, w: c.width, h: c.height };
+  }
 function projectLonLatToRect(lon, lat, x, y, W, H) {
     const px = x + (lon + 180) / 360 * W;
     const py = y + (90 - lat) / 180 * H;
@@ -400,45 +437,30 @@ function projectLonLatToRect(lon, lat, x, y, W, H) {
     });
   }
   
-  function drawCountryMapInRect(ctx, x, y, W, H) {
-    if (!WORLD_GEOJSON) return;
+  function drawCountryMapInRect(ctx, x, y, w, h) {
+    if (!showChoroplethMap) return;
   
-    ctx.save();
+    // Build cache once (or when size changes)
+    const W = Math.max(1, Math.floor(w));
+    const H = Math.max(1, Math.floor(h));
   
-    // clip to panel
-    ctx.beginPath();
-    ctx.rect(x, y, W, H);
-    ctx.clip();
-  
-    // background
-    ctx.fillStyle = "#fbfbfb";
-    ctx.fillRect(x, y, W, H);
-  
-    for (const feat of WORLD_GEOJSON.features) {
-      const name = feat.properties?.name || feat.properties?.ADMIN || feat.properties?.NAME || "";
-      const fill = getCountryColor(name); // your COUNTRY_TO_GEOSTATE -> geoStates colors
-  
-      const geom = feat.geometry;
-      if (!geom) continue;
-  
-      ctx.beginPath();
-      if (geom.type === "Polygon") {
-        drawCountryPolygonInRect(ctx, geom.coordinates, x, y, W, H);
-      } else if (geom.type === "MultiPolygon") {
-        geom.coordinates.forEach(poly => drawCountryPolygonInRect(ctx, poly, x, y, W, H));
-      } else {
-        continue;
-      }
-  
-      ctx.fillStyle = fill;
-      ctx.fill();
-  
-      ctx.strokeStyle = "#9aa0a6";
-      ctx.lineWidth = 1.0;
-      ctx.stroke();
+    if (!choroplethCache || choroplethCache.w !== W || choroplethCache.h !== H) {
+      choroplethCache = buildChoroplethCache(W, H);
     }
   
-    ctx.restore();
+    if (!choroplethCache) {
+      // still loading
+      ctx.fillStyle = "#fbfbfb";
+      ctx.fillRect(x, y, w, h);
+      ctx.fillStyle = "#666";
+      ctx.font = '12px "DM Sans"';
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("Loading map…", x + w/2, y + h/2);
+      return;
+    }
+  
+    ctx.drawImage(choroplethCache.canvas, x, y, w, h);
   }
 
 function drawCountryPolygon(ctx, coords, W, H) {
@@ -1184,6 +1206,7 @@ class HostTransmissionCTMC {
     }
 
     let WORLD_GEOJSON = null;
+    let choroplethCache = null; // { canvas, w, h }
     (async function initCountryMap() {
         const canvas = document.getElementById("countryMapCanvas");
         if (!canvas) return;
@@ -1381,12 +1404,39 @@ class HostTransmissionCTMC {
             this._rescheduleFromCurrent();
         }
 
+        // setStickyPaths(sticky) {
+        //     this.stickyPaths = sticky;
+        //     if (sticky) {
+        //         for (const p of this.trail) p.age = 0;
+        //     }
+        // }
         setStickyPaths(sticky) {
+            const wasSticky = this.stickyPaths;
             this.stickyPaths = sticky;
+          
             if (sticky) {
-                for (const p of this.trail) p.age = 0;
+              // Sticky mode: freeze ages so nothing fades
+              for (const p of this.trail) p.age = 0;
+              return;
             }
-        }
+          
+            // Non-sticky mode: immediately collapse any long history into a short comet tail
+            // Keep ~1 second worth of samples (adjust tailSeconds if you want longer/shorter).
+            const tailSeconds = 1.0;
+            const keepN = Math.max(2, Math.ceil(this.trailSampleHz * tailSeconds));
+          
+            if (wasSticky && this.trail.length > keepN) {
+              this.trail = this.trail.slice(-keepN);
+            }
+          
+            // Make the kept points already “aged” so you see a gradient immediately
+            const n = this.trail.length;
+            for (let k = 0; k < n; k++) {
+              // oldest point gets age close to trailMaxAge, newest close to 0
+              const frac = (n <= 1) ? 0 : k / (n - 1);
+              this.trail[k].age = (1 - frac) * this.trailMaxAge;
+            }
+          }
 
         // Nice flight-like easing
         easeInOut(u) {
@@ -2182,12 +2232,12 @@ class HostTransmissionCTMC {
             ctx.save();
             ctx.globalAlpha = 1.0; // alpha already in silhouette fillStyle
             // ctx.drawImage(sil.canvas, x0, y0, badgeW, badgeH);
-            if (showChoroplethMap && WORLD_GEOJSON) {
-                drawCountryMapInRect(ctx, x0, y0, badgeW, badgeH);
-              } else {
+            // if (showChoroplethMap && WORLD_GEOJSON) {
+            //     drawCountryMapInRect(ctx, x0, y0, badgeW, badgeH);
+            //   } else {
                 ctx.drawImage(sil.canvas, x0, y0, badgeW, badgeH);
                 // ctx.drawImage(worldMapImg, panelX, panelY, panelW, panelH);
-              }
+            //   }
             ctx.restore();
         }
 
@@ -3275,54 +3325,54 @@ const t = ctmc.getTransmissionProgress();
         }
 
         // Draw host icon above sequences
-        // if (showHostTransmission && hostCTMCs.length > 0) {
-        //     // Calculate scaling factor based on number of tips
-        //     const __nTips = (typeof numTipsSelect !== 'undefined' && numTipsSelect) ? parseInt(numTipsSelect.value, 10) : 3;
-        //     const treeScaleFactor = __nTips <= 3 ? 1 : Math.max(0.5, 1 - (__nTips - 3) * 0.06);
+        if (showHostTransmission && hostCTMCs.length > 0) {
+            // Calculate scaling factor based on number of tips
+            const __nTips = (typeof numTipsSelect !== 'undefined' && numTipsSelect) ? parseInt(numTipsSelect.value, 10) : 3;
+            const treeScaleFactor = __nTips <= 3 ? 1 : Math.max(0.5, 1 - (__nTips - 3) * 0.06);
 
-        //     sequences.forEach(seq => {
-        //         // Skip sequences hidden in time travel
-        //         if (seq.hideInTimeTravel) return;
+            sequences.forEach(seq => {
+                // Skip sequences hidden in time travel
+                if (seq.hideInTimeTravel) return;
 
-        //         // Only show if trackAllHostBranches is on, or if this is the tracked sequence
-        //         const shouldShow = trackAllHostBranches || seq.tracked;
-        //         if (!shouldShow) return;
+                // Only show if trackAllHostBranches is on, or if this is the tracked sequence
+                const shouldShow = trackAllHostBranches || seq.tracked;
+                if (!shouldShow) return;
 
-        //         const hostCtmcObj = hostCTMCs.find(h => h.sequenceId === seq.sequenceId);
-        //         if (hostCtmcObj) {
-        //             const currentHost = hostCtmcObj.ctmc.currentHostName();
-        //             // Make pig 50% bigger, then apply tree scale
-        //             const baseScale = currentHost === "Pig" ? 0.525 : 0.35;
-        //             const scale = baseScale * treeScaleFactor;
+                const hostCtmcObj = hostCTMCs.find(h => h.sequenceId === seq.sequenceId);
+                if (hostCtmcObj) {
+                    const currentHost = hostCtmcObj.ctmc.currentHostName();
+                    // Make pig 50% bigger, then apply tree scale
+                    const baseScale = currentHost === "Pig" ? 0.525 : 0.35;
+                    const scale = baseScale * treeScaleFactor;
 
-        //             // Apply jitter when all branches are shown to prevent perfect overlap
-        //             const jitterOffset = trackAllHostBranches ? getJitter(seq.sequenceId, 8 * treeScaleFactor) : { x: 0, y: 0 };
+                    // Apply jitter when all branches are shown to prevent perfect overlap
+                    const jitterOffset = trackAllHostBranches ? getJitter(seq.sequenceId, 8 * treeScaleFactor) : { x: 0, y: 0 };
 
-        //             // Draw virus with color-based positioning
-        //             const virusColor = hostCtmcObj.color;
+                    // Draw virus with color-based positioning
+                    const virusColor = hostCtmcObj.color;
 
-        //             const numTips = getNumTips();
-        //             let virusOffsetX;
+                    const numTips = getNumTips();
+                    let virusOffsetX;
 
-        //             if (numTips === 3) {
-        //                 // Original positioning for 3-tip tree: Red on left, yellow and orange on right
-        //                 virusOffsetX = -30 * treeScaleFactor; // default left
-        //                 if (virusColor === 'rgba(234, 179, 8, 1)' || virusColor === 'rgba(249, 115, 22, 1)') {
-        //                     virusOffsetX = 30 * treeScaleFactor; // yellow or orange on right
-        //                 }
-        //             } else {
-        //                 // For trees > 3 tips: use color hash to determine position
-        //                 const colorHash = virusColor.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        //                 virusOffsetX = (colorHash % 2 === 0) ? -30 * treeScaleFactor : 30 * treeScaleFactor;
-        //             }
+                    if (numTips === 3) {
+                        // Original positioning for 3-tip tree: Red on left, yellow and orange on right
+                        virusOffsetX = -30 * treeScaleFactor; // default left
+                        if (virusColor === 'rgba(234, 179, 8, 1)' || virusColor === 'rgba(249, 115, 22, 1)') {
+                            virusOffsetX = 30 * treeScaleFactor; // yellow or orange on right
+                        }
+                    } else {
+                        // For trees > 3 tips: use color hash to determine position
+                        const colorHash = virusColor.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                        virusOffsetX = (colorHash % 2 === 0) ? -30 * treeScaleFactor : 30 * treeScaleFactor;
+                    }
 
-        //             drawVirus(ctx, seq.x + jitterOffset.x + virusOffsetX, seq.y - 35 * treeScaleFactor + jitterOffset.y, 0.3 * treeScaleFactor, virusColor);
+                    drawVirus(ctx, seq.x + jitterOffset.x + virusOffsetX, seq.y - 35 * treeScaleFactor + jitterOffset.y, 0.3 * treeScaleFactor, virusColor);
 
-        //             // Draw host icon
-        //             HOST_ICON[currentHost](ctx, seq.x + jitterOffset.x, seq.y - 35 * treeScaleFactor + jitterOffset.y, scale);
-        //         }
-        //     });
-        // }
+                    // Draw host icon
+                    HOST_ICON[currentHost](ctx, seq.x + jitterOffset.x, seq.y - 35 * treeScaleFactor + jitterOffset.y, scale);
+                }
+            });
+        }
     }
 
     function animate() {
@@ -4240,6 +4290,7 @@ if (showHostTransmission && dLenNorm > 0) {
 
     resetBtn.addEventListener('click', () => {
         isPlaying = false;
+        choroplethCache = null;
         playBtn.textContent = '▶ Play';
         if (animationFrame) {
             cancelAnimationFrame(animationFrame);
@@ -4375,6 +4426,7 @@ if (showHostTransmission && dLenNorm > 0) {
 
     choroplethCheckbox.addEventListener("change", (e) => {
         showChoroplethMap = e.target.checked;
+        choroplethCache = null;   
         renderCurrentState();
     });
 
