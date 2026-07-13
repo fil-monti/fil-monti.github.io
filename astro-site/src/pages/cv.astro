@@ -1,0 +1,26 @@
+---
+import PageHero from "../components/PageHero.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { profile } from "../data/site";
+---
+
+<BaseLayout title="CV" description="Curriculum vitae for Filippo Monti.">
+  <PageHero
+    eyebrow="Curriculum Vitae"
+    title="CV"
+    description="Download the current PDF version of my curriculum vitae."
+  />
+
+  <section class="section-block">
+    <div class="cv-panel">
+      <div>
+        <p class="section-kicker">PDF</p>
+        <h2>Filippo Monti CV</h2>
+        <p>
+          The Astro version keeps the CV as a direct PDF link, matching your requested behavior.
+        </p>
+      </div>
+      <a class="button primary" href={profile.cv}>Download CV</a>
+    </div>
+  </section>
+</BaseLayout>

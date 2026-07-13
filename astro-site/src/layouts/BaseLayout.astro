@@ -1,0 +1,53 @@
+---
+import "katex/dist/katex.min.css";
+import "../styles/global.css";
+import SearchOverlay from "../components/SearchOverlay.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import { footerLinks, profile } from "../data/site";
+import { getSearchEntries } from "../lib/contentIndex";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = "Filippo Monti develops Bayesian and computational methods for evolutionary and population-level dynamics."
+} = Astro.props;
+
+const pageTitle = title === profile.name ? title : `${title} | ${profile.name}`;
+const searchEntries = await getSearchEntries();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{pageTitle}</title>
+    <script is:inline>
+      const storedTheme = localStorage.getItem("theme");
+      const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.dataset.theme = storedTheme || (systemDark ? "dark" : "light");
+    </script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <SiteHeader />
+      <main>
+        <slot />
+      </main>
+      <SearchOverlay entries={searchEntries} />
+      <footer class="site-footer">
+        <div class="footer-inner">
+          <a class="footer-brand" href="/">{profile.name}</a>
+          <nav class="footer-links" aria-label="Footer">
+            {footerLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+          </nav>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

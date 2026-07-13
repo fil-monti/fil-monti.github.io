@@ -1,0 +1,158 @@
+---
+import PageHero from "../components/PageHero.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { researchProjects } from "../data/site";
+
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+
+const projectsWithIds = researchProjects.map((project) => ({
+  ...project,
+  id: `paper-${slugify(project.title)}`
+}));
+
+const paperTopics = Array.from(
+  new Set(researchProjects.flatMap((project) => project.topics))
+).sort((a, b) => a.localeCompare(b));
+
+const paperStatuses = Array.from(
+  new Set(researchProjects.map((project) => project.status))
+).sort((a, b) => a.localeCompare(b));
+---
+
+<BaseLayout
+  title="Papers"
+  description="Papers and manuscripts by Filippo Monti."
+>
+  <PageHero
+    eyebrow="Papers"
+    title="Papers"
+  />
+
+  <section class="section-block publications-section">
+    <div class="paper-filters" data-paper-filter-root>
+      <div class="paper-filter-row" aria-label="Filter papers by topic">
+        <button class="paper-filter-button" type="button" data-paper-topic="all" aria-pressed="true">
+          All topics
+        </button>
+        {
+          paperTopics.map((topic) => (
+            <button class="paper-filter-button" type="button" data-paper-topic={topic} aria-pressed="false">
+              {topic}
+            </button>
+          ))
+        }
+      </div>
+      <div class="paper-filter-row" aria-label="Filter papers by status">
+        <button class="paper-filter-button" type="button" data-paper-status-filter="all" aria-pressed="true">
+          All statuses
+        </button>
+        {
+          paperStatuses.map((status) => (
+            <button class="paper-filter-button" type="button" data-paper-status-filter={status} aria-pressed="false">
+              {status}
+            </button>
+          ))
+        }
+      </div>
+      <label class="paper-first-author-filter">
+        <input type="checkbox" data-first-author-only />
+        <span>First-author papers</span>
+      </label>
+      <p class="paper-filter-count" data-paper-filter-count></p>
+    </div>
+
+    <div class="project-list" data-paper-list>
+      {
+        projectsWithIds.map((project) => (
+          <div
+            class="paper-item"
+            data-paper-item
+            data-paper-topics={project.topics.join("|")}
+            data-paper-status={project.status}
+            data-first-author={project.authors.trim().startsWith("Monti, F.") ? "true" : "false"}
+          >
+            <ProjectCard {...project} />
+          </div>
+        ))
+      }
+    </div>
+    <p class="paper-empty-message" data-paper-empty hidden>No papers match these filters.</p>
+  </section>
+
+  <script>
+    const filterRoot = document.querySelector("[data-paper-filter-root]");
+    const paperItems = Array.from(document.querySelectorAll("[data-paper-item]"));
+    const topicButtons = filterRoot
+      ? Array.from(filterRoot.querySelectorAll("[data-paper-topic]"))
+      : [];
+    const statusButtons = filterRoot
+      ? Array.from(filterRoot.querySelectorAll("[data-paper-status-filter]"))
+      : [];
+    const firstAuthorInput = filterRoot?.querySelector("[data-first-author-only]");
+    const countNode = document.querySelector("[data-paper-filter-count]");
+    const emptyNode = document.querySelector("[data-paper-empty]");
+    let activeTopic = "all";
+    let activeStatus = "all";
+
+    const updatePapers = () => {
+      const firstAuthorOnly = firstAuthorInput instanceof HTMLInputElement && firstAuthorInput.checked;
+      let visibleCount = 0;
+
+      paperItems.forEach((item) => {
+        if (!(item instanceof HTMLElement)) return;
+
+        const topics = (item.dataset.paperTopics || "").split("|").filter(Boolean);
+        const matchesTopic = activeTopic === "all" || topics.includes(activeTopic);
+        const matchesStatus = activeStatus === "all" || item.dataset.paperStatus === activeStatus;
+        const matchesAuthor = !firstAuthorOnly || item.dataset.firstAuthor === "true";
+        const isVisible = matchesTopic && matchesStatus && matchesAuthor;
+
+        item.hidden = !isVisible;
+        if (isVisible) visibleCount += 1;
+      });
+
+      if (countNode) {
+        const noun = visibleCount === 1 ? "paper" : "papers";
+        countNode.textContent = `Showing ${visibleCount} ${noun}`;
+      }
+
+      if (emptyNode instanceof HTMLElement) {
+        emptyNode.hidden = visibleCount !== 0;
+      }
+    };
+
+    topicButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        if (!(button instanceof HTMLElement)) return;
+        activeTopic = button.dataset.paperTopic || "all";
+
+        topicButtons.forEach((topicButton) => {
+          topicButton.setAttribute("aria-pressed", String(topicButton === button));
+        });
+
+        updatePapers();
+      });
+    });
+
+    statusButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        if (!(button instanceof HTMLElement)) return;
+        activeStatus = button.dataset.paperStatusFilter || "all";
+
+        statusButtons.forEach((statusButton) => {
+          statusButton.setAttribute("aria-pressed", String(statusButton === button));
+        });
+
+        updatePapers();
+      });
+    });
+
+    firstAuthorInput?.addEventListener("change", updatePapers);
+    updatePapers();
+  </script>
+</BaseLayout>

@@ -1,0 +1,187 @@
+---
+import ContentCard from "../components/ContentCard.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { profile, researchProjects, teachingGroups } from "../data/site";
+
+const latestTaGroup = teachingGroups.find((group) => group.role === "Teaching Assistant");
+const latestTaEntry = latestTaGroup?.entries[0];
+const workshopGroup = teachingGroups.find((group) => group.role !== "Teaching Assistant");
+const workshopEntry = workshopGroup?.entries[0];
+---
+
+<BaseLayout title={profile.name}>
+  <section class="hero-section">
+    <div class="hero-grid">
+      <aside class="portrait-panel" aria-label="Portrait">
+        <img src={profile.portrait} alt="Filippo Monti" />
+        <p class="portrait-caption">
+          <span class="portrait-name">{profile.name}</span>
+          PhD Candidate in Biostatistics at UCLA.
+        </p>
+        <div class="portrait-links" aria-label="Profile links">
+          <a
+            href="https://scholar.google.com/citations?user=uhL-AMYAAAAJ&hl=en"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Google Scholar
+          </a>
+          <a
+            href="https://github.com/fil-monti?tab=repositories"
+            target="_blank"
+            rel="noreferrer"
+          >
+            GitHub
+          </a>
+          <span class="email-pill" data-email-pill>
+            <a class="email-main" href={`mailto:${profile.email}`} aria-label={`Email ${profile.email}`}>
+              <span class="email-short">E-mail</span>
+              <span class="email-address">{profile.email}</span>
+            </a>
+            <button
+              class="email-copy"
+              type="button"
+              data-email-copy
+              data-email={profile.email}
+              aria-label={`Copy ${profile.email}`}
+            >
+              Copy
+            </button>
+          </span>
+        </div>
+      </aside>
+      <div class="hero-copy">
+        <p class="eyebrow">Bayesian statistics · Evolutionary dynamics · UCLA</p>
+        <h1>Modeling evolution <span>across space and time.</span></h1>
+        <p class="hero-lede">
+          I am a fourth year PhD candidate in the Department of Biostatistics at UCLA,
+          working with Professor <a href="https://suchard-group.github.io/" target="_blank" rel="noreferrer">Marc Suchard</a>.
+          My research develops Bayesian and computational methods to study evolutionary and
+          population-level dynamics.
+        </p>
+        <div class="notable-contributions">
+          <strong>Selected notable contributions</strong>
+          <ul>
+            <li><em>Derivation of scalable exact matrix-exponential adjoints (<a href="/publications/#paper-nonparametric-modeling-of-continuous-time-markov-chains-with-scalable-exact-and-approximate-gradients">Monti et al., 2026a</a>).</em> Their application to gradient-based inference for CTMCs (<a href="/publications/#paper-nonparametric-modeling-of-continuous-time-markov-chains-with-scalable-exact-and-approximate-gradients">Monti et al., 2026a</a>), OU processes (<a href="/publications/#paper-stable-matrix-parametrizations-and-structured-adjoints-for-ornstein-uhlenbeck-processes">Monti et al., 2026b</a>), and structured coalescent approximations (<a href="/publications/#paper-adjoint-differentiation-and-many-core-acceleration-for-scalable-structured-coalescent-inference">Shao et al., 2026</a>) yielded <u>tens- to thousands-fold speedups</u>.</li>
+            <li><em>Hurwitz smooth spectral block parametrization (<a href="/publications/#paper-stable-matrix-parametrizations-and-structured-adjoints-for-ornstein-uhlenbeck-processes">Monti et al., 2026b</a>).</em> This parametrization enables scalable optimization of functions of stable matrices allowing smooth transitions between non-oscillatory and damped oscillatory regimes. Its application to gradient-based inference for OU processes substantially improves numerical stability and yields <u>tens-fold speedups</u>.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block education-teaching-section">
+    <div class="education-teaching-grid">
+      <div class="education-column" aria-labelledby="education-heading">
+        <div class="section-heading">
+          <p class="section-kicker" id="education-heading">Education</p>
+        </div>
+        <ol class="education-timeline">
+          <li class="education-item">
+            <figure class="education-logo" aria-hidden="true">
+              <img src="/assets/img/logos/education/uc-berkeley-seal.svg" alt="" loading="lazy" />
+            </figure>
+            <div>
+              <h3>Incoming Postdoctoral Researcher</h3>
+              <p class="education-institution">University of California, Berkeley</p>
+              <p class="education-meta">Starting January 2027 · Advisor: Yun Song</p>
+            </div>
+          </li>
+          <li class="education-item">
+            <figure class="education-logo" aria-hidden="true">
+              <img src="/assets/img/logos/education/UCLA-logo.png" alt="" loading="lazy" />
+            </figure>
+            <div>
+              <h3>PhD in Biostatistics</h3>
+              <p class="education-institution">University of California, Los Angeles</p>
+              <p class="education-meta">2022 - Nov. 2026 (Expected) · Advisor: Marc Suchard</p>
+            </div>
+          </li>
+          <li class="education-item">
+            <figure class="education-logo" aria-hidden="true">
+              <img src="/assets/img/logos/education/Bocconi_Logo.png" alt="" loading="lazy" />
+            </figure>
+            <div>
+              <h3>BSc and MSc in Economic and Social Sciences</h3>
+              <p class="education-institution">Bocconi University, Milan, Italy</p>
+              <p class="education-meta">2016-2022 · Advisor: Igor Pruenster</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <div class="home-teaching-column" aria-labelledby="home-teaching-heading">
+        <div class="section-heading">
+          <p class="section-kicker">Teaching</p>
+        </div>
+        <div class="teaching-grid home-teaching-grid">
+          {
+            latestTaGroup && latestTaEntry && (
+              <article class="content-card home-teaching-card">
+                <img src={latestTaGroup.image} alt="" loading="lazy" />
+                <div class="card-body">
+                  <p class="card-label">Teaching Assistant</p>
+                  <h3>{latestTaGroup.institution}</h3>
+                  <p>{latestTaEntry.course} ({latestTaEntry.term})</p>
+                  <a class="teaching-plus-link" href="/myteaching/" aria-label="View all teaching">+</a>
+                </div>
+              </article>
+            )
+          }
+          {
+            workshopGroup && workshopEntry && (
+              <ContentCard
+                label="Lecturer"
+                title={workshopGroup.institution}
+                description={`with Prof. Marc Suchard. ${workshopEntry.course} (${workshopEntry.term})`}
+                image={workshopGroup.image}
+                href="/myteaching/"
+              />
+            )
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block">
+    <div class="section-heading">
+      <p class="section-kicker">Selected Projects</p>
+    </div>
+    <div class="project-list">
+      {researchProjects.slice(0, 2).map((project) => <ProjectCard {...project} />)}
+    </div>
+  </section>
+
+  <script>
+  const setCopyState = (button: HTMLButtonElement, didCopy: boolean) => {
+    const email = button.dataset.email || "";
+    button.textContent = didCopy ? "Copied" : "Copy";
+    button.setAttribute("aria-label", didCopy ? `Copied ${email}` : `Copy ${email}`);
+  };
+
+  document.querySelectorAll("[data-email-copy]").forEach((button) => {
+    if (!(button instanceof HTMLButtonElement)) return;
+
+    button.addEventListener("click", async (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const email = button.dataset.email || "";
+      let copied = false;
+
+      try {
+        await navigator.clipboard.writeText(email);
+        copied = true;
+      } catch {
+        copied = false;
+      }
+
+      if (!copied) return;
+      setCopyState(button, true);
+      window.setTimeout(() => setCopyState(button, false), 1400);
+    });
+  });
+  </script>
+</BaseLayout>

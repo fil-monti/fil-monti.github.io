@@ -1,0 +1,35 @@
+---
+export interface PageSideNavItem {
+  label: string;
+  href: string;
+  children?: PageSideNavItem[];
+}
+
+interface Props {
+  items: PageSideNavItem[];
+  label?: string;
+}
+
+const { items, label = "Page sections" } = Astro.props;
+---
+
+<nav class="page-side-nav" aria-label={label}>
+  <ul class="page-side-nav-list">
+    {
+      items.map((item) => (
+        <li>
+          <a class="page-side-nav-link" href={item.href}>{item.label}</a>
+          {item.children && item.children.length > 0 && (
+            <ul class="page-side-nav-children">
+              {item.children.map((child) => (
+                <li>
+                  <a class="page-side-nav-link child" href={child.href}>{child.label}</a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+</nav>

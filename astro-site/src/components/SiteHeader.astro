@@ -1,0 +1,64 @@
+---
+import { navItems, profile } from "../data/site";
+---
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="/" aria-label="Filippo Monti home">
+      <span>{profile.name}</span>
+    </a>
+    <nav class="desktop-nav" aria-label="Primary">
+      {navItems.map((item) => <a href={item.href}>{item.label}</a>)}
+    </nav>
+    <div class="header-actions">
+      <button class="header-icon-button" type="button" data-search-open aria-label="Open search">
+        ?
+      </button>
+      <button class="theme-switch" type="button" data-theme-toggle role="switch" aria-checked="false" aria-label="Use dark theme">
+        <span class="theme-switch-track" aria-hidden="true">
+          <span class="theme-switch-thumb"></span>
+        </span>
+      </button>
+      <button class="menu-button" type="button" data-menu-toggle aria-label="Open navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </div>
+  <nav class="mobile-nav" data-mobile-nav aria-label="Mobile primary" hidden>
+    {navItems.map((item) => <a href={item.href}>{item.label}</a>)}
+    <button type="button" data-search-open>Search</button>
+  </nav>
+</header>
+
+<script>
+  const themeButton = document.querySelector("[data-theme-toggle]");
+  const menuButton = document.querySelector("[data-menu-toggle]");
+  const mobileNav = document.querySelector("[data-mobile-nav]");
+
+  const syncThemeLabel = () => {
+    const theme = document.documentElement.dataset.theme || "light";
+    if (!(themeButton instanceof HTMLElement)) return;
+    const isDark = theme === "dark";
+    themeButton.setAttribute("aria-checked", String(isDark));
+    themeButton.setAttribute("aria-label", isDark ? "Use light theme" : "Use dark theme");
+    themeButton.setAttribute("title", isDark ? "Use light theme" : "Use dark theme");
+  };
+
+  themeButton?.addEventListener("click", () => {
+    const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = nextTheme;
+    localStorage.setItem("theme", nextTheme);
+    syncThemeLabel();
+  });
+
+  menuButton?.addEventListener("click", () => {
+    if (!(mobileNav instanceof HTMLElement)) return;
+    const isHidden = mobileNav.hasAttribute("hidden");
+    mobileNav.toggleAttribute("hidden", !isHidden);
+    menuButton.setAttribute("aria-label", isHidden ? "Close navigation" : "Open navigation");
+  });
+
+  syncThemeLabel();
+</script>

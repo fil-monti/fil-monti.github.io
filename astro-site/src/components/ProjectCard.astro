@@ -1,0 +1,59 @@
+---
+interface LinkItem {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  id?: string;
+  title: string;
+  authors: string;
+  year: string;
+  status: string;
+  links: LinkItem[];
+  topics: string[];
+  abstract: string[];
+}
+
+const { id, title, authors, year, status, links, topics, abstract } = Astro.props;
+const highlightedAuthor = "Monti, F.";
+const authorParts = authors.split(highlightedAuthor);
+---
+
+<article class="project-card" id={id}>
+  <div class="project-head">
+    <div>
+      <div class="project-meta">
+        <p class="card-label">{year}</p>
+        {links.length > 0 && (
+          <div class="project-meta-links" aria-label={`${title} links`}>
+            {links.map((link) => <a href={link.href} target="_blank" rel="noreferrer">{link.label}</a>)}
+          </div>
+        )}
+        {topics.length > 0 && (
+          <ul class="tag-list project-meta-topics" aria-label={`${title} topics`}>
+            {topics.map((topic) => <li>{topic}</li>)}
+          </ul>
+        )}
+      </div>
+      <h3>{title}</h3>
+    </div>
+    <span class="status-pill">{status}</span>
+  </div>
+  <p class="authors">
+    {
+      authorParts.map((part, index) => (
+        <>
+          {index > 0 && <strong>{highlightedAuthor}</strong>}
+          {part}
+        </>
+      ))
+    }
+  </p>
+  {abstract.length > 0 && (
+    <details class="abstract-block">
+      <summary>Abstract</summary>
+      {abstract.map((paragraph) => <p>{paragraph}</p>)}
+    </details>
+  )}
+</article>

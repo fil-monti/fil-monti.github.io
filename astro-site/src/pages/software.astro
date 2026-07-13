@@ -1,0 +1,44 @@
+---
+import PageHero from "../components/PageHero.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { softwareEntries } from "../data/site";
+---
+
+<BaseLayout
+  title="Software"
+  description="Software and open-source projects connected to Filippo Monti's research."
+>
+  <PageHero
+    eyebrow="The Beauty and the BEAST"
+    title="Software"
+    description="Open-source software ecosystems connected to Bayesian evolutionary analysis."
+  />
+
+  <section class="section-block">
+    <div class="software-grid">
+      {
+        softwareEntries.map((entry) => (
+          <article class="software-card">
+            <a class="software-logo-wrap" href={entry.site} target="_blank" rel="noreferrer">
+              <img src={entry.logo} alt={`${entry.title} logo`} loading="lazy" />
+            </a>
+            <div class="software-copy">
+              <div class="software-meta">
+                <p class="card-label">Software</p>
+                <div class="project-meta-links software-meta-links" aria-label={`${entry.title} links`}>
+                  <a href={entry.site} target="_blank" rel="noreferrer">Website</a>
+                  <a href={entry.github} target="_blank" rel="noreferrer">GitHub</a>
+                </div>
+              </div>
+              <h3>{entry.title}</h3>
+              <p>{entry.description}</p>
+              <ul class="tag-list">
+                {entry.tags.map((tag) => <li>{tag}</li>)}
+              </ul>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>

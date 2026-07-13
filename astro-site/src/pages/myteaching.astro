@@ -1,0 +1,39 @@
+---
+import PageHero from "../components/PageHero.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { teachingGroups } from "../data/site";
+---
+
+<BaseLayout
+  title="Teaching"
+  description="Teaching and workshop experience by Filippo Monti."
+>
+  <PageHero
+    eyebrow="Courses & Workshops"
+    title="Teaching"
+  />
+
+  <section class="section-block">
+    <div class="teaching-grid teaching-page-grid">
+      {
+        teachingGroups.map((group) => (
+          <article class="teaching-card">
+            <img src={group.image} alt="" loading="lazy" />
+            <div class="teaching-copy">
+              <p class="card-label">{group.role}</p>
+              <h3>{group.institution}</h3>
+              <ul class="teaching-list">
+                {group.entries.map((entry) => (
+                  <li>
+                    <strong>{entry.course}</strong>
+                    <span>{entry.term}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>

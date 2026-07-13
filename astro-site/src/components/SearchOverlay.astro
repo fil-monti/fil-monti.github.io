@@ -1,0 +1,81 @@
+---
+import type { SearchEntry } from "../lib/contentIndex";
+
+interface Props {
+  entries: SearchEntry[];
+}
+
+const { entries } = Astro.props;
+---
+
+<div class="search-overlay" data-search-overlay hidden>
+  <div class="search-panel" role="dialog" aria-modal="true" aria-labelledby="search-title">
+    <div class="search-head">
+      <h2 id="search-title">Search</h2>
+      <button class="search-close" type="button" data-search-close aria-label="Close search">Close</button>
+    </div>
+    <input data-search-input type="search" placeholder="Search research, teaching, software, posts" />
+    <div class="search-results" data-search-results></div>
+  </div>
+</div>
+
+<script is:inline define:vars={{ entries }}>
+  const overlay = document.querySelector("[data-search-overlay]");
+  const input = document.querySelector("[data-search-input]");
+  const results = document.querySelector("[data-search-results]");
+  const closeButton = document.querySelector("[data-search-close]");
+
+  const normalize = (value) => value.toLowerCase();
+
+  const renderResults = (query = "") => {
+    if (!(results instanceof HTMLElement)) return;
+
+    const cleaned = normalize(query.trim());
+    const matches = cleaned
+      ? entries.filter((entry) => {
+          const haystack = normalize(
+            [entry.title, entry.description, entry.category, ...(entry.tags || [])].join(" ")
+          );
+          return haystack.includes(cleaned);
+        })
+      : entries.slice(0, 8);
+
+    results.innerHTML = matches
+      .slice(0, 12)
+      .map(
+        (entry) => `
+          <a class="search-result" href="${entry.href}">
+            <span>${entry.category}</span>
+            <strong>${entry.title}</strong>
+            <p>${entry.description || ""}</p>
+          </a>
+        `
+      )
+      .join("");
+  };
+
+  const openSearch = () => {
+    if (!(overlay instanceof HTMLElement) || !(input instanceof HTMLInputElement)) return;
+    overlay.removeAttribute("hidden");
+    renderResults();
+    input.focus();
+  };
+
+  const closeSearch = () => {
+    if (!(overlay instanceof HTMLElement)) return;
+    overlay.setAttribute("hidden", "");
+  };
+
+  document.querySelectorAll("[data-search-open]").forEach((button) => {
+    button.addEventListener("click", openSearch);
+  });
+
+  closeButton?.addEventListener("click", closeSearch);
+  overlay?.addEventListener("click", (event) => {
+    if (event.target === overlay) closeSearch();
+  });
+  input?.addEventListener("input", (event) => renderResults(event.target.value));
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeSearch();
+  });
+</script>

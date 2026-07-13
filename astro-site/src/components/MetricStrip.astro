@@ -1,0 +1,16 @@
+---
+const items = [
+  { value: "Bayesian", label: "statistical modeling" },
+  { value: "Evolution", label: "across space and time" },
+  { value: "Computation", label: "for scalable inference" }
+];
+---
+
+<section class="metric-strip" aria-label="Research themes">
+  {items.map((item) => (
+    <div>
+      <strong>{item.value}</strong>
+      <span>{item.label}</span>
+    </div>
+  ))}
+</section>

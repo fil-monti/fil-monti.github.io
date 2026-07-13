@@ -1,0 +1,76 @@
+---
+import PageSideNav from "../components/PageSideNav.astro";
+import GravityMap from "../components/GravityMap.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { applicationAreas, researchFocus } from "../data/site";
+
+const researchNavItems = [
+  { label: "Introduction", href: "#introduction" },
+  { label: "Research Summary", href: "#research-summary" }
+];
+---
+
+<BaseLayout
+  title="Research"
+  description="Research interests and current projects by Filippo Monti."
+>
+  <div class="research-page-layout research-page-hero-layout">
+    <section id="introduction" class="page-hero research-page-hero">
+      <p class="eyebrow">Modeling Evolution</p>
+      <h1>Research</h1>
+    </section>
+  </div>
+
+  <div class="research-page-layout">
+    <PageSideNav items={researchNavItems} label="Research sections" />
+
+    <div class="research-page-content">
+      <section class="research-overview">
+        <p class="research-intro">
+          My research develops Bayesian statistical methods for modeling stochastic processes in
+          biological and epidemiological systems. By integrating computational statistics, applied
+          probability, and evolutionary biology, I work to understand how complex systems evolve
+          and change over time.
+        </p>
+
+        <div class="research-top-grid">
+          <div class="side-note research-list-panel">
+            <p class="section-kicker">Methodology</p>
+            <ul class="research-list">
+              {
+                researchFocus.map((item) => (
+                  <li>
+                    <strong>{item.title}</strong>
+                    <span>{item.body}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+
+          <aside class="side-note research-list-panel">
+            <p class="section-kicker">Areas of Application</p>
+            <ul class="research-list">
+              {
+                applicationAreas.map((item) => (
+                  <li>
+                    <strong>{item.title}</strong>
+                    <span>{item.body}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <section id="research-summary" class="research-summary" aria-labelledby="research-summary-title">
+        <div class="section-heading">
+          <p class="section-kicker" id="research-summary-title">Research Summary</p>
+        </div>
+
+        <GravityMap />
+      </section>
+    </div>
+  </div>
+</BaseLayout>
