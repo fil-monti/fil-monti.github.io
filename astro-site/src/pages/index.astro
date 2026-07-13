@@ -53,7 +53,16 @@ const coalescentPaper =
       </aside>
       <div class="hero-copy">
         <p class="eyebrow">Bayesian statistics · Evolutionary dynamics · UCLA</p>
-        <h1>Modeling evolution <span>across space and time.</span></h1>
+        <h1 class="hero-title" data-hero-title>
+          <span class="hero-title-slide is-current" data-hero-title-current>
+            <span data-hero-title-current-main>Modeling evolution</span>
+            <span data-hero-title-current-accent>across space and time.</span>
+          </span>
+          <span class="hero-title-slide is-next" data-hero-title-next aria-hidden="true">
+            <span data-hero-title-next-main></span>
+            <span data-hero-title-next-accent></span>
+          </span>
+        </h1>
         <p class="hero-lede">
           I am a fourth year PhD candidate in the Department of Biostatistics at UCLA,
           working with Professor <a href="https://suchard-group.github.io/" target="_blank" rel="noreferrer">Marc Suchard</a>.
@@ -213,5 +222,96 @@ const coalescentPaper =
       copyTimers.set(button, resetTimer);
     });
   });
+
+  const heroTitles = [
+    {
+      main: "Modeling evolution",
+      accent: "across space and time.",
+      compactAccent: false
+    },
+    {
+      main: "Scalable inference for",
+      accent: "continuous-time Markov processes.",
+      compactAccent: true
+    }
+  ];
+  const heroTitle = document.querySelector("[data-hero-title]");
+  const currentSlide = document.querySelector("[data-hero-title-current]");
+  const nextSlide = document.querySelector("[data-hero-title-next]");
+  const currentTitleMain = document.querySelector("[data-hero-title-current-main]");
+  const currentTitleAccent = document.querySelector("[data-hero-title-current-accent]");
+  const nextTitleMain = document.querySelector("[data-hero-title-next-main]");
+  const nextTitleAccent = document.querySelector("[data-hero-title-next-accent]");
+  let activeHeroTitle = 0;
+  let heroTitleIsSliding = false;
+
+  if (
+    heroTitle instanceof HTMLElement &&
+    currentSlide instanceof HTMLElement &&
+    nextSlide instanceof HTMLElement &&
+    currentTitleMain instanceof HTMLElement &&
+    currentTitleAccent instanceof HTMLElement &&
+    nextTitleMain instanceof HTMLElement &&
+    nextTitleAccent instanceof HTMLElement
+  ) {
+    const slideTiming = {
+      duration: 760,
+      easing: "cubic-bezier(0.25, 0.8, 0.25, 1)",
+      fill: "forwards" as FillMode
+    };
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    window.setInterval(() => {
+      if (heroTitleIsSliding) return;
+
+      activeHeroTitle = (activeHeroTitle + 1) % heroTitles.length;
+      const nextTitle = heroTitles[activeHeroTitle];
+
+      heroTitleIsSliding = true;
+      nextTitleMain.textContent = nextTitle.main;
+      nextTitleAccent.textContent = nextTitle.accent;
+      nextSlide.classList.toggle("has-compact-accent", nextTitle.compactAccent);
+
+      const finishSlide = () => {
+        currentTitleMain.textContent = nextTitle.main;
+        currentTitleAccent.textContent = nextTitle.accent;
+        currentSlide.classList.toggle("has-compact-accent", nextTitle.compactAccent);
+        nextTitleMain.textContent = "";
+        nextTitleAccent.textContent = "";
+        nextSlide.classList.remove("has-compact-accent");
+        heroTitleIsSliding = false;
+      };
+
+      if (reducedMotion.matches) {
+        finishSlide();
+        return;
+      }
+
+      const outgoing = currentSlide.animate(
+        [
+          { transform: "translate3d(0, 0, 0)" },
+          { transform: "translate3d(-104%, 0, 0)" }
+        ],
+        slideTiming
+      );
+      const incoming = nextSlide.animate(
+        [
+          { transform: "translate3d(104%, 0, 0)" },
+          { transform: "translate3d(0, 0, 0)" }
+        ],
+        slideTiming
+      );
+
+      incoming.finished.then(() => {
+        finishSlide();
+        outgoing.cancel();
+        incoming.cancel();
+      }).catch(() => {
+        outgoing.cancel();
+        incoming.cancel();
+        finishSlide();
+      });
+    }, 10000);
+  }
   </script>
 </BaseLayout>

@@ -167,6 +167,10 @@ html[data-theme="light"] .site-header .theme-switch:focus-visible {
   border-color: var(--gold);
 }
 
+html[data-theme="dark"] .site-header .header-icon-button {
+  color: var(--muted);
+}
+
 .header-inner,
 .footer-inner,
 .section-block,
@@ -425,8 +429,43 @@ html[data-theme="light"] .mobile-nav button {
   line-height: 1;
 }
 
-.hero-copy h1 span {
+.hero-title {
+  position: relative;
+  height: 2em;
+  overflow: hidden;
+}
+
+.hero-title-slide {
+  position: absolute;
+  inset: 0;
+  display: block;
+  min-width: 0;
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.hero-title-slide.is-next {
+  transform: translate3d(104%, 0, 0);
+}
+
+.hero-title-slide > span {
+  display: block;
   color: var(--blue);
+  text-wrap: balance;
+}
+
+.hero-title-slide > span:first-child {
+  color: var(--ink);
+}
+
+.hero-title-slide > span:last-child {
+  white-space: nowrap;
+}
+
+.hero-title-slide.has-compact-accent > span {
+  font-size: clamp(18px, 5vw, 0.74em);
+  line-height: 1.16;
 }
 
 .hero-lede,
@@ -544,16 +583,16 @@ html[data-theme="light"] .mobile-nav button {
 }
 
 .citation-preview-links {
-  gap: 6px;
+  gap: 4px;
   font-family: var(--sans);
-  font-size: 11px;
+  font-size: 6px;
   font-weight: 800;
   line-height: 1;
 }
 
 .citation-preview-links span {
   border-radius: 999px;
-  padding: 7px 8px;
+  padding: 4px 5px;
 }
 
 .citation-preview-links span {
@@ -600,6 +639,11 @@ html[data-theme="light"] .mobile-nav button {
   border: 1px solid color-mix(in srgb, var(--blue) 22%, var(--line));
   border-radius: 999px;
   color: var(--blue);
+  padding: 4px 5px;
+}
+
+.citation-preview-card .status-pill {
+  font-size: 6px;
   padding: 4px 5px;
 }
 
@@ -857,10 +901,10 @@ html[data-theme="light"] .mobile-nav button {
 .education-timeline::before {
   content: "";
   position: absolute;
-  top: 24px;
+  top: 8px;
   left: var(--timeline-x);
   width: var(--line-width);
-  height: 22px;
+  height: calc(28px + (var(--entry-height) / 2) - (var(--dot-size) / 2) - 8px);
   background: repeating-linear-gradient(
     to bottom,
     var(--blue) 0 5px,
@@ -898,10 +942,10 @@ html[data-theme="light"] .mobile-nav button {
 .education-item:not(:last-child)::after {
   content: "";
   position: absolute;
-  top: calc(50% + (var(--dot-size) / 2) + 8px);
+  top: calc(50% + (var(--dot-size) / 2));
   left: calc(var(--timeline-x) - var(--timeline-offset));
   width: var(--line-width);
-  height: calc(var(--entry-height) + var(--row-gap) - var(--dot-size) - 16px);
+  height: calc(var(--entry-height) + var(--row-gap) - var(--dot-size));
   transform: translateX(-50%);
 }
 
@@ -920,7 +964,7 @@ html[data-theme="light"] .mobile-nav button {
 .education-item:nth-child(3)::after {
   content: "";
   position: absolute;
-  top: calc(50% + (var(--dot-size) / 2) + 8px);
+  top: calc(50% + (var(--dot-size) / 2));
   left: calc(var(--timeline-x) - var(--timeline-offset));
   width: var(--line-width);
   height: 24px;
@@ -1132,26 +1176,43 @@ a.content-card:hover {
 
 .teaching-plus-link {
   display: inline-grid;
+  position: relative;
   width: 22px;
   aspect-ratio: 1 / 1;
   place-items: center;
-  border: 1px solid color-mix(in srgb, var(--gold) 64%, var(--line));
+  border: 2px solid var(--gold);
   border-radius: 50%;
-  background: var(--gold);
-  color: var(--ink);
+  background: transparent;
+  color: var(--gold);
   font-family: var(--sans);
-  font-size: 14px;
+  font-size: 0;
   font-weight: 800;
   line-height: 1;
-  box-shadow: var(--shadow);
   transition:
     transform 160ms ease,
-    background 160ms ease;
+    color 160ms ease;
+}
+
+.teaching-plus-link::before,
+.teaching-plus-link::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--gold);
+  transform: translate(-50%, -50%);
+}
+
+.teaching-plus-link::after {
+  transform: translate(-50%, -50%) rotate(90deg);
 }
 
 .teaching-plus-link:hover,
 .teaching-plus-link:focus-visible {
-  background: color-mix(in srgb, var(--gold) 86%, #fff);
+  color: var(--gold);
   transform: translateY(-1px);
 }
 
