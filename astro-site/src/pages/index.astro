@@ -1,5 +1,6 @@
 ---
 import ContentCard from "../components/ContentCard.astro";
+import CitationPreview from "../components/CitationPreview.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { profile, researchProjects, teachingGroups } from "../data/site";
@@ -8,6 +9,11 @@ const latestTaGroup = teachingGroups.find((group) => group.role === "Teaching As
 const latestTaEntry = latestTaGroup?.entries[0];
 const workshopGroup = teachingGroups.find((group) => group.role !== "Teaching Assistant");
 const workshopEntry = workshopGroup?.entries[0];
+const ctmcPaper =
+  "Nonparametric Modeling of Continuous-Time Markov Chains with Scalable Exact and Approximate Gradients";
+const ouPaper = "Stable Matrix Parametrizations and Structured Adjoints for Ornstein--Uhlenbeck Processes";
+const coalescentPaper =
+  "Adjoint differentiation and many-core acceleration for scalable structured coalescent inference";
 ---
 
 <BaseLayout title={profile.name}>
@@ -34,21 +40,15 @@ const workshopEntry = workshopGroup?.entries[0];
           >
             GitHub
           </a>
-          <span class="email-pill" data-email-pill>
-            <a class="email-main" href={`mailto:${profile.email}`} aria-label={`Email ${profile.email}`}>
-              <span class="email-short">E-mail</span>
-              <span class="email-address">{profile.email}</span>
-            </a>
-            <button
-              class="email-copy"
-              type="button"
-              data-email-copy
-              data-email={profile.email}
-              aria-label={`Copy ${profile.email}`}
-            >
-              Copy
-            </button>
-          </span>
+          <button
+            class="email-pill"
+            type="button"
+            data-email-copy
+            data-email={profile.email}
+            aria-label={`Copy ${profile.email}`}
+          >
+            E-mail
+          </button>
         </div>
       </aside>
       <div class="hero-copy">
@@ -63,8 +63,8 @@ const workshopEntry = workshopGroup?.entries[0];
         <div class="notable-contributions">
           <strong>Selected notable contributions</strong>
           <ul>
-            <li><em>Derivation of scalable exact matrix-exponential adjoints (<a href="/publications/#paper-nonparametric-modeling-of-continuous-time-markov-chains-with-scalable-exact-and-approximate-gradients">Monti et al., 2026a</a>).</em> Their application to gradient-based inference for CTMCs (<a href="/publications/#paper-nonparametric-modeling-of-continuous-time-markov-chains-with-scalable-exact-and-approximate-gradients">Monti et al., 2026a</a>), OU processes (<a href="/publications/#paper-stable-matrix-parametrizations-and-structured-adjoints-for-ornstein-uhlenbeck-processes">Monti et al., 2026b</a>), and structured coalescent approximations (<a href="/publications/#paper-adjoint-differentiation-and-many-core-acceleration-for-scalable-structured-coalescent-inference">Shao et al., 2026</a>) yielded <u>tens- to thousands-fold speedups</u>.</li>
-            <li><em>Hurwitz smooth spectral block parametrization (<a href="/publications/#paper-stable-matrix-parametrizations-and-structured-adjoints-for-ornstein-uhlenbeck-processes">Monti et al., 2026b</a>).</em> This parametrization enables scalable optimization of functions of stable matrices allowing smooth transitions between non-oscillatory and damped oscillatory regimes. Its application to gradient-based inference for OU processes substantially improves numerical stability and yields <u>tens-fold speedups</u>.</li>
+            <li><em>Derivation of scalable exact matrix-exponential adjoints (<CitationPreview label="Monti et al., 2026a" title={ctmcPaper} />).</em> Their application to gradient-based inference for CTMCs (<CitationPreview label="Monti et al., 2026a" title={ctmcPaper} />), OU processes (<CitationPreview label="Monti et al., 2026b" title={ouPaper} />), and structured coalescent approximations (<CitationPreview label="Shao et al., 2026" title={coalescentPaper} />) yielded <u>tens- to thousands-fold speedups</u>.</li>
+            <li><em>Hurwitz smooth spectral block parametrization (<CitationPreview label="Monti et al., 2026b" title={ouPaper} />).</em> This parametrization enables scalable optimization of functions of stable matrices allowing smooth transitions between non-oscillatory and damped oscillatory regimes. Its application to gradient-based inference for OU processes substantially improves numerical stability and yields <u>tens-fold speedups</u>.</li>
           </ul>
         </div>
       </div>
@@ -155,14 +155,40 @@ const workshopEntry = workshopGroup?.entries[0];
   </section>
 
   <script>
-  const setCopyState = (button: HTMLButtonElement, didCopy: boolean) => {
+  const copyTimers = new WeakMap<HTMLButtonElement, number>();
+
+  const setEmailIdleState = (button: HTMLButtonElement) => {
     const email = button.dataset.email || "";
-    button.textContent = didCopy ? "Copied" : "Copy";
-    button.setAttribute("aria-label", didCopy ? `Copied ${email}` : `Copy ${email}`);
+    button.textContent = "E-mail";
+    button.classList.remove("is-copy-ready", "is-copied");
+    button.setAttribute("aria-label", `Copy ${email}`);
+  };
+
+  const setEmailHoverState = (button: HTMLButtonElement) => {
+    if (button.classList.contains("is-copied")) return;
+    button.textContent = "Copy";
+    button.classList.add("is-copy-ready");
+  };
+
+  const setEmailCopiedState = (button: HTMLButtonElement) => {
+    const email = button.dataset.email || "";
+    button.textContent = "Copied";
+    button.classList.remove("is-copy-ready");
+    button.classList.add("is-copied");
+    button.setAttribute("aria-label", `Copied ${email}`);
   };
 
   document.querySelectorAll("[data-email-copy]").forEach((button) => {
     if (!(button instanceof HTMLButtonElement)) return;
+
+    button.addEventListener("pointerenter", () => setEmailHoverState(button));
+    button.addEventListener("focus", () => setEmailHoverState(button));
+    button.addEventListener("pointerleave", () => {
+      if (!button.classList.contains("is-copied")) setEmailIdleState(button);
+    });
+    button.addEventListener("blur", () => {
+      if (!button.classList.contains("is-copied")) setEmailIdleState(button);
+    });
 
     button.addEventListener("click", async (event) => {
       event.preventDefault();
@@ -179,8 +205,12 @@ const workshopEntry = workshopGroup?.entries[0];
       }
 
       if (!copied) return;
-      setCopyState(button, true);
-      window.setTimeout(() => setCopyState(button, false), 1400);
+      const existingTimer = copyTimers.get(button);
+      if (existingTimer) window.clearTimeout(existingTimer);
+
+      setEmailCopiedState(button);
+      const resetTimer = window.setTimeout(() => setEmailIdleState(button), 2000);
+      copyTimers.set(button, resetTimer);
     });
   });
   </script>

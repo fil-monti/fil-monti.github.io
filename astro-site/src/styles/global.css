@@ -344,142 +344,6 @@ html[data-theme="light"] .site-header .theme-switch:focus-visible {
   color: #251700;
 }
 
-.email-pill {
-  --email-expanded-width: 256px;
-  display: inline-flex;
-  align-items: center;
-  width: 68px;
-  max-width: 100%;
-  min-height: 42px;
-  overflow: hidden;
-  border: 1px solid var(--gold);
-  border-radius: var(--radius);
-  background: var(--gold);
-  color: #251700;
-  transition:
-    width 180ms ease,
-    box-shadow 160ms ease;
-}
-
-.email-pill:hover,
-.email-pill:focus-within {
-  width: min(var(--email-expanded-width), 100%);
-  box-shadow: 0 10px 24px color-mix(in srgb, var(--gold) 28%, transparent);
-}
-
-.email-main {
-  display: inline-flex;
-  flex: 1 1 auto;
-  align-items: center;
-  min-width: 0;
-  min-height: 40px;
-  padding: 0 8px;
-  color: inherit;
-  font: 700 14px var(--sans);
-}
-
-.email-short,
-.email-address,
-.email-copy {
-  transition:
-    max-width 180ms ease,
-    opacity 140ms ease,
-    transform 180ms ease;
-}
-
-.email-short {
-  max-width: 60px;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-.email-address {
-  max-width: 0;
-  overflow: hidden;
-  opacity: 0;
-  transform: translateX(6px);
-  white-space: nowrap;
-}
-
-.email-copy {
-  flex: 0 0 auto;
-  max-width: 0;
-  min-height: 28px;
-  margin-right: 0;
-  overflow: hidden;
-  border: 0 solid color-mix(in srgb, #251700 22%, transparent);
-  border-radius: 6px;
-  background: color-mix(in srgb, #fff 34%, transparent);
-  color: inherit;
-  cursor: pointer;
-  font: 800 11px var(--sans);
-  opacity: 0;
-  padding: 0;
-  pointer-events: none;
-  transform: translateX(6px);
-}
-
-.email-pill:hover .email-short,
-.email-pill:focus-within .email-short {
-  max-width: 0;
-  opacity: 0;
-}
-
-.email-pill:hover .email-address,
-.email-pill:focus-within .email-address {
-  max-width: 150px;
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.email-pill:hover .email-copy,
-.email-pill:focus-within .email-copy {
-  max-width: 60px;
-  margin-right: 6px;
-  border-width: 1px;
-  opacity: 1;
-  padding: 0 8px;
-  pointer-events: auto;
-  transform: translateX(0);
-}
-
-.email-main:focus-visible,
-.email-copy:focus-visible {
-  outline: 0;
-}
-
-.email-copy:hover,
-.email-copy:focus-visible {
-  background: color-mix(in srgb, #fff 54%, transparent);
-}
-
-@media (hover: none) {
-  .email-pill {
-    width: min(var(--email-expanded-width), 100%);
-  }
-
-  .email-short {
-    max-width: 0;
-    opacity: 0;
-  }
-
-  .email-address {
-    max-width: 150px;
-    opacity: 1;
-    transform: translateX(0);
-  }
-
-  .email-copy {
-    max-width: 60px;
-    margin-right: 6px;
-    border-width: 1px;
-    opacity: 1;
-    padding: 0 8px;
-    pointer-events: auto;
-    transform: translateX(0);
-  }
-}
-
 .menu-button {
   display: none;
   width: 42px;
@@ -596,6 +460,149 @@ html[data-theme="light"] .mobile-nav button {
   min-height: 1.35em;
 }
 
+.citation-preview-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.citation-preview-link {
+  color: var(--blue);
+}
+
+.citation-preview-card {
+  position: absolute;
+  bottom: calc(100% + 13px);
+  left: 50%;
+  z-index: 50;
+  display: block;
+  width: min(430px, calc(100vw - 32px));
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  color: var(--body);
+  font-style: normal;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 6px);
+  transition:
+    border-color 160ms ease,
+    opacity 160ms ease,
+    transform 160ms ease,
+    visibility 160ms ease;
+  visibility: hidden;
+}
+
+.citation-preview-card::after {
+  content: "";
+  position: absolute;
+  bottom: -7px;
+  left: 50%;
+  width: 12px;
+  aspect-ratio: 1;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.citation-preview-wrap:hover .citation-preview-card,
+.citation-preview-wrap:focus-within .citation-preview-card {
+  border-color: var(--blue);
+  opacity: 1;
+  transform: translate(-50%, 0);
+  visibility: visible;
+}
+
+.citation-preview-wrap:hover .citation-preview-card::after,
+.citation-preview-wrap:focus-within .citation-preview-card::after {
+  border-color: var(--blue);
+}
+
+.citation-preview-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.citation-preview-meta,
+.citation-preview-links,
+.citation-preview-topics {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.citation-preview-meta {
+  gap: 8px;
+}
+
+.citation-preview-meta .card-label {
+  margin-bottom: 0;
+}
+
+.citation-preview-links {
+  gap: 6px;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.citation-preview-links span {
+  border-radius: 999px;
+  padding: 7px 8px;
+}
+
+.citation-preview-links span {
+  border: 1px solid color-mix(in srgb, var(--gold) 52%, var(--line));
+  color: color-mix(in srgb, var(--gold) 78%, var(--ink));
+}
+
+.citation-preview-title {
+  display: block;
+  width: 100%;
+  margin-top: 13px;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.18;
+}
+
+.citation-preview-authors {
+  display: block;
+  margin-top: 11px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.citation-preview-authors strong {
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 800;
+}
+
+.citation-preview-topics {
+  gap: 4px;
+  margin-top: 13px;
+  font-family: var(--sans);
+  font-size: 6px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.citation-preview-topics span {
+  border: 1px solid color-mix(in srgb, var(--blue) 22%, var(--line));
+  border-radius: 999px;
+  color: var(--blue);
+  padding: 4px 5px;
+}
+
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
@@ -676,84 +683,34 @@ html[data-theme="light"] .mobile-nav button {
   color: var(--ink);
 }
 
-.portrait-links .email-pill {
-  width: 68px;
+.email-pill {
+  display: inline-flex;
+  min-width: 68px;
   min-height: 28px;
-  border-color: color-mix(in srgb, var(--blue) 24%, var(--line));
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--blue) 24%, var(--line));
   border-radius: 999px;
   background: transparent;
   color: var(--blue);
+  cursor: pointer;
+  font: 800 12px/1 var(--sans);
+  padding: 7px 10px;
   transition:
     border-color 160ms ease,
     background 160ms ease,
     color 160ms ease;
 }
 
-.portrait-links .email-pill:hover,
-.portrait-links .email-pill:focus-within {
-  width: 68px;
+.email-pill.is-copy-ready,
+.email-pill.is-copied {
   border-color: var(--gold);
   background: color-mix(in srgb, var(--gold) 14%, transparent);
-  color: var(--ink);
-  box-shadow: none;
+  color: color-mix(in srgb, var(--gold) 76%, var(--ink));
 }
 
-.portrait-links .email-main {
-  min-height: 26px;
-  padding: 0 10px;
-  font: 800 12px var(--sans);
-}
-
-.portrait-links .email-pill:hover .email-main,
-.portrait-links .email-pill:focus-within .email-main {
-  flex: 0 1 0;
-  max-width: 0;
-  overflow: hidden;
-  padding: 0;
-}
-
-.portrait-links .email-address {
-  display: none;
-}
-
-.portrait-links .email-pill:hover .email-address,
-.portrait-links .email-pill:focus-within .email-address {
-  max-width: 0;
-  opacity: 0;
-}
-
-.portrait-links .email-copy {
-  flex: 1 1 auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  max-width: 0;
-  min-height: 20px;
-  margin-right: 0;
-  border-radius: 999px;
-  border-width: 0;
-  background: color-mix(in srgb, var(--gold) 22%, transparent);
-  font: 800 10px var(--sans);
-  opacity: 0;
-  padding: 0;
-  pointer-events: none;
-  transform: translateX(4px);
-}
-
-.portrait-links .email-pill:hover .email-copy,
-.portrait-links .email-pill:focus-within .email-copy {
-  max-width: 54px;
-  margin: 0 auto;
-  border-width: 1px;
-  opacity: 1;
-  padding: 0 7px;
-  pointer-events: auto;
-  transform: translateX(0);
-}
-
-.portrait-links .email-copy:hover,
-.portrait-links .email-copy:focus-visible {
-  background: color-mix(in srgb, var(--gold) 34%, transparent);
+.email-pill:focus-visible {
+  outline: 0;
 }
 
 .metric-strip {
@@ -1161,6 +1118,12 @@ a.content-card:hover {
 .home-teaching-card {
   position: relative;
   overflow: hidden;
+}
+
+.home-teaching-card:hover,
+.home-teaching-card:focus-within {
+  border-color: var(--blue);
+  transform: translateY(-2px);
 }
 
 .home-teaching-card .card-body {

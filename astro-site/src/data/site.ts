@@ -60,9 +60,8 @@ export const researchProjects = [
     ],
     topics: ["CTMCs", "Gaussian processes", "Adjoint methods"],
     abstract: [
-      "Inferring the infinitesimal rates of continuous-time Markov chains (CTMCs) is a central challenge in many scientific domains. This task is difficult because the number of rates grows quadratically with the state space, rates can be strongly dependent, and many transitions may be only partially observed. We introduce a Bayesian framework that models CTMC rates as flexible functions of covariates through Gaussian processes.",
-      "This enables nonlinear covariate effects, improves inference by incorporating external information, and helps identify potential drivers of CTMC dynamics. For posterior inference, we use Hamiltonian Monte Carlo and develop scalable exact and approximate gradients for likelihoods involving repeated matrix exponentials.",
-      "With N observations and K CTMC states, these gradients reduce the dominant cost of existing derivative calculations from O(NK^3), with large constants, to O(K^3 + NK^2), with cheaper constants. We demonstrate the method in Bayesian phylogenetic and phylogeographic inference, where CTMCs are central, and show strong performance on synthetic and real datasets, including empirical quadratic scaling in K even when N < K."
+      "Inferring the infinitesimal rates of continuous-time Markov chains (CTMCs) is a central challenge in many scientific domains. This task is difficult because the number of rates grows quadratically with the state space, rates can be strongly dependent, and many transitions may be only partially observed. We introduce a Bayesian framework that models CTMC rates as flexible functions of covariates through Gaussian processes. This enables nonlinear covariate effects, improves inference by incorporating external information, and helps identify potential drivers of CTMC dynamics. ",
+      "For posterior inference, we use Hamiltonian Monte Carlo and develop scalable exact and approximate gradients for likelihoods involving repeated matrix exponentials. With $N$ observations and $K$ CTMC states, these gradients reduce the dominant cost of existing derivative calculations from $O(NK^3)$, with large constants, to $O(K^3 + NK^2)$, with cheaper constants. We demonstrate the method in Bayesian phylogenetic and phylogeographic inference, where CTMCs are central, and show strong performance on synthetic and real datasets, including empirical quadratic scaling in $K$ even when $N < K$."
     ]
   },
   {
@@ -95,7 +94,7 @@ export const researchProjects = [
       { label: "DOI", href: "https://doi.org/10.64898/2026.01.07.26343606" },
       { label: "Europe PMC", href: "https://europepmc.org/article/ppr/ppr1251646" }
     ],
-    topics: ["Chikungunya virus", "Phylogeography", "Phylodynamics"],
+    topics: ["Viral evolution", "Phylogeography", "Phylodynamics"],
     abstract: [
       "This preprint studies the 2024-2025 chikungunya virus epidemic on Réunion island using a large genomic dataset and phylogeographic and phylodynamic methods to characterize the introduced transmission chain.",
       "The analyses point to gravity-like spatial dispersal among populated areas, frequent exchanges across residential areas, and associations between epidemic intensity and climate variables, while suggesting that population immunity from the recent and historical epidemics may help explain the epidemic decline."

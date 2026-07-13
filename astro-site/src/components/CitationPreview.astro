@@ -1,0 +1,55 @@
+---
+import { researchProjects } from "../data/site";
+
+interface Props {
+  label: string;
+  title: string;
+}
+
+const { label, title } = Astro.props;
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+
+const project = researchProjects.find((item) => item.title === title);
+const href = project ? `/publications/#paper-${slugify(project.title)}` : "/publications/";
+const highlightedAuthor = "Monti, F.";
+const authorParts = project?.authors.split(highlightedAuthor) ?? [];
+---
+
+<span class="citation-preview-wrap">
+  <a class="citation-preview-link" href={href}>{label}</a>
+  {
+    project && (
+      <span class="citation-preview-card" aria-hidden="true">
+        <span class="citation-preview-head">
+          <span class="citation-preview-meta">
+            <span class="card-label">{project.year}</span>
+            {project.links.length > 0 && (
+              <span class="citation-preview-links">
+                {project.links.map((link) => <span>{link.label}</span>)}
+              </span>
+            )}
+          </span>
+          <span class="status-pill">{project.status}</span>
+        </span>
+        <span class="citation-preview-title">{project.title}</span>
+        <span class="authors citation-preview-authors">
+          {authorParts.map((part, index) => (
+            <>
+              {index > 0 && <strong>{highlightedAuthor}</strong>}
+              {part}
+            </>
+          ))}
+        </span>
+        {project.topics.length > 0 && (
+          <span class="citation-preview-topics">
+            {project.topics.slice(0, 3).map((topic) => <span>{topic}</span>)}
+          </span>
+        )}
+      </span>
+    )
+  }
+</span>
