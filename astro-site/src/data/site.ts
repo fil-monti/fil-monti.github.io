@@ -219,6 +219,5 @@ export const softwareEntries = [
 
 export const footerLinks = [
   { label: "Email", href: `mailto:${profile.email}` },
-  { label: "GitHub", href: profile.github },
-  { label: "News", href: "/news/" }
+  { label: "GitHub", href: profile.github }
 ];

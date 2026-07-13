@@ -1,4 +1,3 @@
-import { getCollection } from "astro:content";
 import { navItems, researchProjects, softwareEntries, teachingGroups } from "../data/site";
 
 export type SearchEntry = {
@@ -9,17 +8,13 @@ export type SearchEntry = {
   tags?: string[];
 };
 
-const postHref = (id: string) => `/news/${id}/`;
-
 const slugify = (value: string) =>
   value
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 
-export async function getSearchEntries(): Promise<SearchEntry[]> {
-  const posts = await getCollection("posts");
-
+export function getSearchEntries(): SearchEntry[] {
   return [
     ...navItems.map((item) => ({
       title: item.label,
@@ -27,12 +22,6 @@ export async function getSearchEntries(): Promise<SearchEntry[]> {
       category: "Page",
       description: `${item.label} page on Filippo Monti's academic website.`
     })),
-    {
-      title: "News",
-      href: "/news/",
-      category: "Page",
-      description: "Posts and longer notes preserved from the current site."
-    },
     ...researchProjects.map((project) => ({
       title: project.title,
       href: `/publications/#paper-${slugify(project.title)}`,
@@ -54,13 +43,6 @@ export async function getSearchEntries(): Promise<SearchEntry[]> {
       category: "Software",
       description: entry.description,
       tags: entry.tags
-    })),
-    ...posts.map((post) => ({
-      title: post.data.title,
-      href: postHref(post.id),
-      category: "News",
-      description: post.data.description ?? "",
-      tags: post.data.tags
     }))
   ];
 }

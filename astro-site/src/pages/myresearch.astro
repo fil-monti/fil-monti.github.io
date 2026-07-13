@@ -1,12 +1,10 @@
 ---
 import PageSideNav from "../components/PageSideNav.astro";
-import GravityMap from "../components/GravityMap.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { applicationAreas, researchFocus } from "../data/site";
 
 const researchNavItems = [
-  { label: "Introduction", href: "#introduction" },
-  { label: "Research Summary", href: "#research-summary" }
+  { label: "Introduction", href: "#introduction" }
 ];
 ---
 
@@ -64,13 +62,6 @@ const researchNavItems = [
         </div>
       </section>
 
-      <section id="research-summary" class="research-summary" aria-labelledby="research-summary-title">
-        <div class="section-heading">
-          <p class="section-kicker" id="research-summary-title">Research Summary</p>
-        </div>
-
-        <GravityMap />
-      </section>
     </div>
   </div>
 </BaseLayout>

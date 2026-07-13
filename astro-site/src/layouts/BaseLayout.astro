@@ -17,7 +17,7 @@ const {
 } = Astro.props;
 
 const pageTitle = title === profile.name ? title : `${title} | ${profile.name}`;
-const searchEntries = await getSearchEntries();
+const searchEntries = getSearchEntries();
 ---
 
 <!doctype html>
