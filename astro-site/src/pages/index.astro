@@ -55,12 +55,14 @@ const coalescentPaper =
         <p class="eyebrow">Bayesian statistics · Evolutionary dynamics · UCLA</p>
         <h1 class="hero-title" data-hero-title>
           <span class="hero-title-slide is-current" data-hero-title-current>
-            <span data-hero-title-current-main>Modeling evolution</span>
-            <span data-hero-title-current-accent>across space and time.</span>
+            <span class="hero-title-line is-ink" data-hero-title-current-line>Modeling evolution</span>
+            <span class="hero-title-line is-blue" data-hero-title-current-line>across space and time.</span>
+            <span class="hero-title-line is-blue" data-hero-title-current-line hidden></span>
           </span>
           <span class="hero-title-slide is-next" data-hero-title-next aria-hidden="true">
-            <span data-hero-title-next-main></span>
-            <span data-hero-title-next-accent></span>
+            <span class="hero-title-line is-ink" data-hero-title-next-line hidden></span>
+            <span class="hero-title-line is-blue" data-hero-title-next-line hidden></span>
+            <span class="hero-title-line is-blue" data-hero-title-next-line hidden></span>
           </span>
         </h1>
         <p class="hero-lede">
@@ -225,23 +227,24 @@ const coalescentPaper =
 
   const heroTitles = [
     {
-      main: "Modeling evolution",
-      accent: "across space and time.",
-      compactAccent: false
+      lines: [
+        { text: "Modeling evolution", tone: "ink" },
+        { text: "across space and time.", tone: "blue" }
+      ]
     },
     {
-      main: "Scalable inference for",
-      accent: "continuous-time Markov processes.",
-      compactAccent: true
+      lines: [
+        { text: "Scalable inference for", tone: "ink" },
+        { text: "continuous-time Markov", tone: "blue" },
+        { text: "processes.", tone: "blue" }
+      ]
     }
   ];
   const heroTitle = document.querySelector("[data-hero-title]");
   const currentSlide = document.querySelector("[data-hero-title-current]");
   const nextSlide = document.querySelector("[data-hero-title-next]");
-  const currentTitleMain = document.querySelector("[data-hero-title-current-main]");
-  const currentTitleAccent = document.querySelector("[data-hero-title-current-accent]");
-  const nextTitleMain = document.querySelector("[data-hero-title-next-main]");
-  const nextTitleAccent = document.querySelector("[data-hero-title-next-accent]");
+  const currentTitleLines = Array.from(document.querySelectorAll("[data-hero-title-current-line]"));
+  const nextTitleLines = Array.from(document.querySelectorAll("[data-hero-title-next-line]"));
   let activeHeroTitle = 0;
   let heroTitleIsSliding = false;
 
@@ -249,10 +252,8 @@ const coalescentPaper =
     heroTitle instanceof HTMLElement &&
     currentSlide instanceof HTMLElement &&
     nextSlide instanceof HTMLElement &&
-    currentTitleMain instanceof HTMLElement &&
-    currentTitleAccent instanceof HTMLElement &&
-    nextTitleMain instanceof HTMLElement &&
-    nextTitleAccent instanceof HTMLElement
+    currentTitleLines.every((line) => line instanceof HTMLElement) &&
+    nextTitleLines.every((line) => line instanceof HTMLElement)
   ) {
     const slideTiming = {
       duration: 760,
@@ -260,6 +261,23 @@ const coalescentPaper =
       fill: "forwards" as FillMode
     };
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const setSlideTitle = (
+      slide: HTMLElement,
+      lineElements: Element[],
+      title: (typeof heroTitles)[number]
+    ) => {
+      lineElements.forEach((lineElement, index) => {
+        if (!(lineElement instanceof HTMLElement)) return;
+        const line = title.lines[index];
+
+        lineElement.textContent = line?.text ?? "";
+        lineElement.classList.toggle("is-ink", line?.tone === "ink");
+        lineElement.classList.toggle("is-blue", line?.tone !== "ink");
+        lineElement.toggleAttribute("hidden", !line);
+      });
+
+      slide.dataset.lineCount = String(title.lines.length);
+    };
 
     window.setInterval(() => {
       if (heroTitleIsSliding) return;
@@ -268,17 +286,16 @@ const coalescentPaper =
       const nextTitle = heroTitles[activeHeroTitle];
 
       heroTitleIsSliding = true;
-      nextTitleMain.textContent = nextTitle.main;
-      nextTitleAccent.textContent = nextTitle.accent;
-      nextSlide.classList.toggle("has-compact-accent", nextTitle.compactAccent);
+      setSlideTitle(nextSlide, nextTitleLines, nextTitle);
 
       const finishSlide = () => {
-        currentTitleMain.textContent = nextTitle.main;
-        currentTitleAccent.textContent = nextTitle.accent;
-        currentSlide.classList.toggle("has-compact-accent", nextTitle.compactAccent);
-        nextTitleMain.textContent = "";
-        nextTitleAccent.textContent = "";
-        nextSlide.classList.remove("has-compact-accent");
+        setSlideTitle(currentSlide, currentTitleLines, nextTitle);
+        nextTitleLines.forEach((lineElement) => {
+          if (!(lineElement instanceof HTMLElement)) return;
+          lineElement.textContent = "";
+          lineElement.hidden = true;
+        });
+        nextSlide.removeAttribute("data-line-count");
         heroTitleIsSliding = false;
       };
 

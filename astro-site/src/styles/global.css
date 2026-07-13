@@ -431,14 +431,16 @@ html[data-theme="light"] .mobile-nav button {
 
 .hero-title {
   position: relative;
-  height: 2em;
+  height: 3em;
   overflow: hidden;
 }
 
 .hero-title-slide {
   position: absolute;
   inset: 0;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   min-width: 0;
   transform: translate3d(0, 0, 0);
   will-change: transform;
@@ -449,23 +451,19 @@ html[data-theme="light"] .mobile-nav button {
   transform: translate3d(104%, 0, 0);
 }
 
-.hero-title-slide > span {
+.hero-title-line {
   display: block;
   color: var(--blue);
-  text-wrap: balance;
-}
-
-.hero-title-slide > span:first-child {
-  color: var(--ink);
-}
-
-.hero-title-slide > span:last-child {
+  line-height: 1;
   white-space: nowrap;
 }
 
-.hero-title-slide.has-compact-accent > span {
-  font-size: clamp(18px, 5vw, 0.74em);
-  line-height: 1.16;
+.hero-title-line.is-ink {
+  color: var(--ink);
+}
+
+.hero-title-line.is-blue {
+  color: var(--blue);
 }
 
 .hero-lede,
