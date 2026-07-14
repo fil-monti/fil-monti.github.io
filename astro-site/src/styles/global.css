@@ -471,7 +471,7 @@ html[data-theme="light"] .mobile-nav button {
 .section-heading p {
   max-width: 760px;
   color: var(--body);
-  font-size: 22px;
+  font-size: 20px;
 }
 
 .notable-contributions {
