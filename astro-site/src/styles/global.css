@@ -2303,6 +2303,12 @@ a.content-card:hover {
     font-size: 19px;
   }
 
+  .hero-lede,
+  .notable-contributions,
+  .notable-contributions strong {
+    font-size: 18px;
+  }
+
   .education-timeline {
     --timeline-x: 14px;
     --timeline-offset: 40px;
