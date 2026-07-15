@@ -4,3 +4,6 @@ _site*
 vendor/*
 .DS_Store
 *.zip
+.bundle/
+Gemfile.lock
+buildWebsite.md
