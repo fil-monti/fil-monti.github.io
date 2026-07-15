@@ -264,12 +264,12 @@ html[data-theme="dark"] .site-header .header-icon-button {
 
 .header-icon-button {
   display: inline-grid;
-  width: 30px;
-  min-height: 30px;
+  width: 22px;
+  min-height: 22px;
   place-items: center;
   border-radius: 50%;
   padding: 0;
-  font-size: 19px;
+  font-size: 14px;
   line-height: 1;
 }
 
@@ -285,8 +285,8 @@ html[data-theme="dark"] .site-header .header-icon-button {
 
 .theme-switch {
   display: inline-grid;
-  width: 44px;
-  min-height: 26px;
+  width: 33px;
+  min-height: 20px;
   place-items: center;
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -298,25 +298,25 @@ html[data-theme="dark"] .site-header .header-icon-button {
 .theme-switch-track {
   position: relative;
   display: block;
-  width: 30px;
-  height: 16px;
+  width: 22px;
+  height: 12px;
   border-radius: 999px;
   background: color-mix(in srgb, var(--blue) 20%, var(--line));
 }
 
 .theme-switch-thumb {
   position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 12px;
-  height: 12px;
+  top: 1.5px;
+  left: 1.5px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background: var(--blue);
   transition: transform 160ms ease;
 }
 
 .theme-switch[aria-checked="true"] .theme-switch-thumb {
-  transform: translateX(14px);
+  transform: translateX(10px);
 }
 
 .theme-switch:hover,
@@ -350,16 +350,20 @@ html[data-theme="dark"] .site-header .header-icon-button {
 
 .menu-button {
   display: none;
-  width: 42px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 30px;
+  min-height: 30px;
   padding: 0;
-  place-items: center;
 }
 
 .menu-button span {
   display: block;
-  width: 18px;
+  width: 14px;
   height: 2px;
-  margin: 3px auto;
+  margin: 0;
   border-radius: 999px;
   background: currentColor;
 }
@@ -504,6 +508,91 @@ html[data-theme="light"] .mobile-nav button {
 
 .citation-preview-link {
   color: var(--blue);
+}
+
+.person-link-menu {
+  position: relative;
+  display: inline-block;
+  line-height: inherit;
+}
+
+.person-link-trigger {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--blue);
+  cursor: pointer;
+  font: inherit;
+  font-style: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+.person-link-trigger:hover,
+.person-link-trigger:focus-visible {
+  color: var(--gold);
+}
+
+.person-link-trigger:focus-visible {
+  border-radius: 4px;
+  outline: 2px solid color-mix(in srgb, var(--gold) 70%, transparent);
+  outline-offset: 2px;
+}
+
+.person-link-popover {
+  position: absolute;
+  bottom: calc(100% + 9px);
+  left: 50%;
+  z-index: 70;
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 4px);
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease;
+  white-space: nowrap;
+}
+
+.person-link-popover::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  height: 12px;
+}
+
+.person-link-popover a {
+  border: 1px solid color-mix(in srgb, var(--blue) 24%, var(--line));
+  border-radius: 999px;
+  color: var(--blue);
+  padding: 6px 8px;
+}
+
+.person-link-popover a:hover,
+.person-link-popover a:focus-visible {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.person-link-menu:hover .person-link-popover,
+.person-link-menu:focus-within .person-link-popover {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
 }
 
 .citation-preview-card {
@@ -1168,6 +1257,12 @@ a.content-card:hover {
   transform: translateY(-2px);
 }
 
+.home-teaching-info-card:hover,
+.home-teaching-info-card:focus-within {
+  border-color: var(--blue);
+  transform: translateY(-2px);
+}
+
 .home-teaching-card .card-body {
   padding-bottom: 76px;
 }
@@ -1408,12 +1503,12 @@ a.content-card:hover {
   position: relative;
   width: min(1180px, 100%);
   margin: 0 auto;
-  padding: 22px 28px 0;
+  padding: 10px 28px 0;
 }
 
 .research-page-layout > .page-side-nav {
   position: absolute;
-  top: 22px;
+  top: 10px;
   left: -165px;
   width: 150px;
 }
@@ -1425,7 +1520,7 @@ a.content-card:hover {
 .page-hero.research-page-hero {
   width: auto;
   margin: 0;
-  padding: var(--hero-top-space) 0 18px;
+  padding: var(--hero-top-space) 0 8px;
 }
 
 .research-page-content {
@@ -1438,6 +1533,27 @@ a.content-card:hover {
   scroll-margin-top: calc(var(--site-bar-height) + 24px);
 }
 
+.project-card:target {
+  animation: paper-target-highlight 4s ease-out;
+}
+
+@keyframes paper-target-highlight {
+  0%,
+  82% {
+    outline: 5px solid var(--blue);
+    outline-offset: 0;
+    box-shadow:
+      var(--shadow),
+      0 0 0 8px color-mix(in srgb, var(--blue) 10%, transparent);
+  }
+
+  100% {
+    outline: 5px solid transparent;
+    outline-offset: 0;
+    box-shadow: var(--shadow);
+  }
+}
+
 .research-overview {
   padding-bottom: 56px;
 }
@@ -1445,7 +1561,7 @@ a.content-card:hover {
 .research-intro {
   max-width: 900px;
   margin-bottom: 30px;
-  font-size: 22px;
+  font-size: 20px;
 }
 
 .research-top-grid {
@@ -1453,6 +1569,41 @@ a.content-card:hover {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 34px;
   align-items: stretch;
+}
+
+.research-thesis {
+  padding-top: 40px;
+  padding-bottom: 56px;
+  border-top: 1px solid var(--line);
+}
+
+.thesis-index {
+  display: grid;
+  gap: 18px;
+  padding-left: 22px;
+  font-size: 20px;
+}
+
+.thesis-index ol {
+  margin-top: 10px;
+  padding-left: 22px;
+}
+
+.thesis-sublist {
+  list-style-type: lower-roman;
+}
+
+.thesis-index > li {
+  font-family: var(--sans);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.thesis-index li li {
+  font-family: var(--serif);
+  font-weight: 400;
+  color: var(--body);
+  margin-bottom: 0.45rem;
 }
 
 .research-papers {
@@ -2171,7 +2322,7 @@ a.content-card:hover {
   }
 
   .menu-button {
-    display: inline-grid;
+    display: inline-flex;
   }
 
   .hero-grid,
@@ -2304,6 +2455,7 @@ a.content-card:hover {
   }
 
   .hero-lede,
+  .page-hero p:not(.eyebrow),
   .notable-contributions,
   .notable-contributions strong {
     font-size: 18px;
@@ -2345,8 +2497,9 @@ a.content-card:hover {
     text-align: left;
   }
 
-  .research-intro {
-    font-size: 19px;
+  .research-intro,
+  .thesis-index {
+    font-size: 18px;
   }
 
   .teaching-card {

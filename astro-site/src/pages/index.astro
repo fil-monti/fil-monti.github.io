@@ -1,6 +1,6 @@
 ---
-import ContentCard from "../components/ContentCard.astro";
 import CitationPreview from "../components/CitationPreview.astro";
+import PersonLinkMenu from "../components/PersonLinkMenu.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { profile, researchProjects, teachingGroups } from "../data/site";
@@ -14,6 +14,23 @@ const ctmcPaper =
 const ouPaper = "Stable Matrix Parametrizations and Structured Adjoints for Ornstein--Uhlenbeck Processes";
 const coalescentPaper =
   "Adjoint differentiation and many-core acceleration for scalable structured coalescent inference";
+const professorLinks = {
+  marcSuchard: [
+    { label: "Website", href: "https://suchard-group.github.io/" },
+    {
+      label: "Google Scholar",
+      href: "https://scholar.google.com/citations?view_op=search_authors&mauthors=Marc+A.+Suchard&hl=en"
+    }
+  ],
+  yunSong: [{ label: "Website", href: "https://people.eecs.berkeley.edu/~yss/" }],
+  igorPruenster: [
+    { label: "Website", href: "https://www.unibocconi.it/en/faculty/igor-pruenster" },
+    {
+      label: "Google Scholar",
+      href: "https://scholar.google.com/citations?view_op=search_authors&mauthors=Igor+Pruenster&hl=en"
+    }
+  ]
+};
 ---
 
 <BaseLayout title={profile.name}>
@@ -67,7 +84,7 @@ const coalescentPaper =
         </h1>
         <p class="hero-lede">
           I am a fourth year PhD candidate in the Department of Biostatistics at UCLA,
-          working with Professor <a href="https://suchard-group.github.io/" target="_blank" rel="noreferrer">Marc Suchard</a>.
+          working with Professor <PersonLinkMenu name="Marc Suchard" links={professorLinks.marcSuchard} />.
           My research develops Bayesian and computational methods to study evolutionary and
           population-level dynamics.
         </p>
@@ -96,7 +113,7 @@ const coalescentPaper =
             <div>
               <h3>Incoming Postdoctoral Researcher</h3>
               <p class="education-institution">University of California, Berkeley</p>
-              <p class="education-meta">Starting January 2027 · Advisor: Yun Song</p>
+              <p class="education-meta">Starting January 2027 · Advisor: <PersonLinkMenu name="Yun Song" links={professorLinks.yunSong} /></p>
             </div>
           </li>
           <li class="education-item">
@@ -106,7 +123,7 @@ const coalescentPaper =
             <div>
               <h3>PhD in Biostatistics</h3>
               <p class="education-institution">University of California, Los Angeles</p>
-              <p class="education-meta">2022 - Nov. 2026 (Expected) · Advisor: Marc Suchard</p>
+              <p class="education-meta">2022 - Nov. 2026 (Expected) · Advisor: <PersonLinkMenu name="Marc Suchard" links={professorLinks.marcSuchard} /></p>
             </div>
           </li>
           <li class="education-item">
@@ -116,7 +133,7 @@ const coalescentPaper =
             <div>
               <h3>BSc and MSc in Economic and Social Sciences</h3>
               <p class="education-institution">Bocconi University, Milan, Italy</p>
-              <p class="education-meta">2016-2022 · Advisor: Igor Pruenster</p>
+              <p class="education-meta">2016-2022 · Advisor: <PersonLinkMenu name="Igor Pruenster" links={professorLinks.igorPruenster} /></p>
             </div>
           </li>
         </ol>
@@ -142,13 +159,17 @@ const coalescentPaper =
           }
           {
             workshopGroup && workshopEntry && (
-              <ContentCard
-                label="Lecturer"
-                title={workshopGroup.institution}
-                description={`with Prof. Marc Suchard. ${workshopEntry.course} (${workshopEntry.term})`}
-                image={workshopGroup.image}
-                href="/myteaching/"
-              />
+              <article class="content-card home-teaching-info-card">
+                <img src={workshopGroup.image} alt="" loading="lazy" />
+                <div class="card-body">
+                  <p class="card-label">Lecturer</p>
+                  <h3>{workshopGroup.institution}</h3>
+                  <p>
+                    with Prof. <PersonLinkMenu name="Marc Suchard" links={professorLinks.marcSuchard} />.{" "}
+                    {workshopEntry.course} ({workshopEntry.term})
+                  </p>
+                </div>
+              </article>
             )
           }
         </div>

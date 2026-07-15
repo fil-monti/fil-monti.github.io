@@ -153,16 +153,26 @@ export const researchProjects = [
     abstract: []
   },
   {
-    title: "Modeling Random Positive Integrals with Squared Basis Expansions",
+    title: "Scalable Nonparametric Modeling of Random Integrals with Squared Basis Expansions",
     authors: "Monti, F., and Suchard, M. A.",
     year: "2026+",
-    status: "Manuscript in preparation",
+    status: "Work in progress",
     links: [],
     topics: ["Random positive integrals", "Basis expansions"],
     abstract: []
   },
   {
-    title: "Stable Matrix Parametrizations and Structured Adjoints for Ornstein--Uhlenbeck Processes",
+    title:
+      "Substitution Rate Heterogeneity Driven by the Threshold-Occupation Time of a Latent Brownian Motion",
+    authors: "Monti, F., and Suchard, M. A.",
+    year: "2026+",
+    status: "Work in progress",
+    links: [],
+    topics: ["CTMCs", "Diffusion processes", "Substitution models"],
+    abstract: []
+  },
+  {
+    title: "Stable Matrix Parametrization and Structured Adjoints for Ornstein--Uhlenbeck Processes",
     authors: "Monti, F., Holbrook, A., Glatt-Holtz, N. E., and Suchard, M. A.",
     year: "2026+",
     status: "Manuscript in preparation",

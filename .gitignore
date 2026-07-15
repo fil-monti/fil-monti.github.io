@@ -1,0 +1,6 @@
+_site*
+.DS_Store
+.idea/*
+vendor/*
+.DS_Store
+*.zip

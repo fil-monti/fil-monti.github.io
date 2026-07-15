@@ -4,7 +4,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import { applicationAreas, researchFocus } from "../data/site";
 
 const researchNavItems = [
-  { label: "Introduction", href: "#introduction" }
+  { label: "Overview", href: "#overview" },
+  { label: "PhD Thesis", href: "#phd-thesis" }
 ];
 ---
 
@@ -13,7 +14,7 @@ const researchNavItems = [
   description="Research interests and current projects by Filippo Monti."
 >
   <div class="research-page-layout research-page-hero-layout">
-    <section id="introduction" class="page-hero research-page-hero">
+    <section id="overview" class="page-hero research-page-hero">
       <p class="eyebrow">Modeling Evolution</p>
       <h1>Research</h1>
     </section>
@@ -59,6 +60,48 @@ const researchNavItems = [
               }
             </ul>
           </aside>
+        </div>
+      </section>
+
+      <section id="phd-thesis" class="research-thesis">
+        <p class="section-kicker">PhD Thesis</p>
+        <h2>Scalable Inference for Continuous-Time Markov Processes</h2>
+        <p class="research-intro">Estimated publication: November 2026.</p>
+
+        <div class="prose">
+          <ol class="thesis-index">
+            <li>Chapter 1: Introduction</li>
+            <li>
+              Part I: Discrete Processes
+              <ol class="thesis-sublist">
+                <li>
+                  Research Chapter: <a href="/publications/#paper-nonparametric-modeling-of-continuous-time-markov-chains-with-scalable-exact-and-approximate-gradients">Nonparametric Modeling of Continuous-Time Markov Chains with Scalable Exact and Approximate Gradients</a>
+                </li>
+                <li>
+                  Research Chapter: <a href="/publications/#paper-scalable-nonparametric-modeling-of-random-integrals-with-squared-basis-expansions">Scalable Nonparametric Modeling of Random Integrals with Squared Basis Expansions</a>
+                </li>
+              </ol>
+            </li>
+            <li>
+              Part II: Continuous Processes
+              <ol class="thesis-sublist">
+                <li>
+                  Research Chapter: <a href="/publications/#paper-stable-matrix-parametrization-and-structured-adjoints-for-ornstein-uhlenbeck-processes">Stable Matrix Parametrization and Structured Adjoints for Ornstein-Uhlenbeck Processes</a>
+                </li>
+              </ol>
+            </li>
+            <li>
+              Part III: Dependencies between Continuous-Time Markov Processes
+              <ol class="thesis-sublist">
+                <li>
+                  Research Chapter: <a href="/publications/#paper-investigating-the-drivers-of-time-varying-rates-of-evolution">Investigating the Drivers of Time-Varying Rates of Evolution</a>
+                </li>
+                <li>
+                  Research Chapter: <a href="/publications/#paper-substitution-rate-heterogeneity-driven-by-the-threshold-occupation-time-of-a-latent-brownian-motion">Substitution Rate Heterogeneity Driven by the Threshold-Occupation Time of a Latent Brownian Motion</a>
+                </li>
+              </ol>
+            </li>
+          </ol>
         </div>
       </section>
 
