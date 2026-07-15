@@ -1,0 +1,33 @@
+---
+interface PersonLink {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  name: string;
+  links: PersonLink[];
+}
+
+const { name, links } = Astro.props;
+---
+
+<span class="person-link-menu">
+  <button
+    class="person-link-trigger"
+    type="button"
+    aria-haspopup="true"
+    aria-label={`${name} links`}
+  >
+    {name}
+  </button>
+  <span class="person-link-popover" aria-label={`${name} links`}>
+    {
+      links.map((link) => (
+        <a href={link.href} target="_blank" rel="noreferrer">
+          {link.label}
+        </a>
+      ))
+    }
+  </span>
+</span>
