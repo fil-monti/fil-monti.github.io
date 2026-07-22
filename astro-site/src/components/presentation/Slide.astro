@@ -1,0 +1,24 @@
+---
+interface Props {
+  id?: string;
+  class?: string;
+  background?: string;
+  transition?: string;
+}
+
+const {
+  id,
+  class: className,
+  background,
+  transition
+} = Astro.props;
+---
+
+<section
+  id={id}
+  class:list={["cgsi-slide", className]}
+  data-background={background}
+  data-transition={transition}
+>
+  <slot />
+</section>

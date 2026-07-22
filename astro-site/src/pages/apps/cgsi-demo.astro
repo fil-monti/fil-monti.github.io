@@ -1,0 +1,488 @@
+---
+const title = "CGSI interactive demonstration";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #172033;
+        --muted: #59657a;
+        --blue: #244d8f;
+        --blue-soft: #dbe7fb;
+        --gold: #b9872c;
+        --gold-soft: #f8ead0;
+        --paper: #fffaf0;
+        --line: rgb(23 32 51 / 16%);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        min-height: 100%;
+        margin: 0;
+      }
+
+      body {
+        display: grid;
+        place-items: stretch;
+        background:
+          linear-gradient(135deg, rgb(36 77 143 / 9%), transparent 42%),
+          linear-gradient(315deg, rgb(185 135 44 / 13%), transparent 45%),
+          var(--paper);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      .cgsi-demo {
+        display: grid;
+        grid-template-columns: minmax(18rem, 0.9fr) minmax(24rem, 1.4fr);
+        gap: clamp(1rem, 3vw, 2.5rem);
+        min-height: 100vh;
+        padding: clamp(1.25rem, 3vw, 3rem);
+      }
+
+      .cgsi-demo-panel {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 1.2rem;
+      }
+
+      .cgsi-kicker {
+        margin: 0;
+        color: var(--blue);
+        font-size: clamp(0.8rem, 1.4vw, 1.1rem);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        max-width: 10ch;
+        margin: 0;
+        color: var(--ink);
+        font-size: clamp(2.4rem, 7vw, 6.8rem);
+        line-height: 0.92;
+        letter-spacing: 0;
+      }
+
+      .cgsi-demo-copy {
+        max-width: 34rem;
+        margin: 0;
+        color: var(--muted);
+        font-size: clamp(1.05rem, 1.8vw, 1.45rem);
+        line-height: 1.5;
+      }
+
+      .cgsi-demo-controls,
+      .cgsi-demo-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+      }
+
+      .cgsi-control {
+        min-height: 3rem;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: rgb(255 255 255 / 78%);
+        color: var(--ink);
+        cursor: pointer;
+        padding: 0.6rem 1rem;
+        box-shadow: 0 0.7rem 1.8rem rgb(23 32 51 / 8%);
+      }
+
+      .cgsi-control.primary {
+        border-color: transparent;
+        background: var(--blue);
+        color: white;
+      }
+
+      .cgsi-control:focus-visible,
+      input:focus-visible {
+        outline: 3px solid rgb(36 77 143 / 32%);
+        outline-offset: 3px;
+      }
+
+      .cgsi-slider-row {
+        display: grid;
+        gap: 0.4rem;
+        width: min(100%, 30rem);
+      }
+
+      .cgsi-slider-label {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        color: var(--muted);
+        font-size: 1rem;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--blue);
+      }
+
+      .cgsi-visual {
+        display: grid;
+        align-content: center;
+        min-height: 100%;
+      }
+
+      .cgsi-balance-card {
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 0.5rem;
+        background: rgb(255 255 255 / 66%);
+        box-shadow: 0 1.2rem 3rem rgb(23 32 51 / 11%);
+      }
+
+      .cgsi-plot {
+        position: relative;
+        min-height: min(62vh, 34rem);
+        padding: clamp(1rem, 2.4vw, 2rem);
+      }
+
+      .cgsi-grid {
+        position: absolute;
+        inset: clamp(1rem, 2.4vw, 2rem);
+        background:
+          linear-gradient(var(--line) 1px, transparent 1px),
+          linear-gradient(90deg, var(--line) 1px, transparent 1px);
+        background-size: 100% 25%, 20% 100%;
+        opacity: 0.65;
+      }
+
+      .cgsi-orbit {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: min(45vw, 22rem);
+        aspect-ratio: 1;
+        border: 2px solid rgb(36 77 143 / 22%);
+        border-radius: 999px;
+        translate: -50% -50%;
+      }
+
+      .cgsi-system {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: min(26vw, 13rem);
+        aspect-ratio: 1;
+        border-radius: 999px;
+        background:
+          radial-gradient(circle at 34% 34%, white 0 12%, transparent 13%),
+          conic-gradient(from var(--angle), var(--blue), var(--gold), var(--blue));
+        box-shadow: 0 1rem 2.2rem rgb(23 32 51 / 18%);
+        translate: -50% -50%;
+      }
+
+      .cgsi-vector {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: var(--vector-length);
+        height: 0.42rem;
+        border-radius: 999px;
+        background: var(--gold);
+        transform: translateY(-50%) rotate(var(--angle));
+        transform-origin: left center;
+        box-shadow: 0 0 0 0.35rem rgb(185 135 44 / 16%);
+      }
+
+      .cgsi-vector::after {
+        position: absolute;
+        top: 50%;
+        right: -0.25rem;
+        width: 0;
+        height: 0;
+        border-top: 0.48rem solid transparent;
+        border-bottom: 0.48rem solid transparent;
+        border-left: 0.78rem solid var(--gold);
+        content: "";
+        translate: 0 -50%;
+      }
+
+      .cgsi-readouts {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        border-top: 1px solid var(--line);
+        background: rgb(255 255 255 / 74%);
+      }
+
+      .cgsi-readout {
+        padding: 1rem;
+      }
+
+      .cgsi-readout + .cgsi-readout {
+        border-left: 1px solid var(--line);
+      }
+
+      .cgsi-readout span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+
+      .cgsi-readout strong {
+        display: block;
+        margin-top: 0.2rem;
+        color: var(--ink);
+        font-size: clamp(1.35rem, 3vw, 2.2rem);
+        font-weight: 700;
+      }
+
+      .is-paused .cgsi-system {
+        filter: saturate(0.65);
+      }
+
+      @media (max-width: 780px) {
+        .cgsi-demo {
+          grid-template-columns: 1fr;
+        }
+
+        h1 {
+          max-width: none;
+          font-size: clamp(2.5rem, 14vw, 4.8rem);
+        }
+
+        .cgsi-plot {
+          min-height: 22rem;
+        }
+
+        .cgsi-readouts {
+          grid-template-columns: 1fr;
+        }
+
+        .cgsi-readout + .cgsi-readout {
+          border-top: 1px solid var(--line);
+          border-left: 0;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="cgsi-demo" style="--angle: 20deg; --vector-length: 12rem;">
+      <section class="cgsi-demo-panel" aria-labelledby="cgsi-demo-title">
+        <p class="cgsi-kicker">Same-origin iframe app</p>
+        <h1 id="cgsi-demo-title">CGSI demo</h1>
+        <p class="cgsi-demo-copy">
+          A small stateful placeholder for the talk application. Tune the coupling
+          strength, step the system, leave the slide, and return: the state remains.
+        </p>
+
+        <div class="cgsi-slider-row">
+          <label class="cgsi-slider-label" for="coupling">
+            <span>Coupling strength</span>
+            <strong id="coupling-value">0.62</strong>
+          </label>
+          <input id="coupling" type="range" min="0" max="1" value="0.62" step="0.01" />
+        </div>
+
+        <div class="cgsi-demo-controls" aria-label="Demo controls">
+          <button id="step-system" class="cgsi-control primary" type="button">Step system</button>
+          <button id="reset-system" class="cgsi-control" type="button">Reset</button>
+        </div>
+
+        <div class="cgsi-demo-nav" aria-label="Presentation navigation">
+          <button id="previous-slide" class="cgsi-control" type="button">← Previous slide</button>
+          <button id="next-slide" class="cgsi-control" type="button">Next slide →</button>
+        </div>
+      </section>
+
+      <section class="cgsi-visual" aria-label="Animated CGSI state summary">
+        <div class="cgsi-balance-card">
+          <div class="cgsi-plot">
+            <div class="cgsi-grid" aria-hidden="true"></div>
+            <div class="cgsi-orbit" aria-hidden="true"></div>
+            <div class="cgsi-system" aria-hidden="true"></div>
+            <div class="cgsi-vector" aria-hidden="true"></div>
+          </div>
+
+          <div class="cgsi-readouts" aria-live="polite">
+            <div class="cgsi-readout">
+              <span>Step</span>
+              <strong id="step-value">0</strong>
+            </div>
+            <div class="cgsi-readout">
+              <span>Relaxation</span>
+              <strong id="relaxation-value">0.38</strong>
+            </div>
+            <div class="cgsi-readout">
+              <span>Visible</span>
+              <strong id="visibility-value">yes</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      type CgsiDirection = "next" | "previous";
+      type CgsiVisibilityMessage = {
+        type?: string;
+        visible?: boolean;
+      };
+
+      const storageKey = "cgsi-demo-state";
+      const root = document.querySelector<HTMLElement>(".cgsi-demo");
+      const couplingInput = document.querySelector<HTMLInputElement>("#coupling");
+      const couplingValue = document.querySelector<HTMLElement>("#coupling-value");
+      const stepValue = document.querySelector<HTMLElement>("#step-value");
+      const relaxationValue = document.querySelector<HTMLElement>("#relaxation-value");
+      const visibilityValue = document.querySelector<HTMLElement>("#visibility-value");
+      const stepButton = document.querySelector<HTMLButtonElement>("#step-system");
+      const resetButton = document.querySelector<HTMLButtonElement>("#reset-system");
+
+      let state = {
+        coupling: 0.62,
+        step: 0,
+        angle: 20,
+        visible: true
+      };
+
+      let animationFrame = 0;
+
+      function readStoredState() {
+        const stored = window.sessionStorage.getItem(storageKey);
+
+        if (!stored) {
+          return;
+        }
+
+        try {
+          const parsed = JSON.parse(stored) as Partial<typeof state>;
+          state = {
+            ...state,
+            ...parsed
+          };
+        } catch {
+          window.sessionStorage.removeItem(storageKey);
+        }
+      }
+
+      function writeStoredState() {
+        window.sessionStorage.setItem(storageKey, JSON.stringify(state));
+      }
+
+      function render() {
+        if (!root || !couplingInput || !couplingValue || !stepValue || !relaxationValue || !visibilityValue) {
+          return;
+        }
+
+        const relaxation = Math.max(0.04, 1 - state.coupling);
+        const vectorLength = 8 + state.coupling * 11;
+
+        couplingInput.value = state.coupling.toFixed(2);
+        couplingValue.textContent = state.coupling.toFixed(2);
+        stepValue.textContent = String(state.step);
+        relaxationValue.textContent = relaxation.toFixed(2);
+        visibilityValue.textContent = state.visible ? "yes" : "paused";
+        root.style.setProperty("--angle", `${state.angle}deg`);
+        root.style.setProperty("--vector-length", `${vectorLength}rem`);
+        root.classList.toggle("is-paused", !state.visible);
+      }
+
+      function tick() {
+        if (state.visible) {
+          state.angle = (state.angle + 0.12 + state.coupling * 0.22) % 360;
+          render();
+        }
+
+        animationFrame = window.requestAnimationFrame(tick);
+      }
+
+      function stepSystem() {
+        state.step += 1;
+        state.angle = (state.angle + 24 + state.coupling * 42) % 360;
+        writeStoredState();
+        render();
+      }
+
+      function resetSystem() {
+        state = {
+          coupling: 0.62,
+          step: 0,
+          angle: 20,
+          visible: true
+        };
+        writeStoredState();
+        render();
+      }
+
+      function navigatePresentation(direction: CgsiDirection) {
+        window.parent.postMessage(
+          {
+            type: "cgsi:navigate",
+            direction
+          },
+          window.location.origin
+        );
+      }
+
+      document.querySelector("#previous-slide")?.addEventListener("click", () => {
+        navigatePresentation("previous");
+      });
+
+      document.querySelector("#next-slide")?.addEventListener("click", () => {
+        navigatePresentation("next");
+      });
+
+      stepButton?.addEventListener("click", stepSystem);
+      resetButton?.addEventListener("click", resetSystem);
+
+      couplingInput?.addEventListener("input", () => {
+        state.coupling = Number(couplingInput.value);
+        writeStoredState();
+        render();
+      });
+
+      window.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          navigatePresentation("next");
+        }
+      });
+
+      window.addEventListener("message", (event) => {
+        if (event.origin !== window.location.origin) {
+          return;
+        }
+
+        const message = event.data as CgsiVisibilityMessage | undefined;
+
+        if (!message || message.type !== "cgsi:visibility" || typeof message.visible !== "boolean") {
+          return;
+        }
+
+        state.visible = message.visible;
+        render();
+      });
+
+      readStoredState();
+      render();
+      tick();
+
+      window.addEventListener("pagehide", () => {
+        window.cancelAnimationFrame(animationFrame);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,113 @@
+---
+layout: ../../../layouts/PresentationLayout.astro
+title: CGSI | Filippo Monti
+description: CGSI interactive presentation
+---
+
+import Slide from "../../../components/presentation/Slide.astro";
+import TitleSlide from "../../../components/presentation/TitleSlide.astro";
+import AppSlide from "../../../components/presentation/AppSlide.astro";
+
+export const talk = {
+  title: "CGSI",
+  subtitle: "Interactive statistical and computational models",
+  author: "Filippo Monti",
+  affiliation: "UCLA Biostatistics",
+  event: "CGSI",
+  date: "2026"
+};
+
+<TitleSlide
+  title={talk.title}
+  subtitle={talk.subtitle}
+  author={talk.author}
+  affiliation={talk.affiliation}
+  event={talk.event}
+  date={talk.date}
+/>
+
+<AppSlide
+  id="interactive-tree"
+  class="cgsi-app-slide-side-nav"
+  src="/apps/interactive-ctmc-tree/index.html?embed=1&theme=light&presentation=1"
+  title="Interactive tree app"
+  printSummary="The live version opens the app-only interactive tree view."
+  showNavigation={false}
+/>
+
+<AppSlide
+  id="coalescent-grid"
+  class="cgsi-app-slide-side-nav"
+  src="/apps/interactive-coalescent/index.html?embed=1&theme=light&presentation=1&v=20260722-responsive-toolbar"
+  title="Discrete-time coalescent on a grid"
+  printSummary="The live version opens the coalescent explorer with time-varying population controls."
+  showNavigation={false}
+/>
+
+<Slide id="motivation">
+
+<h2>Motivation</h2>
+
+- Present the scientific problem.
+- Introduce the computational bottleneck.
+- Explain why an interactive visualization is useful during the talk.
+
+</Slide>
+
+<Slide id="mathematical-model">
+
+<h2>Mathematical model</h2>
+
+The central object is the continuous-time covariance balance
+
+$$
+A\Sigma + \Sigma A^\top + Q = 0.
+$$
+
+If the drift admits a stable eigensystem, then
+
+$$
+\exp(tA) = R \exp(tB) R^{-1},
+$$
+
+which turns repeated propagation into a structured computational problem.
+
+</Slide>
+
+<AppSlide
+  id="interactive-demo"
+  src="/apps/cgsi-demo/"
+  title="CGSI interactive demonstration"
+  printSummary="The live version includes a stateful same-origin app with slide navigation, reset controls, and visibility messages from the deck."
+/>
+
+<Slide id="static-backup">
+
+<h2>Static backup</h2>
+
+- The demo represents how coupling strength changes relaxation and propagation.
+- App state is stored locally and the iframe stays mounted while moving through the deck.
+- The next slide summarizes the interpretation if the live app cannot be used.
+
+</Slide>
+
+<Slide id="interpretation">
+
+<h2>Interpretation</h2>
+
+- Interactive state changes make the computational tradeoff visible.
+- The Lyapunov balance links model stability, covariance structure, and numerical propagation.
+- Same-origin embedding keeps the presentation reliable on ordinary GitHub Pages hosting.
+
+</Slide>
+
+<Slide id="conclusion">
+
+<h2>Conclusions</h2>
+
+- Build the talk as a fullscreen web deck, separate from the ordinary site layout.
+- Use MDX for slides, KaTeX for mathematics, and Reveal hashes for direct URLs.
+- Embed larger applications under `/apps/` with explicit presentation navigation.
+- Keep a static fallback available for rehearsal, export, and venue failures.
+
+</Slide>

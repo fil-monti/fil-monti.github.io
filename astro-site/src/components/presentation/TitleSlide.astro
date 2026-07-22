@@ -1,0 +1,45 @@
+---
+interface Props {
+  title: string;
+  subtitle?: string;
+  author?: string;
+  affiliation?: string;
+  date?: string;
+  event?: string;
+  logos?: string[];
+}
+
+const {
+  title,
+  subtitle,
+  author,
+  affiliation,
+  date,
+  event,
+  logos = []
+} = Astro.props;
+---
+
+<section id="title" class="cgsi-slide cgsi-title-slide">
+  <div class="cgsi-title-content">
+    {event && <p class="cgsi-title-event">{event}</p>}
+    <h1>{title}</h1>
+    {subtitle && <p class="cgsi-title-subtitle">{subtitle}</p>}
+
+    <div class="cgsi-title-meta" aria-label="Speaker information">
+      {author && <p>{author}</p>}
+      {affiliation && <p>{affiliation}</p>}
+      {date && <p>{date}</p>}
+    </div>
+  </div>
+
+  {
+    logos.length > 0 && (
+      <div class="cgsi-title-logos" aria-label="Presentation logos">
+        {logos.map((logo) => (
+          <img src={logo} alt="" loading="eager" />
+        ))}
+      </div>
+    )
+  }
+</section>

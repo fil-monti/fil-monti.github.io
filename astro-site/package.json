@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.2.1",
+    "@astrojs/mdx": "^7.0.3",
     "astro": "^7.0.7",
     "katex": "^0.17.0",
     "rehype-katex": "^7.0.1",
-    "remark-math": "^6.0.0"
+    "remark-math": "^6.0.0",
+    "reveal.js": "^6.0.1"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",

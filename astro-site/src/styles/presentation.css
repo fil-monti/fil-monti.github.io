@@ -1,0 +1,348 @@
+html,
+body.presentation-page {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+.presentation-page {
+  --cgsi-ink: #172033;
+  --cgsi-muted: #5d697c;
+  --cgsi-blue: #244d8f;
+  --cgsi-blue-soft: #dbe7fb;
+  --cgsi-gold: #b9872c;
+  --cgsi-gold-soft: #f8ead0;
+  --cgsi-paper: #fffaf0;
+  --cgsi-line: rgb(23 32 51 / 16%);
+  --r-main-font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --r-heading-font: var(--r-main-font);
+  --r-main-color: var(--cgsi-ink);
+  --r-heading-color: var(--cgsi-ink);
+  --r-link-color: var(--cgsi-blue);
+  --r-link-color-hover: #163866;
+  background: var(--cgsi-paper);
+  color: var(--cgsi-ink);
+}
+
+.reveal {
+  background:
+    linear-gradient(135deg, rgb(36 77 143 / 8%), transparent 42%),
+    linear-gradient(315deg, rgb(185 135 44 / 10%), transparent 45%),
+    var(--cgsi-paper);
+  color: var(--cgsi-ink);
+  font-size: 36px;
+}
+
+.reveal .slides {
+  text-align: left;
+}
+
+.reveal .slides section {
+  box-sizing: border-box;
+}
+
+.reveal h1,
+.reveal h2,
+.reveal h3 {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.reveal h1 {
+  font-size: 3.25em;
+}
+
+.reveal h2 {
+  color: var(--cgsi-blue);
+  font-size: 1.65em;
+}
+
+.reveal p,
+.reveal li {
+  line-height: 1.35;
+}
+
+.reveal ul {
+  margin-left: 1.1em;
+}
+
+.reveal li + li {
+  margin-top: 0.28em;
+}
+
+.reveal .katex-display {
+  margin: 1.1em 0;
+}
+
+.reveal .controls {
+  color: var(--cgsi-blue);
+}
+
+.reveal .progress {
+  height: 0.18rem;
+  color: var(--cgsi-gold);
+}
+
+.slide-number {
+  border-radius: 999px;
+  background: rgb(255 255 255 / 82%) !important;
+  color: var(--cgsi-ink) !important;
+  font-size: 0.48em !important;
+}
+
+.cgsi-slide {
+  min-height: 100%;
+  padding: 4.2rem 5rem !important;
+}
+
+.cgsi-title-slide {
+  display: grid !important;
+  grid-template-rows: 1fr auto;
+  gap: 2rem;
+}
+
+.cgsi-title-content {
+  align-self: center;
+}
+
+.cgsi-title-event,
+.cgsi-kicker {
+  margin: 0 0 0.8rem;
+  color: var(--cgsi-gold);
+  font-size: 0.58em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cgsi-title-slide h1 {
+  max-width: 10ch;
+  margin: 0;
+  color: var(--cgsi-ink);
+  font-size: 4.2em;
+  line-height: 0.88;
+}
+
+.cgsi-title-subtitle {
+  max-width: 18ch;
+  margin: 1.2rem 0 0;
+  color: var(--cgsi-blue);
+  font-size: 1.2em;
+  font-weight: 500;
+}
+
+.cgsi-title-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.1rem;
+  margin-top: 2rem;
+  color: var(--cgsi-muted);
+  font-size: 0.62em;
+}
+
+.cgsi-title-meta p {
+  margin: 0;
+}
+
+.cgsi-title-logos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+.cgsi-title-logos img {
+  max-width: 7rem;
+  max-height: 4rem;
+  object-fit: contain;
+}
+
+.cgsi-app-slide {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0 !important;
+}
+
+.cgsi-app-frame,
+.cgsi-app-slide iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.cgsi-app-slide iframe {
+  border: 0;
+  background: transparent;
+}
+
+.cgsi-app-navigation {
+  position: absolute;
+  right: 1.2rem;
+  bottom: 1.2rem;
+  left: 1.2rem;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.cgsi-app-navigation > * {
+  pointer-events: auto;
+}
+
+.cgsi-app-nav-button,
+.cgsi-control-button {
+  display: inline-grid;
+  place-items: center;
+  width: 3.15rem;
+  height: 3.15rem;
+  border: 1px solid var(--cgsi-line);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 82%);
+  color: var(--cgsi-ink);
+  font: inherit;
+  cursor: pointer;
+  opacity: 0.72;
+  box-shadow: 0 0.7rem 1.8rem rgb(23 32 51 / 10%);
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease,
+    background 160ms ease;
+}
+
+.cgsi-app-nav-button:hover,
+.cgsi-app-nav-button:focus-visible,
+.cgsi-control-button:hover,
+.cgsi-control-button:focus-visible {
+  background: white;
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.cgsi-app-label {
+  max-width: min(62vw, 34rem);
+  overflow: hidden;
+  padding: 0.44rem 0.85rem;
+  border: 1px solid var(--cgsi-line);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 82%);
+  color: var(--cgsi-muted);
+  font-size: 0.45em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cgsi-app-slide-side-nav .cgsi-app-navigation {
+  top: 50%;
+  right: 0.75rem;
+  bottom: auto;
+  left: 0.75rem;
+  transform: translateY(-50%);
+}
+
+.cgsi-app-slide-side-nav .cgsi-app-label {
+  display: none;
+}
+
+.presentation-page:has(.cgsi-app-slide-side-nav.present) .cgsi-deck-controls {
+  top: 0.75rem;
+  right: 0.75rem;
+  bottom: auto;
+}
+
+.presentation-page:has(.cgsi-app-slide-side-nav.present) .slide-number {
+  display: none;
+}
+
+.cgsi-deck-controls {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 40;
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.cgsi-fullscreen-button {
+  width: 2.65rem;
+  height: 2.65rem;
+  font-size: 0.72rem;
+}
+
+.print-only {
+  display: none;
+}
+
+.cgsi-app-print-fallback {
+  height: 100%;
+  padding: 4.2rem 5rem;
+  background: var(--cgsi-paper);
+}
+
+@media (max-width: 900px) {
+  .reveal {
+    font-size: 30px;
+  }
+
+  .cgsi-slide,
+  .cgsi-app-print-fallback {
+    padding: 3.2rem 2.2rem !important;
+  }
+
+  .cgsi-title-slide h1 {
+    font-size: 3.3em;
+  }
+}
+
+@media (max-width: 640px) {
+  .reveal {
+    font-size: 26px;
+  }
+
+  .cgsi-slide,
+  .cgsi-app-print-fallback {
+    padding: 2.5rem 1.25rem !important;
+  }
+
+  .cgsi-title-slide h1 {
+    font-size: 2.65em;
+  }
+
+  .cgsi-title-subtitle {
+    max-width: 100%;
+  }
+
+  .cgsi-app-label {
+    display: none;
+  }
+
+  .cgsi-deck-controls {
+    right: 0.7rem;
+    bottom: 0.7rem;
+  }
+}
+
+@media print {
+  html,
+  body.presentation-page {
+    overflow: visible;
+  }
+
+  .interactive-only,
+  .cgsi-deck-controls {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block;
+  }
+
+  .reveal {
+    background: white;
+  }
+}

@@ -1,0 +1,35 @@
+---
+import CoalescentEmbed from "../../components/CoalescentEmbed.astro";
+import PageHero from "../../components/PageHero.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Discrete-Time Coalescent App"
+  description="An interactive browser app for exploring a discrete-time coalescent on a grid."
+>
+  <PageHero
+    eyebrow="Interactive app"
+    title="Discrete-time coalescent"
+    description="A grid-based coalescent explorer with controls for population size, sampling, and time-varying histories."
+  />
+
+  <section class="section-block interactive-app-page">
+    <div class="interactive-app-note">
+      <p>
+        The embedded app keeps its simulation code self-contained while the page
+        provides the site layout and responsive frame.
+      </p>
+      <a
+        class="button"
+        href="/apps/interactive-coalescent/index.html?embed=1&theme=light&v=20260722-responsive-toolbar"
+        target="_blank"
+        rel="noreferrer"
+      >
+        Open full screen
+      </a>
+    </div>
+
+    <CoalescentEmbed />
+  </section>
+</BaseLayout>

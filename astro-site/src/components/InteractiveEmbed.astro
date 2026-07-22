@@ -1,0 +1,112 @@
+---
+interface Props {
+  className?: string;
+  fallbackHref: string;
+  minHeight?: number;
+  source: string;
+  src: string;
+  title: string;
+}
+
+const {
+  className = "",
+  fallbackHref,
+  minHeight = 680,
+  source,
+  src,
+  title,
+} = Astro.props;
+---
+
+<div class={`app-embed ${className}`} data-app-embed data-source={source}>
+  <div class="embed-status" data-embed-status>Loading interactive app...</div>
+  <iframe
+    class="app-frame"
+    data-app-frame
+    data-min-height={minHeight}
+    data-source={source}
+    src={src}
+    title={title}
+    loading="lazy"
+    allow="fullscreen"
+  ></iframe>
+  <noscript>
+    <p>
+      JavaScript is required for the embedded app.
+      <a href={fallbackHref}>Open the app directly</a>.
+    </p>
+  </noscript>
+</div>
+
+<script>
+  const embeds = document.querySelectorAll("[data-app-embed]");
+
+  const currentTheme = () => {
+    const theme = document.documentElement.dataset.theme;
+    return theme === "dark" ? "dark" : "light";
+  };
+
+  const postTheme = (frame: HTMLIFrameElement) => {
+    frame.contentWindow?.postMessage(
+      {
+        type: "beastx:set-theme",
+        theme: currentTheme(),
+      },
+      "*"
+    );
+  };
+
+  embeds.forEach((embed) => {
+    const frame = embed.querySelector("[data-app-frame]");
+    const status = embed.querySelector("[data-embed-status]");
+    if (!(frame instanceof HTMLIFrameElement)) return;
+
+    let loaded = false;
+
+    frame.addEventListener("load", () => {
+      loaded = true;
+      embed.classList.add("is-loaded");
+      status?.setAttribute("hidden", "");
+      postTheme(frame);
+    });
+
+    window.setTimeout(() => {
+      if (!loaded && status) {
+        status.innerHTML = `Still loading. <a href="${frame.src}">Open the app directly</a>.`;
+      }
+    }, 5000);
+  });
+
+  window.addEventListener("message", (event) => {
+    if (!event.data || typeof event.data !== "object") return;
+    if (event.data.type !== "beastx:embed-size") return;
+
+    const source = event.data.source;
+    const height = Number(event.data.height);
+    if (!source || !Number.isFinite(height)) return;
+
+    document
+      .querySelectorAll(`[data-app-frame][data-source="${source}"]`)
+      .forEach((frame) => {
+        if (!(frame instanceof HTMLIFrameElement)) return;
+        const minHeight = Number(frame.dataset.minHeight || 680);
+        frame.style.height = `${Math.max(minHeight, Math.ceil(height))}px`;
+      });
+  });
+
+  window.addEventListener("storage", () => {
+    document
+      .querySelectorAll("[data-app-frame]")
+      .forEach((frame) => frame instanceof HTMLIFrameElement && postTheme(frame));
+  });
+
+  const observer = new MutationObserver((records) => {
+    if (records.some((record) => record.attributeName === "data-theme")) {
+      document
+        .querySelectorAll("[data-app-frame]")
+        .forEach((frame) => frame instanceof HTMLIFrameElement && postTheme(frame));
+    }
+  });
+
+  observer.observe(document.documentElement, { attributes: true });
+</script>

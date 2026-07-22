@@ -1,0 +1,14 @@
+---
+import InteractiveEmbed from "./InteractiveEmbed.astro";
+
+const src = "/apps/interactive-coalescent/index.html?embed=1&theme=light&v=20260722-responsive-toolbar";
+---
+
+<InteractiveEmbed
+  className="coalescent-frame"
+  fallbackHref={src}
+  minHeight={980}
+  source="beastx-coalescent-embed"
+  src={src}
+  title="Discrete-time coalescent on a grid app"
+/>

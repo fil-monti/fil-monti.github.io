@@ -1,0 +1,68 @@
+---
+interface Props {
+  src: string;
+  title: string;
+  id?: string;
+  class?: string;
+  preserveState?: boolean;
+  printSummary?: string;
+  showNavigation?: boolean;
+}
+
+const {
+  src,
+  title,
+  id,
+  class: className,
+  preserveState = true,
+  printSummary = "Open the live deck to interact with this demonstration.",
+  showNavigation = true
+} = Astro.props;
+---
+
+<section
+  id={id}
+  class:list={["cgsi-slide", "cgsi-app-slide", className]}
+  data-preserve-state={preserveState ? "true" : "false"}
+>
+  <div class="cgsi-app-frame interactive-only">
+    <iframe
+      src={src}
+      title={title}
+      loading="eager"
+      allow="fullscreen"
+    ></iframe>
+  </div>
+
+  <div class="cgsi-app-print-fallback print-only">
+    <p class="cgsi-kicker">Interactive demonstration</p>
+    <h2>{title}</h2>
+    <p>{printSummary}</p>
+  </div>
+
+  {
+    showNavigation && (
+      <div class="cgsi-app-navigation interactive-only" aria-label="Presentation navigation">
+        <button
+          type="button"
+          class="cgsi-app-nav-button"
+          data-cgsi-deck-direction="previous"
+          aria-label="Previous slide"
+        >
+          <span aria-hidden="true">←</span>
+        </button>
+
+        <span class="cgsi-app-label">{title}</span>
+
+        <button
+          type="button"
+          class="cgsi-app-nav-button"
+          data-cgsi-deck-direction="next"
+          aria-label="Next slide"
+        >
+          <span aria-hidden="true">→</span>
+        </button>
+      </div>
+    )
+  }
+</section>
