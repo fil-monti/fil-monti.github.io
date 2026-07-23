@@ -1287,6 +1287,16 @@ body.presentation-page {
   white-space: nowrap;
 }
 
+.cgsi-bat-rabies-slide .cgsi-global-flu-copy {
+  width: 72%;
+  font-size: 0.72em;
+}
+
+.cgsi-bat-rabies-facts {
+  row-gap: 0.46em;
+  line-height: 1.45;
+}
+
 .cgsi-global-flu-rates {
   position: absolute;
   left: 0;

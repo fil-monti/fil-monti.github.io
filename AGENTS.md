@@ -229,6 +229,62 @@ astro-site/src/lib/contentIndex.ts
 
 Builds search entries from navigation, papers, teaching, and software data.
 
+### Presentation Slides
+
+CGSI and related HTML presentation decks live under:
+
+```text
+astro-site/src/pages/talks/
+```
+
+For the CGSI deck, the main source is:
+
+```text
+astro-site/src/pages/talks/cgsi/index.mdx
+```
+
+Global presentation styling is in:
+
+```text
+astro-site/src/styles/presentation.css
+```
+
+Some slide-specific styles may be embedded directly in the MDX file inside a
+slide-scoped `<style>` block. This is intentional when the user wants a
+one-slide layout to be easy to tune without switching between MDX and CSS.
+
+#### Aligning Figure Edges in Presentation Slides
+
+When the user asks to align the bottom, top, left, or right edges of two figures
+in a slide, first determine whether they mean the raw image element boxes or the
+visible plotted/content areas. Scientific figures often have white padding,
+axis labels, legends, or transparent/blank margins, so two `<img>` bounding
+boxes can be perfectly aligned while the visible plots still look misaligned.
+
+Recommended workflow:
+
+1. Edit only the slide-local selector or existing presentation selector that
+   controls the figure position, usually a `transform: translate(...)`,
+   `margin`, `width`, or grid/flex alignment rule.
+2. Run `npm run build` from `astro-site`.
+3. Preview the built deck and capture the target slide at a fixed viewport, for
+   example `1600x900`.
+4. If the user asked for raw element alignment, compare
+   `getBoundingClientRect()` values for the two target `<img>` elements.
+5. If the visual result still looks off, inspect a screenshot or image-content
+   bounds and align the visible plotting/content edges instead of the raw DOM
+   boxes.
+6. Iterate with a fresh preview load or cache-busting reload. Reveal can scale
+   slides, so do not assume that `1rem` in authored CSS corresponds to exactly
+   `16px` on the screenshot.
+7. Stop any temporary preview/browser processes before finishing.
+
+For example, on the CGSI Ancient Musk Ox slide the raw image bottoms aligned,
+but the right tree PNG had extra blank canvas. The correct-looking fix was to
+move the covariate figure upward until the visible plotted bottoms matched,
+leaving the CSS at `transform: translate(5.2rem, -2.1rem);` for
+`#ancient-musk-ox-example .musk-ox-covariate-figure img`.
+
 ### Styling
 
 ```text
