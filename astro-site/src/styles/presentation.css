@@ -473,8 +473,8 @@ body.presentation-page {
 
 .cgsi-nucleotide-rate-controls {
   position: absolute;
-  top: var(--cgsi-slide-pad-top);
-  right: var(--cgsi-slide-pad-inline);
+  left: var(--cgsi-slide-pad-inline);
+  bottom: var(--cgsi-slide-pad-bottom);
   display: flex;
   gap: 0.45rem;
   align-items: center;
@@ -1669,6 +1669,7 @@ body.presentation-page {
   grid-template-columns: minmax(18rem, 0.52fr) minmax(0, 1.48fr);
   gap: clamp(1rem, 2.2vw, 1.8rem);
   align-items: center;
+  height: 100%;
   min-height: 0;
 }
 
@@ -1677,7 +1678,7 @@ body.presentation-page {
   gap: clamp(0.72rem, 1.8vmin, 1.15rem);
   align-self: start;
   align-content: start;
-  padding-top: clamp(7.4rem, 18.8vmin, 11.6rem);
+  padding-top: clamp(3.3rem, 6.8vmin, 4.25rem);
   color: var(--cgsi-ink);
   font-size: 0.74em;
   line-height: 1.18;
@@ -1709,16 +1710,55 @@ body.presentation-page {
 
 .cgsi-thank-you-slide {
   display: grid !important;
-  place-items: center;
+  align-items: start;
+  justify-items: center;
   min-height: 100%;
+  position: relative;
 }
 
 .cgsi-thank-you-slide h2 {
-  margin: 0;
+  margin: clamp(7.4rem, 20vmin, 10.8rem) 0 0;
   color: var(--cgsi-blue);
   font-size: clamp(2.6em, 13vmin, 5.2em);
   line-height: 1;
   text-align: center;
+}
+
+.cgsi-thank-you-footer {
+  position: absolute;
+  left: var(--cgsi-slide-pad-inline);
+  right: var(--cgsi-slide-pad-inline);
+  bottom: clamp(4.7rem, 11vmin, 6.4rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1.16fr) minmax(0, 0.84fr);
+  gap: clamp(1.4rem, 3vw, 2.3rem);
+  align-items: start;
+  color: var(--cgsi-ink);
+  font-size: 0.92em;
+  line-height: 1.3;
+}
+
+.cgsi-thank-you-footer p {
+  margin: 0;
+}
+
+.cgsi-thank-you-footer p + p {
+  margin-top: 0.36rem;
+}
+
+.cgsi-thank-you-footer strong {
+  color: var(--cgsi-blue);
+  font-weight: 850;
+}
+
+.cgsi-thank-you-acknowledgments {
+  padding-left: clamp(1rem, 2.4vw, 1.9rem);
+}
+
+.cgsi-thank-you-funding {
+  justify-self: end;
+  max-width: none;
+  text-align: left;
 }
 
 .cgsi-stable-computational-cost {
@@ -1735,17 +1775,89 @@ body.presentation-page {
 .cgsi-stable-computational-figure {
   display: grid;
   width: 100%;
-  height: 100%;
+  height: calc(100% - clamp(0.7rem, 1.6vmin, 1.15rem));
   min-height: 0;
   margin: 0;
-  place-items: center;
+  place-items: start center;
 }
 
 .cgsi-stable-computational-figure img {
   display: block;
-  width: 100%;
+  width: auto;
+  height: auto;
+  max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+}
+
+.cgsi-yf-example-layout {
+  --cgsi-yf-citation-reserve: clamp(1.35rem, 3vmin, 2.05rem);
+
+  display: grid;
+  grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+  gap: clamp(1.1rem, 2.5vw, 2rem);
+  align-items: start;
+  height: calc(100% - var(--cgsi-yf-citation-reserve));
+  min-height: 0;
+}
+
+.cgsi-yf-example-copy {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: clamp(0.9rem, 2vmin, 1.45rem);
+  align-content: stretch;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  padding-top: clamp(0.28rem, 0.9vmin, 0.58rem);
+  color: var(--cgsi-ink);
+  font-size: 0.64em;
+}
+
+.cgsi-yf-example-facts {
+  max-width: 50rem;
+}
+
+.cgsi-yf-covariate-figure {
+  display: grid;
+  align-self: end;
+  justify-self: start;
+  width: min(100%, 27rem);
+  min-width: 0;
+  max-height: 100%;
+  margin: 0 0 clamp(0.25rem, 0.7vmin, 0.48rem);
+}
+
+.cgsi-yf-covariate-figure img {
+  display: block;
+  width: 130%;
+  height: auto;
+  max-width: 130%;
+  max-height: 130%;
+  object-fit: contain;
+  transform: translate(5.2rem, 0.9rem);
+}
+
+.cgsi-yf-tree-figure {
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  margin: 0;
+  overflow: visible;
+  transform: translate(4.4rem,-3.3rem);
+}
+
+.cgsi-yf-tree-figure img {
+  display: block;
+  width: 90%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center top;
 }
 
 .cgsi-model-gravity-slide {
@@ -1966,16 +2078,6 @@ body.presentation-page {
   transition: border-width 180ms ease, box-shadow 180ms ease;
 }
 
-.cgsi-gravity-highlight-toggle {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
 .cgsi-gravity-highlight-button {
   position: absolute;
   left: clamp(0.8rem, 2vmin, 1.25rem);
@@ -2000,20 +2102,290 @@ body.presentation-page {
 }
 
 .cgsi-gravity-highlight-button:hover,
-.cgsi-gravity-highlight-toggle:focus-visible + .cgsi-gravity-highlight-button {
+.cgsi-gravity-highlight-button:focus-visible {
   border-color: rgb(36 77 143 / 58%);
   background: color-mix(in srgb, var(--cgsi-blue-soft) 88%, var(--cgsi-paper));
 }
 
-.cgsi-gravity-highlight-toggle:checked + .cgsi-gravity-highlight-button {
+.cgsi-gravity-highlight-button:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--cgsi-blue) 38%, transparent);
+  outline-offset: 3px;
+}
+
+.cgsi-talk-keywords {
+  position: absolute;
+  right: clamp(1.1rem, 2.4vmin, 2rem);
+  bottom: clamp(1rem, 2.3vmin, 1.8rem);
+  z-index: 260;
+  width: min(27rem, calc(100% - 4rem));
+  padding: 0.68rem 0.78rem 0.72rem;
+  border: 1px solid color-mix(in srgb, var(--cgsi-blue) 22%, var(--cgsi-line));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--cgsi-paper) 93%, #fff);
+  box-shadow: 0 0.48rem 1.25rem rgb(23 32 51 / 12%);
+  color: var(--cgsi-ink);
+  font-size: 0.48em;
+  line-height: 1.28;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition: opacity 160ms ease, transform 160ms ease, visibility 160ms ease;
+  visibility: hidden;
+}
+
+.cgsi-talk-keywords strong {
+  display: block;
+  margin-bottom: 0.34rem;
+  color: var(--cgsi-blue);
+  font-weight: 850;
+}
+
+.cgsi-talk-keywords ul {
+  display: grid;
+  gap: 0.16rem;
+  margin: 0;
+  padding-left: 1.18em;
+}
+
+.cgsi-talk-keywords li {
+  margin: 0;
+}
+
+.cgsi-model-gravity-slide[data-gravity-state="1"] .cgsi-gravity-highlight-button,
+.cgsi-model-gravity-slide[data-gravity-state="2"] .cgsi-gravity-highlight-button {
   background: var(--cgsi-blue);
   border-color: var(--cgsi-blue);
   color: #fff;
 }
 
-.cgsi-gravity-highlight-toggle:checked ~ .cgsi-gravity-map-wrap .cgsi-moon-emphasis-target {
+.cgsi-model-gravity-slide[data-gravity-state="1"] .cgsi-moon-emphasis-target,
+.cgsi-model-gravity-slide[data-gravity-state="2"] .cgsi-moon-emphasis-target {
   border-width: 6px;
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--cgsi-gravity-moon-color) 18%, transparent);
+}
+
+.cgsi-moon-paper-stack {
+  position: absolute;
+  z-index: 120;
+  display: grid;
+  width: 16rem;
+  gap: 0.34rem;
+  font-size: 1rem;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 160ms ease, transform 160ms ease, visibility 160ms ease;
+}
+
+.cgsi-paper-placement-cover {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.97);
+}
+
+.cgsi-paper-placement-tree-pair {
+  left: 50%;
+  bottom: calc(100% + 0.82rem);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 49.4rem;
+  transform: translateX(-50%) scale(0.97);
+  transform-origin: 50% 100%;
+}
+
+.cgsi-paper-placement-rates-pair {
+  top: 50%;
+  right: calc(100% + 0.82rem);
+  width: 16.4rem;
+  transform: translateY(-50%) scale(0.97);
+  transform-origin: 100% 50%;
+}
+
+.cgsi-paper-placement-top {
+  bottom: calc(100% + 0.72rem);
+  left: 50%;
+  transform: translate(-50%, 6px);
+}
+
+.cgsi-paper-placement-bottom {
+  top: calc(100% + 0.72rem);
+  left: 50%;
+  transform: translate(-50%, -6px);
+}
+
+.cgsi-paper-placement-left {
+  top: 50%;
+  right: calc(100% + 0.76rem);
+  transform: translate(6px, -50%);
+}
+
+.cgsi-paper-placement-right {
+  top: 50%;
+  left: calc(100% + 0.76rem);
+  transform: translate(-6px, -50%);
+}
+
+.cgsi-model-gravity-slide[data-gravity-state="2"] .cgsi-moon-paper-stack {
+  z-index: 300;
+  opacity: 1;
+  visibility: visible;
+}
+
+.cgsi-model-gravity-slide[data-gravity-state="2"] .cgsi-talk-keywords {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.cgsi-model-gravity-slide[data-gravity-state="2"] .cgsi-body-discrete {
+  z-index: 80;
+}
+
+.cgsi-model-gravity-slide[data-gravity-state="2"] .cgsi-body-discrete .cgsi-moon-cluster {
+  z-index: 85;
+}
+
+.cgsi-model-gravity-slide[data-gravity-state="2"] .cgsi-body-discrete .cgsi-moon:nth-child(3) {
+  z-index: 90;
+}
+
+.cgsi-model-gravity-slide[data-gravity-state="2"] .cgsi-paper-placement-cover {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.cgsi-model-gravity-slide[data-gravity-state="2"] .cgsi-paper-placement-tree-pair {
+  transform: translateX(-50%) scale(1);
+}
+
+.cgsi-model-gravity-slide[data-gravity-state="2"] .cgsi-paper-placement-rates-pair {
+  transform: translateY(-50%) scale(1);
+}
+
+.cgsi-model-gravity-slide[data-gravity-state="2"] .cgsi-paper-placement-top {
+  transform: translate(-50%, 0);
+}
+
+.cgsi-model-gravity-slide[data-gravity-state="2"] .cgsi-paper-placement-bottom {
+  transform: translate(-50%, 0);
+}
+
+.cgsi-model-gravity-slide[data-gravity-state="2"] .cgsi-paper-placement-left,
+.cgsi-model-gravity-slide[data-gravity-state="2"] .cgsi-paper-placement-right {
+  transform: translate(0, -50%);
+}
+
+.cgsi-model-gravity-slide .citation-preview-card {
+  position: relative;
+  z-index: 1;
+  left: auto;
+  bottom: auto;
+  display: block;
+  width: 100%;
+  padding: 0.58rem 0.66rem;
+  border: 1px solid var(--cgsi-line);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--cgsi-paper) 94%, #fff);
+  box-shadow: 0 0.44rem 1.28rem rgb(23 32 51 / 15%);
+  color: var(--cgsi-muted);
+  font-style: normal;
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+}
+
+.cgsi-model-gravity-slide .citation-preview-card::after {
+  display: none;
+}
+
+.cgsi-model-gravity-slide .citation-preview-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.45rem;
+}
+
+.cgsi-model-gravity-slide .citation-preview-meta,
+.cgsi-model-gravity-slide .citation-preview-links,
+.cgsi-model-gravity-slide .citation-preview-topics {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.cgsi-model-gravity-slide .citation-preview-meta {
+  gap: 0.26rem;
+}
+
+.cgsi-model-gravity-slide .card-label,
+.cgsi-model-gravity-slide .status-pill,
+.cgsi-model-gravity-slide .citation-preview-links span,
+.cgsi-model-gravity-slide .citation-preview-topics span {
+  border-radius: 999px;
+  padding: 0.16rem 0.22rem;
+  font-size: 0.34rem;
+  font-weight: 850;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.cgsi-model-gravity-slide .card-label {
+  border: 1px solid color-mix(in srgb, var(--cgsi-blue) 22%, var(--cgsi-line));
+  color: var(--cgsi-blue);
+}
+
+.cgsi-model-gravity-slide .status-pill {
+  border: 1px solid color-mix(in srgb, var(--cgsi-gold) 32%, var(--cgsi-line));
+  color: color-mix(in srgb, var(--cgsi-gold) 78%, var(--cgsi-ink));
+}
+
+.cgsi-model-gravity-slide .citation-preview-links {
+  gap: 0.16rem;
+}
+
+.cgsi-model-gravity-slide .citation-preview-links span {
+  border: 1px solid color-mix(in srgb, var(--cgsi-gold) 52%, var(--cgsi-line));
+  color: color-mix(in srgb, var(--cgsi-gold) 78%, var(--cgsi-ink));
+}
+
+.cgsi-model-gravity-slide .citation-preview-title {
+  display: block;
+  width: 100%;
+  margin-top: 0.44rem;
+  font-size: 0.72rem;
+  font-weight: 850;
+  line-height: 1.15;
+}
+
+.cgsi-model-gravity-slide .citation-preview-authors {
+  display: block;
+  margin-top: 0.34rem;
+  color: var(--cgsi-muted);
+  font-size: 0.55rem;
+  line-height: 1.28;
+}
+
+.cgsi-model-gravity-slide .citation-preview-authors strong {
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 850;
+}
+
+.cgsi-model-gravity-slide .citation-preview-topics {
+  gap: 0.16rem;
+  margin-top: 0.44rem;
+}
+
+.cgsi-model-gravity-slide .citation-preview-topics span {
+  border: 1px solid color-mix(in srgb, var(--cgsi-blue) 22%, var(--cgsi-line));
+  color: var(--cgsi-blue);
+}
+
+.cgsi-paper-placement-tree-pair .citation-preview-title {
+  font-size: 0.66rem;
+}
+
+.cgsi-paper-placement-tree-pair .citation-preview-authors {
+  font-size: 0.5rem;
 }
 
 .cgsi-moon-cluster-top .cgsi-moon {

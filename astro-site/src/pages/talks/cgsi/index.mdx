@@ -11,7 +11,7 @@ import AppSlide from "../../../components/presentation/AppSlide.astro";
 export const talk = {
   title: "Scalable inference for continuous-time Markov processes",
   titleLines: ["Scalable inference for", "continuous-time Markov processes"],
-  subtitle: "Application to phylogenetics",
+  subtitle: "Applications to phylogenetics",
   author: "Filippo Monti",
   affiliation: "UCLA Biostatistics",
   event: "CGSI 2026"
@@ -27,6 +27,144 @@ export const talk = {
   event={talk.event}
 />
 
+<Slide id="evolution-model-gravity-map" class="cgsi-model-gravity-slide">
+
+<h2>Evolution Procesess</h2>
+
+<button
+  class="cgsi-gravity-highlight-button"
+  type="button"
+  data-cgsi-gravity-toggle
+  aria-pressed="false"
+>
+  <span data-cgsi-gravity-toggle-label>Highlight models</span>
+</button>
+
+<div class="cgsi-talk-keywords" data-cgsi-gravity-keywords aria-hidden="true">
+  <strong>Talk keywords:</strong>
+  <ul>
+    <li>Exact Likelihood-based inference</li>
+    <li>Analytic backpropagation</li>
+    <li>Matrix exponentials</li>
+  </ul>
+</div>
+
+<div class="cgsi-gravity-map-wrap">
+<div class="cgsi-gravity-map" role="img" aria-label="Model gravity map with central models node, four model families, and subfamily moons">
+  <div class="cgsi-gravity-orbit cgsi-gravity-orbit-a" aria-hidden="true"></div>
+  <div class="cgsi-gravity-orbit cgsi-gravity-orbit-b" aria-hidden="true"></div>
+  <div class="cgsi-gravity-core">Evolution</div>
+
+  <div class="cgsi-orbit-body cgsi-body-trees">
+    <span class="cgsi-body-node cgsi-body-node-trees">Evolutionary Trees</span>
+    <div class="cgsi-moon-cluster cgsi-moon-cluster-top">
+      <span class="cgsi-moon cgsi-moon-emphasis-target">
+        <span>Coalescent models</span>
+      </span>
+      <span class="cgsi-moon">Speciation models</span>
+    </div>
+    <span class="cgsi-moon-paper-stack cgsi-paper-placement-tree-pair" aria-hidden="true">
+      <span class="citation-preview-card cgsi-moon-paper-card">
+        <span class="citation-preview-head"><span class="citation-preview-meta"><span class="card-label">2026</span><span class="citation-preview-links"><span>arXiv</span><span>Code</span></span></span><span class="status-pill">Under review</span></span>
+        <span class="citation-preview-title paper-title">Nonlinear Drivers of Population Dynamics: A Nonparametric Coalescent Approach</span>
+        <span class="authors citation-preview-authors"><strong>Monti, F.</strong>, Faria, N. R., Ji, X., Lemey, P., Kraemer, M., and Suchard, M. A.</span>
+        <span class="citation-preview-topics"><span>Coalescent processes</span><span>Gaussian processes</span><span>Phylodynamics</span></span>
+      </span>
+      <span class="citation-preview-card cgsi-moon-paper-card">
+        <span class="citation-preview-head"><span class="citation-preview-meta"><span class="card-label">2026+</span></span><span class="status-pill">Manuscript in preparation</span></span>
+        <span class="citation-preview-title paper-title">Adjoint differentiation and many-core acceleration for scalable structured coalescent inference</span>
+        <span class="authors citation-preview-authors">Shao, Y., <strong>Monti, F.</strong>, Gangavarapu, K., Ji, X., Lemey, P., Rambaut, A., Baele, G., and Suchard, M. A.</span>
+        <span class="citation-preview-topics"><span>Coalescent processes</span><span>CTMCs</span><span>Adjoint methods</span></span>
+      </span>
+      <span class="citation-preview-card cgsi-moon-paper-card">
+        <span class="citation-preview-head"><span class="citation-preview-meta"><span class="card-label">2026+</span></span><span class="status-pill">Work in progress</span></span>
+        <span class="citation-preview-title paper-title">Scalable Nonparametric Modeling of Random Integrals with Squared Basis Expansions</span>
+        <span class="authors citation-preview-authors"><strong>Monti, F.</strong>, and Suchard, M. A.</span>
+        <span class="citation-preview-topics"><span>Random positive integrals</span><span>Basis expansions</span></span>
+      </span>
+    </span>
+  </div>
+
+  <div class="cgsi-orbit-body cgsi-body-discrete">
+    <span class="cgsi-body-node cgsi-body-node-discrete">Discrete Trait (CTMCs)</span>
+    <div class="cgsi-moon-cluster cgsi-moon-cluster-right">
+      <span class="cgsi-moon cgsi-moon-nucleotide">
+        <span>Nucleotides</span>
+        {/*
+        <span class="cgsi-micro-moons" aria-hidden="true">
+          <span class="cgsi-micro-moon">JC69</span>
+          <span class="cgsi-micro-moon">HKY</span>
+          <span class="cgsi-micro-moon">TN93</span>
+          <span class="cgsi-micro-moon">GTR</span>
+        </span>
+        */}
+      </span>
+      <span class="cgsi-moon cgsi-moon-emphasis-target">
+        <span>Amino acids</span>
+      </span>
+      <span class="cgsi-moon cgsi-moon-emphasis-target">
+        <span>Phylogeography</span>
+        <span class="cgsi-moon-paper-stack cgsi-paper-placement-cover" aria-hidden="true">
+          <span class="citation-preview-card cgsi-moon-paper-card">
+            <span class="citation-preview-head"><span class="citation-preview-meta"><span class="card-label">2026</span><span class="citation-preview-links"><span>arXiv</span><span>Code</span></span></span><span class="status-pill">Under review</span></span>
+            <span class="citation-preview-title paper-title">Nonparametric Modeling of Continuous-Time Markov Chains with Scalable Exact and Approximate Gradients</span>
+            <span class="authors citation-preview-authors"><strong>Monti, F.</strong>, Ji, X., Shao, Y., and Suchard, M. A.</span>
+            <span class="citation-preview-topics"><span>CTMCs</span><span>Gaussian processes</span><span>Adjoint methods</span></span>
+          </span>
+        </span>
+      </span>
+      <span class="cgsi-moon cgsi-moon-emphasis-target">
+        <span>Host transmission</span>
+      </span>
+    </div>
+  </div>
+
+  <div class="cgsi-orbit-body cgsi-body-continuous">
+    <span class="cgsi-body-node cgsi-body-node-continuous">Continuous Traits</span>
+    <div class="cgsi-moon-cluster cgsi-moon-cluster-bottom">
+      <span class="cgsi-moon">Brownian Motion</span>
+      <span class="cgsi-moon cgsi-moon-emphasis-target">
+        <span>OU process</span>
+        <span class="cgsi-moon-paper-stack cgsi-paper-placement-cover" aria-hidden="true">
+          <span class="citation-preview-card cgsi-moon-paper-card">
+            <span class="citation-preview-head"><span class="citation-preview-meta"><span class="card-label">2026+</span></span><span class="status-pill">Manuscript in preparation</span></span>
+            <span class="citation-preview-title paper-title">Stable Matrix Parametrization and Structured Adjoints for Ornstein--Uhlenbeck Processes</span>
+            <span class="authors citation-preview-authors"><strong>Monti, F.</strong>, Holbrook, A., Glatt-Holtz, N. E., and Suchard, M. A.</span>
+            <span class="citation-preview-topics"><span>Diffusion processes</span><span>OU processes</span><span>Adjoint methods</span></span>
+          </span>
+        </span>
+      </span>
+    </div>
+  </div>
+
+  <div class="cgsi-orbit-body cgsi-body-clock">
+    <span class="cgsi-body-node cgsi-body-node-clock">Evolutionary Rates</span>
+    <div class="cgsi-moon-cluster cgsi-moon-cluster-left">
+      <span class="cgsi-moon">Free</span>
+      <span class="cgsi-moon cgsi-moon-emphasis-target">
+        <span>Dependent</span>
+      </span>
+    </div>
+    <span class="cgsi-moon-paper-stack cgsi-paper-placement-rates-pair" aria-hidden="true">
+      <span class="citation-preview-card cgsi-moon-paper-card">
+        <span class="citation-preview-head"><span class="citation-preview-meta"><span class="card-label">2026+</span></span><span class="status-pill">Manuscript in preparation</span></span>
+        <span class="citation-preview-title paper-title">Investigating the drivers of time-varying rates of evolution</span>
+        <span class="authors citation-preview-authors"><strong>Monti, F.</strong>, Lemey, P., and Suchard, M. A.</span>
+        <span class="citation-preview-topics"><span>CTMCs</span><span>Diffusion processes</span><span>Regime-switching</span></span>
+      </span>
+      <span class="citation-preview-card cgsi-moon-paper-card">
+        <span class="citation-preview-head"><span class="citation-preview-meta"><span class="card-label">2026+</span></span><span class="status-pill">Work in progress</span></span>
+        <span class="citation-preview-title paper-title">Substitution Rate Heterogeneity Driven by the Threshold-Occupation Time of a Latent Brownian Motion</span>
+        <span class="authors citation-preview-authors"><strong>Monti, F.</strong>, and Suchard, M. A.</span>
+        <span class="citation-preview-topics"><span>CTMCs</span><span>Diffusion processes</span><span>Substitution models</span></span>
+      </span>
+    </span>
+  </div>
+</div>
+</div>
+
+</Slide>
+
 <AppSlide
   id="single-tip-phylogenetics"
   class="cgsi-app-slide-side-nav"
@@ -39,7 +177,7 @@ export const talk = {
 <AppSlide
   id="interactive-tree"
   class="cgsi-app-slide-side-nav"
-  src="/apps/interactive-ctmc-tree/index.html?embed=1&theme=light&presentation=1"
+  src="/apps/interactive-ctmc-tree/index.html?embed=1&theme=light&presentation=1&state=default&treeSize=3"
   title="Interactive tree app"
   printSummary="The live version opens the app-only interactive tree view."
   showNavigation={false}
@@ -728,7 +866,7 @@ export const talk = {
         <div class="cgsi-nondiag-equation cgsi-nondiag-schur-equation">
 
 $$
-\int_{0}^{t} e^{(t-\tau) S} \Sigma  e^{\tau S}   d\tau
+\int_{0}^{t} e^{(t-\tau) S} \Sigma  e^{(t-\tau) S^{T}}   d\tau
 $$
 
     </div>
@@ -749,7 +887,7 @@ $$
 $$
 
     </div>
-    <p>Need to pre-specify the number of complex conjugate pairs</p>
+    <p><strong>But</strong>: need to pre-specify the number of complex conjugate pairs</p>
   </section>
 </div>
 
@@ -827,7 +965,7 @@ $$
       <strong>Using H-SSBP:</strong>
     </p>
 
-    <div class="cgsi-katex-cost cgsi-katex-cost-light cgsi-stable-computational-cost" aria-label="O of N K squared with a light constant">
+    <div class="cgsi-katex-cost cgsi-katex-cost-light cgsi-stable-computational-cost" aria-label="O of N K cubed with a light constant">
       <span class="cgsi-cost-math-part">$O($</span>
 
       <span class="cgsi-cost-slot">
@@ -838,7 +976,7 @@ $$
         </span>
       </span>
 
-      <span class="cgsi-cost-math-part">$N K^2)$</span>
+      <span class="cgsi-cost-math-part">$N K^3)$</span>
     </div>
   </section>
 </div>
@@ -881,6 +1019,18 @@ which turns repeated propagation into a structured computational problem.
 
 <h2>Thank you</h2>
 
+<div class="cgsi-thank-you-footer">
+  <div class="cgsi-thank-you-acknowledgments">
+    <p><strong>Advisor:</strong> Marc Suchard</p>
+    <p><strong>Collaborators:</strong> Xiang Ji, Yuyang Shao, Nuno Faria, Philippe Lemey, Moritz Kraemer, Karthik Gangavarapu, Andrew Rambaut, Guy Baele, Andrew Holbrook, and Nathan Glatt-Holtz.</p>
+  </div>
+
+  <div class="cgsi-thank-you-funding">
+    <p><strong>Funding:</strong></p>
+    <p>National Institutes of Health grants U19 AI135995, R01 AI153044, and R01 AI162611.</p>
+  </div>
+</div>
+
 </Slide>
 
 <AppSlide
@@ -892,70 +1042,53 @@ which turns repeated propagation into a structured computational problem.
   showNavigation={false}
 />
 
-<Slide id="evolution-model-gravity-map" class="cgsi-model-gravity-slide">
+<Slide id="yellow-fever-example" class="cgsi-figure-slide cgsi-yf-example-slide">
 
-<h2>Evolution Models</h2>
+<h2>Yellow fever example</h2>
 
-<input
-  id="cgsiGravityHighlightToggle"
-  class="cgsi-gravity-highlight-toggle"
-  type="checkbox"
-  aria-label="Highlight selected evolution models"
-/>
-<label class="cgsi-gravity-highlight-button" for="cgsiGravityHighlightToggle">
-  <span>Highlight models</span>
-</label>
+<div class="cgsi-yf-example-layout">
+  <div class="cgsi-yf-example-copy">
+    <dl class="cgsi-global-flu-facts cgsi-yf-example-facts">
+      <div>
+        <dt>Data:</dt>
+        <dd>705 YFV genomes</dd>
+      </div>
+      <div>
+        <dt>Virus:</dt>
+        <dd>Yellow Fever Virus (YFV)</dd>
+      </div>
+      <div>
+        <dt>Hosts:</dt>
+        <dd>Humans, primates, mosquitoes (and more)</dd>
+      </div>
+      <div>
+        <dt>Where:</dt>
+        <dd>San Paulo, Brazil</dd>
+      </div>
+      <div>
+        <dt>When:</dt>
+        <dd>2016-2018</dd>
+      </div>
+    </dl>
 
-<div class="cgsi-gravity-map-wrap">
-<div class="cgsi-gravity-map" role="img" aria-label="Model gravity map with central models node, four model families, and subfamily moons">
-  <div class="cgsi-gravity-orbit cgsi-gravity-orbit-a" aria-hidden="true"></div>
-  <div class="cgsi-gravity-orbit cgsi-gravity-orbit-b" aria-hidden="true"></div>
-  <div class="cgsi-gravity-core">Evolution</div>
-
-  <div class="cgsi-orbit-body cgsi-body-trees">
-    <span class="cgsi-body-node cgsi-body-node-trees">Evolutionary Trees</span>
-    <div class="cgsi-moon-cluster cgsi-moon-cluster-top">
-      <span class="cgsi-moon cgsi-moon-emphasis-target">Coalescent models</span>
-      <span class="cgsi-moon">Speciation models</span>
-    </div>
+    <figure class="cgsi-yf-covariate-figure">
+      <img
+        src="/talks/cgsi/figures/YFDemographicCovariate.png"
+        alt="Yellow fever demographic covariate relationship between temperature and effective population size"
+        loading="eager"
+      />
+    </figure>
   </div>
 
-  <div class="cgsi-orbit-body cgsi-body-discrete">
-    <span class="cgsi-body-node cgsi-body-node-discrete">Discrete Trait (CTMCs)</span>
-    <div class="cgsi-moon-cluster cgsi-moon-cluster-right">
-      <span class="cgsi-moon cgsi-moon-nucleotide">
-        <span>Nucleotides</span>
-        {/*
-        <span class="cgsi-micro-moons" aria-hidden="true">
-          <span class="cgsi-micro-moon">JC69</span>
-          <span class="cgsi-micro-moon">HKY</span>
-          <span class="cgsi-micro-moon">TN93</span>
-          <span class="cgsi-micro-moon">GTR</span>
-        </span>
-        */}
-      </span>
-      <span class="cgsi-moon cgsi-moon-emphasis-target">Amino acids</span>
-      <span class="cgsi-moon cgsi-moon-emphasis-target">Phylogeography</span>
-      <span class="cgsi-moon cgsi-moon-emphasis-target">Host transmission</span>
-    </div>
-  </div>
-
-  <div class="cgsi-orbit-body cgsi-body-continuous">
-    <span class="cgsi-body-node cgsi-body-node-continuous">Continuous Traits</span>
-    <div class="cgsi-moon-cluster cgsi-moon-cluster-bottom">
-      <span class="cgsi-moon">Brownian Motion</span>
-      <span class="cgsi-moon cgsi-moon-emphasis-target">OU process</span>
-    </div>
-  </div>
-
-  <div class="cgsi-orbit-body cgsi-body-clock">
-    <span class="cgsi-body-node cgsi-body-node-clock">Evolutionary Rates</span>
-    <div class="cgsi-moon-cluster cgsi-moon-cluster-left">
-      <span class="cgsi-moon">Free</span>
-      <span class="cgsi-moon cgsi-moon-emphasis-target">Dependent</span>
-    </div>
-  </div>
+  <figure class="cgsi-yf-tree-figure">
+    <img
+      src="/talks/cgsi/figures/YFTree.png"
+      alt="Yellow fever phylogenetic tree"
+      loading="eager"
+    />
+  </figure>
 </div>
-</div>
+
+<p class="cgsi-slide-citation">Monti, F., Faria, N. R., Ji, X., Lemey, P., Kraemer, M., and Suchard, M. A. (2026). <em>Nonlinear Drivers of Population Dynamics: A Nonparametric Coalescent Approach</em>.</p>
 
 </Slide>
