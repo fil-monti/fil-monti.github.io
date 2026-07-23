@@ -21,6 +21,13 @@ body.presentation-page {
   --r-heading-color: var(--cgsi-ink);
   --r-link-color: var(--cgsi-blue);
   --r-link-color-hover: #163866;
+  --cgsi-deck-control-size: clamp(2.1rem, 5.2vmin, 3.15rem);
+  --cgsi-deck-control-font-size: clamp(0.95rem, 2.15vmin, 1.35rem);
+  --cgsi-deck-control-gap: clamp(0.32rem, 0.9vmin, 0.55rem);
+  --cgsi-deck-control-offset: clamp(0.55rem, 1.55vmin, 1rem);
+  --cgsi-slide-pad-top: clamp(0.45rem, 1.25vmin, 0.8rem);
+  --cgsi-slide-pad-inline: clamp(0.45rem, 1.35vmin, 0.85rem);
+  --cgsi-slide-pad-bottom: clamp(0.5rem, 1.35vmin, 0.9rem);
   background: var(--cgsi-paper);
   color: var(--cgsi-ink);
 }
@@ -42,6 +49,12 @@ body.presentation-page {
   box-sizing: border-box;
 }
 
+.reveal .backgrounds,
+.reveal .slide-background,
+.reveal .slide-background-content {
+  pointer-events: none;
+}
+
 .reveal h1,
 .reveal h2,
 .reveal h3 {
@@ -56,6 +69,8 @@ body.presentation-page {
 .reveal h2 {
   color: var(--cgsi-blue);
   font-size: 1.65em;
+  line-height: 1;
+  margin: 0 0 0.58em;
 }
 
 .reveal p,
@@ -64,7 +79,7 @@ body.presentation-page {
 }
 
 .reveal ul {
-  margin-left: 1.1em;
+  margin-left: 0.72em;
 }
 
 .reveal li + li {
@@ -79,21 +94,50 @@ body.presentation-page {
   color: var(--cgsi-blue);
 }
 
+.paper-title {
+  color: var(--cgsi-blue);
+}
+
+.presentation-page .reveal .controls,
+.presentation-page .cgsi-deck-controls,
+.presentation-page .cgsi-app-navigation {
+  transition: opacity 180ms ease;
+}
+
+.presentation-page.cgsi-controls-idle .reveal .controls,
+.presentation-page.cgsi-controls-idle .cgsi-deck-controls,
+.presentation-page.cgsi-controls-idle .cgsi-app-navigation {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.presentation-page.cgsi-controls-idle .reveal .controls button,
+.presentation-page.cgsi-controls-idle .cgsi-deck-controls > *,
+.presentation-page.cgsi-controls-idle .cgsi-app-navigation > * {
+  pointer-events: none;
+}
+
 .reveal .progress {
   height: 0.18rem;
   color: var(--cgsi-gold);
 }
 
 .slide-number {
+  border: 0 !important;
   border-radius: 999px;
-  background: rgb(255 255 255 / 82%) !important;
+  background: transparent !important;
   color: var(--cgsi-ink) !important;
   font-size: 0.48em !important;
+  box-shadow: none !important;
 }
 
 .cgsi-slide {
+  position: relative;
   min-height: 100%;
-  padding: 4.2rem 5rem !important;
+  padding:
+    var(--cgsi-slide-pad-top)
+    var(--cgsi-slide-pad-inline)
+    var(--cgsi-slide-pad-bottom) !important;
 }
 
 .cgsi-title-slide {
@@ -117,16 +161,35 @@ body.presentation-page {
 }
 
 .cgsi-title-slide h1 {
-  max-width: 10ch;
+  display: flex;
+  flex-direction: column;
+  max-width: none;
   margin: 0;
   color: var(--cgsi-ink);
-  font-size: 4.2em;
+  font-size: 2.2em;
   line-height: 0.88;
 }
 
+.cgsi-title-line {
+  display: block;
+}
+
+.cgsi-title-line:nth-child(2) {
+  white-space: nowrap;
+}
+
+.cgsi-title-headline {
+  max-width: 24ch;
+  margin: 1.15rem 0 0;
+  color: var(--cgsi-ink);
+  font-size: 1.28em;
+  font-weight: 700;
+  line-height: 1.05;
+}
+
 .cgsi-title-subtitle {
-  max-width: 18ch;
-  margin: 1.2rem 0 0;
+  max-width: none;
+  margin: 0.9rem 0 0;
   color: var(--cgsi-blue);
   font-size: 1.2em;
   font-weight: 500;
@@ -158,6 +221,1863 @@ body.presentation-page {
   object-fit: contain;
 }
 
+.cgsi-nucleotide-slide {
+  position: relative;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 0.45rem;
+}
+
+.cgsi-nucleotide-slide h2 {
+  margin: 0;
+}
+
+.cgsi-ctmc-slide-body {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: clamp(0.58rem, 1.45vmin, 0.9rem);
+  min-height: 0;
+}
+
+.cgsi-nucleotide-visual-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(17.5rem, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(0.85rem, 2.3vw, 1.7rem);
+  align-items: flex-start;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.cgsi-nucleotide-ctmc-figure {
+  justify-self: center;
+  flex: 0 0 auto;
+  width: min(36vw, 15.6rem);
+  margin: 0;
+}
+
+.cgsi-nucleotide-ctmc-figure svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.cgsi-nucleotide-arrows path {
+  fill: none;
+  stroke: #b2bfcb;
+  stroke-width: 2.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  marker-end: url("#nucleotide-arrowhead");
+}
+
+.cgsi-nucleotide-arrows marker path,
+#nucleotide-arrowhead path {
+  fill: #b2bfcb;
+}
+
+.cgsi-nucleotide-rate-labels {
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.cgsi-nucleotide-slide[data-rate-step="1"] .cgsi-nucleotide-rate-labels,
+.cgsi-nucleotide-slide[data-rate-step="2"] .cgsi-nucleotide-rate-labels {
+  opacity: 1;
+}
+
+.cgsi-nucleotide-rate-labels text {
+  fill: var(--cgsi-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 22px;
+  font-style: italic;
+  text-anchor: middle;
+}
+
+.cgsi-nucleotide-rate-labels tspan {
+  font-size: 0.62em;
+  baseline-shift: sub;
+}
+
+.cgsi-nucleotide-node circle {
+  stroke: none;
+}
+
+.cgsi-nucleotide-node text,
+.cgsi-nucleotide-swatch-letter {
+  fill: white;
+  font-family: "SFMono-Regular", "JetBrains Mono", Consolas, monospace;
+  font-size: 20px;
+  font-weight: 800;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.cgsi-nucleotide-node-ring {
+  fill: none;
+  stroke: #2d3947 !important;
+  stroke-width: 5;
+}
+
+.cgsi-nucleotide-node-a circle:not(.cgsi-nucleotide-node-ring),
+.cgsi-nucleotide-swatch-a {
+  fill: #d86b86;
+}
+
+.cgsi-nucleotide-node-t circle,
+.cgsi-nucleotide-swatch-t {
+  fill: #6e9fd8;
+}
+
+.cgsi-nucleotide-node-c circle,
+.cgsi-nucleotide-swatch-c {
+  fill: #76a95f;
+}
+
+.cgsi-nucleotide-node-g circle,
+.cgsi-nucleotide-swatch-g {
+  fill: #d7a341;
+}
+
+.cgsi-nucleotide-legend-label {
+  fill: var(--cgsi-muted);
+  font-family: "DM Sans", Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 14px;
+  dominant-baseline: central;
+}
+
+.cgsi-nucleotide-q-matrix {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  justify-self: start;
+  margin-top: clamp(1.05rem, 2.2vmin, 1.45rem);
+  color: var(--cgsi-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1rem, 2.05vmin, 1.45rem);
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.cgsi-nucleotide-slide[data-rate-step="2"] .cgsi-nucleotide-q-matrix {
+  opacity: 1;
+}
+
+.cgsi-nucleotide-q-symbol,
+.cgsi-geo-q-symbol {
+  flex: 0 0 clamp(3.65rem, 6.6vmin, 4.9rem);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.cgsi-nucleotide-q-symbol sub,
+.cgsi-geo-q-symbol sub {
+  font-size: 0.55em;
+  font-weight: 400;
+}
+
+.cgsi-nucleotide-matrix-brackets {
+  position: relative;
+  display: grid;
+  width: clamp(9.6rem, 20vmin, 12.8rem);
+  aspect-ratio: 1;
+  padding: 0.5rem 0.78rem;
+  place-items: center;
+}
+
+.cgsi-nucleotide-matrix-brackets::before,
+.cgsi-nucleotide-matrix-brackets::after {
+  position: absolute;
+  top: 0.3rem;
+  bottom: 0.3rem;
+  width: 0.45rem;
+  border-color: var(--cgsi-ink);
+  content: "";
+}
+
+.cgsi-nucleotide-matrix-brackets::before {
+  left: 0;
+  border-top: 0.095rem solid;
+  border-bottom: 0.095rem solid;
+  border-left: 0.095rem solid;
+}
+
+.cgsi-nucleotide-matrix-brackets::after {
+  right: 0;
+  border-top: 0.095rem solid;
+  border-right: 0.095rem solid;
+  border-bottom: 0.095rem solid;
+}
+
+.cgsi-nucleotide-matrix-brackets table {
+  width: 100%;
+  height: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.cgsi-nucleotide-matrix-brackets tbody,
+.cgsi-nucleotide-matrix-brackets tr,
+.cgsi-nucleotide-matrix-brackets td {
+  border: 0 !important;
+}
+
+.cgsi-nucleotide-matrix-brackets td {
+  width: 25%;
+  height: 25%;
+  padding: 0;
+  color: var(--cgsi-ink);
+  font-style: italic;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.cgsi-nucleotide-matrix-brackets sub {
+  font-size: 0.6em;
+  line-height: 0;
+}
+
+.cgsi-nucleotide-matrix-link {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease;
+}
+
+.cgsi-nucleotide-slide[data-rate-step="2"] .cgsi-nucleotide-matrix-link {
+  opacity: 1;
+}
+
+.cgsi-nucleotide-matrix-link [data-nucleotide-matrix-link-path] {
+  fill: none;
+  marker-end: url("#nucleotide-matrix-arrowhead");
+  stroke: var(--cgsi-blue);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.45;
+  vector-effect: non-scaling-stroke;
+}
+
+#nucleotide-matrix-arrowhead path {
+  fill: var(--cgsi-blue);
+}
+
+.cgsi-nucleotide-rate-controls {
+  position: absolute;
+  top: var(--cgsi-slide-pad-top);
+  right: var(--cgsi-slide-pad-inline);
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.cgsi-nucleotide-rate-controls button {
+  display: inline-grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid var(--cgsi-line);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 82%);
+  color: var(--cgsi-blue);
+  font: inherit;
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 0.35rem 1rem rgb(23 32 51 / 10%);
+  transition:
+    background 160ms ease,
+    transform 160ms ease,
+    opacity 160ms ease;
+}
+
+.cgsi-nucleotide-rate-controls button:hover,
+.cgsi-nucleotide-rate-controls button:focus-visible {
+  background: white;
+  transform: translateY(-1px);
+}
+
+.cgsi-nucleotide-rate-controls button[aria-disabled="true"] {
+  cursor: default;
+  opacity: 0.34;
+}
+
+.cgsi-nucleotide-rate-controls button[aria-disabled="true"]:hover,
+.cgsi-nucleotide-rate-controls button[aria-disabled="true"]:focus-visible {
+  background: rgb(255 255 255 / 82%);
+  transform: none;
+}
+
+.cgsi-geo-ctmc-row {
+  display: grid;
+  grid-template-columns: minmax(17.5rem, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(0.9rem, 2.2vw, 1.65rem);
+  align-items: center;
+  align-self: stretch;
+  min-height: 0;
+}
+
+.cgsi-geo-ctmc-figure {
+  justify-self: center;
+  width: min(43vw, 25.5rem);
+  margin: 0;
+}
+
+.cgsi-geo-ctmc-figure svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.cgsi-geo-ring {
+  fill: none;
+  stroke: rgb(23 32 51 / 14%);
+  stroke-dasharray: 4 8;
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+}
+
+.cgsi-geo-arrow-network path {
+  fill: none;
+  marker-end: url("#geo-arrowhead");
+  marker-start: url("#geo-arrowhead");
+  stroke: #9aa8b5;
+  stroke-linecap: round;
+  stroke-opacity: 0.58;
+  stroke-width: 0.9;
+  vector-effect: non-scaling-stroke;
+}
+
+#geo-arrowhead path {
+  fill: #9aa8b5;
+}
+
+.cgsi-geo-node circle {
+  stroke: white;
+  stroke-width: 3;
+  filter: drop-shadow(0 0.18rem 0.22rem rgb(23 32 51 / 14%));
+}
+
+.cgsi-geo-node text {
+  fill: white;
+  font-family: "SFMono-Regular", "JetBrains Mono", Consolas, monospace;
+  font-size: 15px;
+  font-weight: 850;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.cgsi-geo-node-na circle {
+  fill: #7ea9c8;
+}
+
+.cgsi-geo-node-sa circle {
+  fill: #5fa0af;
+}
+
+.cgsi-geo-node-eu circle {
+  fill: #c9a46d;
+}
+
+.cgsi-geo-node-af circle {
+  fill: #9abc73;
+}
+
+.cgsi-geo-node-me circle {
+  fill: #d7a06a;
+}
+
+.cgsi-geo-node-ea circle {
+  fill: #d88a74;
+}
+
+.cgsi-geo-node-au circle {
+  fill: #b38dcb;
+}
+
+.cgsi-geo-labels text {
+  fill: var(--cgsi-muted);
+  font-family: var(--r-main-font);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+.cgsi-geo-q-matrix {
+  display: flex;
+  gap: clamp(0.52rem, 1.25vw, 0.85rem);
+  align-items: center;
+  justify-self: stretch;
+  min-width: 0;
+  color: var(--cgsi-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.cgsi-nucleotide-slide[data-rate-step="2"] .cgsi-geo-q-matrix {
+  opacity: 1;
+}
+
+.cgsi-geo-q-symbol {
+  font-size: clamp(1.15rem, 2.65vmin, 1.75rem);
+}
+
+.cgsi-geo-matrix-stack {
+  display: grid;
+  flex: 1 1 auto;
+  gap: 0.32rem;
+  min-width: 0;
+}
+
+.cgsi-geo-state-order {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  align-items: end;
+  width: min(48vw, 30rem);
+  padding: 0 0.9rem;
+  color: var(--cgsi-muted);
+  font-family: var(--r-main-font);
+  font-size: clamp(0.4rem, 0.92vmin, 0.56rem);
+  line-height: 1.18;
+  text-align: center;
+  transform: translateX(-0.45rem);
+}
+
+.cgsi-geo-state-order span {
+  display: block;
+  min-width: 0;
+  white-space: normal;
+}
+
+.cgsi-geo-state-order span strong {
+  display: block;
+  margin: 0 0 0.08rem;
+  line-height: 1;
+  text-align: center;
+}
+
+.cgsi-geo-state-order strong {
+  color: var(--cgsi-blue);
+  font-weight: 850;
+}
+
+.cgsi-geo-matrix-brackets {
+  position: relative;
+  display: grid;
+  width: min(48vw, 30rem);
+  aspect-ratio: 1.62;
+  padding: 0.48rem 0.9rem;
+  place-items: center;
+}
+
+.cgsi-geo-matrix-brackets::before,
+.cgsi-geo-matrix-brackets::after {
+  position: absolute;
+  top: 0.24rem;
+  bottom: 0.24rem;
+  width: 0.48rem;
+  border-color: var(--cgsi-ink);
+  content: "";
+}
+
+.cgsi-geo-matrix-brackets::before {
+  left: 0;
+  border-top: 0.085rem solid;
+  border-bottom: 0.085rem solid;
+  border-left: 0.085rem solid;
+}
+
+.cgsi-geo-matrix-brackets::after {
+  right: 0;
+  border-top: 0.085rem solid;
+  border-right: 0.085rem solid;
+  border-bottom: 0.085rem solid;
+}
+
+.cgsi-geo-matrix-brackets table {
+  width: 100%;
+  height: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.cgsi-geo-matrix-brackets tbody,
+.cgsi-geo-matrix-brackets tr,
+.cgsi-geo-matrix-brackets td {
+  border: 0 !important;
+}
+
+.cgsi-geo-matrix-brackets td {
+  width: 14.285%;
+  height: 14.285%;
+  padding: 0;
+  color: var(--cgsi-ink);
+  font-size: clamp(0.65rem, 1.34vmin, 0.94rem);
+  font-style: italic;
+  line-height: 1;
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.cgsi-geo-matrix-brackets sub {
+  font-size: 0.6em;
+  line-height: 0;
+}
+
+.cgsi-modeling-ctmc-slide {
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: clamp(0.55rem, 1.45vmin, 0.9rem);
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.cgsi-modeling-ctmc-slide h2 {
+  margin: 0;
+}
+
+.cgsi-modeling-ctmc-body {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: clamp(0.72rem, 1.8vmin, 1.1rem);
+  min-height: 0;
+}
+
+.cgsi-modeling-panels {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: clamp(1.1rem, 2.4vw, 1.9rem);
+  align-items: start;
+  padding-top: clamp(0.5rem, 1.35vmin, 0.85rem);
+  transform: translateY(clamp(0.55rem, 1.45vmin, 0.95rem));
+}
+
+.cgsi-modeling-block {
+  display: grid;
+  gap: 0.42rem;
+  min-width: 0;
+  color: var(--cgsi-ink);
+  font-size: 0.72em;
+}
+
+.cgsi-modeling-block h3 {
+  margin: 0;
+  color: var(--cgsi-gold);
+  font-size: 0.86em;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.cgsi-modeling-questions {
+  gap: clamp(0.72rem, 1.5vmin, 1rem);
+}
+
+.cgsi-modeling-block p {
+  margin: 0;
+  font-weight: 700;
+}
+
+.cgsi-modeling-solution h3 + p {
+  margin-top: clamp(0.35rem, 1.1vmin, 0.7rem);
+}
+
+.cgsi-modeling-block ol {
+  display: grid;
+  gap: 0.54rem;
+  margin: 0 0 0 1.12em;
+  padding: 0;
+  font-weight: 400;
+}
+
+.cgsi-modeling-block li {
+  margin: 0;
+  font-weight: 400;
+}
+
+.cgsi-modeling-block li::marker {
+  font-weight: 400;
+}
+
+.cgsi-modeling-ctmc-slide .cgsi-modeling-questions ol,
+.cgsi-modeling-ctmc-slide .cgsi-modeling-questions li,
+.cgsi-modeling-ctmc-slide .cgsi-modeling-questions li::marker,
+.cgsi-modeling-ctmc-slide .cgsi-modeling-questions .cgsi-modeling-question-text,
+.cgsi-modeling-ctmc-slide .cgsi-modeling-questions .cgsi-modeling-aside {
+  font-weight: 400 !important;
+}
+
+.cgsi-modeling-question-q {
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 850 !important;
+}
+
+.cgsi-modeling-aside {
+  display: block;
+  margin-top: 0.16rem;
+  color: var(--cgsi-muted);
+  font-size: 0.72em;
+  font-weight: 400;
+  line-height: 1.22;
+}
+
+.cgsi-modeling-solution .katex-display {
+  margin: 0.24rem 0 0;
+  font-size: 0.98em;
+  line-height: 1.05;
+  text-align: left;
+}
+
+.cgsi-modeling-qgeo-matrix {
+  --cgsi-modeling-bracket-width: clamp(40rem, 58vw, 55rem);
+  --cgsi-modeling-bracket-height: clamp(16.9rem, calc(24.7vw + 0.84rem), 23.4rem);
+
+  display: grid;
+  grid-template-columns: auto minmax(0, var(--cgsi-modeling-bracket-width)) auto;
+  grid-template-rows: auto auto;
+  align-items: flex-end;
+  align-self: end;
+  column-gap: clamp(0.52rem, 1.05vw, 0.9rem);
+  row-gap: 0.22rem;
+  justify-self: start;
+  max-width: 100%;
+  opacity: 1;
+  transform: translateY(-1.65rem);
+  width: 100%;
+}
+
+.cgsi-modeling-qgeo-matrix .cgsi-geo-q-symbol {
+  grid-column: 1;
+  grid-row: 2;
+  align-self: center;
+  font-size: clamp(1.35rem, 2.9vmin, 2.05rem);
+}
+
+.cgsi-modeling-qgeo-matrix .cgsi-geo-matrix-stack {
+  grid-column: 2;
+  grid-row: 2;
+  flex: 0 1 auto;
+  gap: 0.22rem;
+}
+
+.cgsi-modeling-example {
+  grid-column: 1 / 3;
+  grid-row: 1;
+  justify-self: start;
+  width: auto;
+  margin: 0;
+  padding-left: 0;
+  color: var(--cgsi-ink);
+  font-family: var(--r-main-font);
+  font-size: 0.72em;
+  font-weight: 400;
+  line-height: 1.2;
+  text-align: left;
+}
+
+.cgsi-modeling-example strong {
+  color: var(--cgsi-blue);
+  font-weight: 850;
+}
+
+.cgsi-modeling-qgeo-matrix .cgsi-geo-state-order,
+.cgsi-modeling-qgeo-matrix .cgsi-geo-matrix-brackets {
+  width: var(--cgsi-modeling-bracket-width);
+}
+
+.cgsi-modeling-qgeo-matrix .cgsi-geo-state-order {
+  font-size: clamp(0.46rem, 0.98vmin, 0.62rem);
+}
+
+.cgsi-modeling-qgeo-matrix .cgsi-geo-matrix-brackets {
+  height: var(--cgsi-modeling-bracket-height);
+  aspect-ratio: auto;
+  padding: 0.42rem 0.82rem;
+}
+
+.cgsi-modeling-qgeo-matrix .cgsi-geo-matrix-brackets td {
+  font-size: clamp(1rem, 1.9vmin, 1.4rem);
+}
+
+.cgsi-modeling-flu-rates {
+  display: block;
+  grid-column: 3;
+  grid-row: 1 / 3;
+  align-self: end;
+  justify-self: start;
+  flex: 0 0 auto;
+  width: auto;
+  height: var(--cgsi-modeling-bracket-height);
+  object-fit: contain;
+}
+
+.cgsi-figure-slide {
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0.72rem;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.cgsi-slide.cgsi-figure-slide {
+  padding-bottom: clamp(0.95rem, 2.1vmin, 1.35rem) !important;
+}
+
+.cgsi-figure-split {
+  display: grid;
+  grid-template-columns: minmax(18rem, 0.78fr) minmax(0, 1.22fr);
+  gap: clamp(1rem, 2.2vw, 1.8rem);
+  align-items: start;
+  min-height: 0;
+}
+
+.cgsi-figure-copy {
+  display: grid;
+  align-content: start;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0.8rem;
+  max-width: none;
+  min-height: 100%;
+  color: var(--cgsi-ink);
+  font-size: 0.72em;
+}
+
+.cgsi-figure-copy ul {
+  margin: 0;
+}
+
+.cgsi-figure-copy li + li {
+  margin-top: 0.62em;
+}
+
+.cgsi-computational-slide .cgsi-figure-split {
+  grid-template-columns: minmax(20rem, 0.95fr) minmax(0, 1.05fr);
+  gap: clamp(0.9rem, 1.8vw, 1.4rem);
+}
+
+.cgsi-computational-slide .cgsi-figure-copy {
+  font-size: 0.62em;
+}
+
+.cgsi-computational-copy {
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+}
+
+.cgsi-computational-intro {
+  margin: 0;
+  color: var(--cgsi-ink);
+  font-weight: 650;
+}
+
+.cgsi-computational-section {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.cgsi-computational-section h3 {
+  margin: 0;
+  color: var(--cgsi-gold);
+  font-size: 0.82em;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.cgsi-computational-section ul {
+  margin: 0 0 0 0.78em;
+  padding: 0;
+}
+
+.cgsi-computational-section li + li {
+  margin-top: 0.42em;
+}
+
+.cgsi-inline-matrix-exp {
+  display: inline-block;
+  font-size: 0.92em;
+  line-height: 1;
+  vertical-align: -0.04em;
+}
+
+.cgsi-computational-slide .katex-display {
+  margin: 0.36rem 0 0.1rem;
+  font-size: 1.28em;
+  line-height: 1.05;
+  text-align: center;
+}
+
+.cgsi-katex-cost {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 0.03em;
+  margin: 0.36rem 0 0.1rem;
+  padding-bottom: 1.95rem;
+  font-size: 1.28em;
+  line-height: 1;
+}
+
+.cgsi-katex-cost-light {
+  transform: translateX(2.15em);
+}
+
+.cgsi-cost-math-part {
+  display: inline-flex;
+  align-items: flex-end;
+  line-height: 1;
+}
+
+.cgsi-cost-slot {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 1.74em;
+  align-items: flex-end;
+  justify-content: center;
+  height: 1.36em;
+  margin: 0 0.02em;
+}
+
+.cgsi-katex-cost-light .cgsi-cost-slot {
+  flex-basis: 1.42em;
+  height: 1.08em;
+}
+
+.cgsi-cost-sticker {
+  display: inline-block;
+  flex: 0 0 auto;
+  margin: 0 0.1em;
+}
+
+.cgsi-cost-weight {
+  position: relative;
+  width: 1.3em;
+  height: 1.36em;
+}
+
+.cgsi-cost-weight::before {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 0.53em;
+  height: 0.53em;
+  border: 0.115em solid #4f5661;
+  border-radius: 999px;
+  background: transparent;
+  content: "";
+  transform: translateX(-50%);
+}
+
+.cgsi-cost-weight::after {
+  position: absolute;
+  left: 0.085em;
+  bottom: 0;
+  width: 1.13em;
+  height: 0.86em;
+  background: linear-gradient(145deg, #a8adb4 0%, #4f5661 100%);
+  clip-path: polygon(17% 0, 83% 0, 100% 100%, 0 100%);
+  content: "";
+  filter: drop-shadow(0 0.035em 0 rgb(23 32 51 / 28%));
+}
+
+.cgsi-cost-feather {
+  position: relative;
+  width: 1.28em;
+  height: 0.86em;
+  background: center / contain no-repeat url("/talks/cgsi/stickers/feather_sticker.png");
+  transform: none;
+}
+
+.cgsi-cost-feather::after {
+  display: none;
+  content: "";
+}
+
+.cgsi-cost-slot .cgsi-cost-sticker {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  z-index: 2;
+  margin: 0;
+}
+
+.cgsi-cost-slot .cgsi-cost-weight {
+  bottom: 0.12em;
+  transform: translateX(-50%);
+}
+
+.cgsi-cost-slot .cgsi-cost-feather {
+  bottom: 0.2em;
+  transform: translateX(-50%);
+}
+
+.cgsi-cost-callout {
+  position: absolute;
+  top: calc(100% - 0.06rem);
+  left: 50%;
+  display: inline-grid;
+  gap: 0.08rem;
+  align-items: center;
+  justify-items: center;
+  color: var(--cgsi-muted);
+  font-size: 0.66em;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+.cgsi-katex-cost-light .cgsi-cost-callout {
+  color: #b1bac6;
+}
+
+.cgsi-cost-callout-arrow {
+  position: relative;
+  display: inline-block;
+  width: 0.72rem;
+  height: 0.84rem;
+  background: center / contain no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 32'%3E%3Cpath d='M12 30V4M4.5 11.5 12 4l7.5 7.5' fill='none' stroke='%23111111' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  opacity: 1;
+}
+
+.cgsi-cost-callout-arrow::before,
+.cgsi-cost-callout-arrow::after {
+  content: "";
+}
+
+.cgsi-cost-callout-arrow::before {
+  display: none;
+}
+
+.cgsi-cost-callout-arrow::after {
+  display: none;
+}
+
+.cgsi-left-inset-figure {
+  align-self: end;
+  justify-self: stretch;
+  width: 94%;
+  margin: 0;
+}
+
+.cgsi-left-inset-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.cgsi-right-figure {
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  margin: 0;
+}
+
+.cgsi-right-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.cgsi-cited-figure {
+  box-sizing: border-box;
+  grid-template-rows: minmax(0, 0.9fr) auto;
+  align-content: start;
+  gap: 0.28rem;
+  overflow: hidden;
+  padding-top: clamp(0.95rem, 2.2vmin, 1.45rem);
+}
+
+.cgsi-cited-figure img {
+  align-self: start;
+  justify-self: center;
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+}
+
+.cgsi-cited-figure figcaption {
+  max-width: 100%;
+  color: var(--cgsi-muted);
+  font-size: 0.31em;
+  line-height: 1.22;
+  text-align: left;
+}
+
+.cgsi-cited-figure figcaption em {
+  color: var(--cgsi-ink);
+  font-style: italic;
+}
+
+.cgsi-global-flu-layout {
+  --cgsi-global-flu-art-bottom: 1.1rem;
+  position: relative;
+  min-height: 0;
+  align-self: stretch;
+}
+
+.cgsi-global-flu-copy {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 47%;
+  color: var(--cgsi-ink);
+  font-size: 0.66em;
+}
+
+.cgsi-global-flu-facts {
+  display: grid;
+  row-gap: 0.22em;
+  margin: 0;
+  font-weight: 450;
+  line-height: 1.4;
+}
+
+.cgsi-global-flu-facts div {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 0.32em;
+  align-items: baseline;
+}
+
+.cgsi-global-flu-facts dt {
+  color: var(--cgsi-blue);
+  font-weight: 500;
+}
+
+.cgsi-global-flu-facts dd {
+  min-width: 0;
+  margin: 0;
+  color: #000;
+}
+
+.cgsi-global-flu-data {
+  align-self: start;
+  margin-top: 0.55em;
+}
+
+.cgsi-global-flu-data dd {
+  white-space: nowrap;
+}
+
+.cgsi-global-flu-rates {
+  position: absolute;
+  left: 0;
+  bottom: var(--cgsi-global-flu-art-bottom);
+  width: 34.5%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.cgsi-global-flu-rates img {
+  margin: 0;
+  width: 100%;
+  max-height: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: bottom left;
+  transform: translateY(2.75%);
+}
+
+.cgsi-global-flu-tree {
+  box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: var(--cgsi-global-flu-art-bottom);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 59.5%;
+  height: auto;
+  min-height: 0;
+  max-height: 100%;
+  overflow: hidden;
+  padding-top: clamp(0.55rem, 1.35vmin, 0.9rem);
+}
+
+.cgsi-global-flu-tree img {
+  display: block;
+  margin: 0;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: bottom center;
+}
+
+.cgsi-global-flu-citation {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 59.5%;
+  max-width: 100%;
+  margin: 0;
+  color: var(--cgsi-muted);
+  font-size: 0.31em;
+  line-height: 1.22;
+  text-align: left;
+}
+
+.cgsi-global-flu-citation p {
+  margin: 0;
+}
+
+.cgsi-global-flu-citation em {
+  color: var(--cgsi-blue);
+  font-style: italic;
+}
+
+.cgsi-lizard-slide {
+  position: relative;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0.5rem;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.cgsi-lizard-slide h2 {
+  margin: 0;
+}
+
+.cgsi-lizard-layout {
+  position: relative;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.cgsi-lizard-intro {
+  position: absolute;
+  top: 2.45rem;
+  right: 7%;
+  left: 7%;
+  display: grid;
+  text-align: center;
+}
+
+.cgsi-lizard-equation {
+  position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.18em;
+  padding: 3rem 0 4.55rem;
+  color: var(--cgsi-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.6em, 6.2vmin, 2.35em);
+  line-height: 1.08;
+  white-space: nowrap;
+}
+
+.cgsi-lizard-equation sup {
+  font-size: 0.58em;
+}
+
+.cgsi-lizard-term {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  min-width: 0.62em;
+  line-height: 1;
+}
+
+.cgsi-lizard-symbol {
+  position: relative;
+  z-index: 2;
+}
+
+.cgsi-lizard-arrow {
+  position: absolute;
+  left: 50%;
+  z-index: 1;
+  width: 0;
+  height: 1.42rem;
+  border-left: 0.09rem solid var(--cgsi-blue);
+  opacity: 0.9;
+  transform: translateX(-50%);
+}
+
+.cgsi-lizard-arrow::after {
+  position: absolute;
+  left: 50%;
+  width: 0;
+  height: 0;
+  content: "";
+  transform: translateX(-50%);
+}
+
+.cgsi-lizard-term-a .cgsi-lizard-arrow,
+.cgsi-lizard-term-sigma .cgsi-lizard-arrow {
+  top: calc(100% + 0.12rem);
+}
+
+.cgsi-lizard-term-a .cgsi-lizard-arrow::after,
+.cgsi-lizard-term-sigma .cgsi-lizard-arrow::after {
+  bottom: -0.11rem;
+  border-top: 0.3rem solid var(--cgsi-blue);
+  border-right: 0.22rem solid transparent;
+  border-left: 0.22rem solid transparent;
+}
+
+.cgsi-lizard-term-theta .cgsi-lizard-arrow {
+  bottom: calc(100% + 0.12rem);
+}
+
+.cgsi-lizard-term-theta .cgsi-lizard-arrow::after {
+  top: -0.11rem;
+  border-right: 0.22rem solid transparent;
+  border-bottom: 0.3rem solid var(--cgsi-blue);
+  border-left: 0.22rem solid transparent;
+}
+
+.cgsi-lizard-label {
+  position: absolute;
+  left: 50%;
+  display: grid;
+  gap: 0.1rem;
+  min-width: 10.6rem;
+  color: var(--cgsi-muted);
+  font-family: var(--r-main-font);
+  font-size: clamp(0.24em, 1.12vmin, 0.34em);
+  font-weight: 600;
+  line-height: 1.16;
+  text-align: center;
+  white-space: normal;
+  transform: translateX(-50%);
+}
+
+.cgsi-lizard-label strong {
+  color: var(--cgsi-blue);
+  font-weight: 850;
+}
+
+.cgsi-lizard-label span {
+  display: block;
+}
+
+.cgsi-lizard-term-a .cgsi-lizard-label,
+.cgsi-lizard-term-sigma .cgsi-lizard-label {
+  top: calc(100% + 1.9rem);
+}
+
+.cgsi-lizard-term-theta .cgsi-lizard-label {
+  bottom: calc(100% + 1.9rem);
+}
+
+.cgsi-lizard-intro p {
+  max-width: 48rem;
+  margin: 0 auto;
+  color: var(--cgsi-muted);
+  font-size: 0.52em;
+  line-height: 1.28;
+}
+
+.cgsi-lizard-intro strong,
+.cgsi-lizard-trait-note strong {
+  color: var(--cgsi-blue);
+}
+
+.cgsi-nondiag-slide {
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: clamp(2.2rem, 5.4vmin, 3.4rem);
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.cgsi-nondiag-slide h2 {
+  margin: 0;
+}
+
+.cgsi-nondiag-title-symbol {
+  color: inherit;
+  font-style: italic;
+  font-weight: inherit;
+}
+
+.cgsi-nondiag-content {
+  display: grid;
+  gap: clamp(0.5rem, 1.1vmin, 0.78rem);
+  align-content: start;
+  width: 100%;
+  min-height: 0;
+  margin: 0 auto;
+  color: #050505;
+  font-size: clamp(0.61em, 2.6vmin, 0.78em);
+  line-height: 1.22;
+}
+
+.cgsi-nondiag-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+  gap: clamp(1.25rem, 3vw, 2.2rem);
+  align-items: start;
+  min-height: 0;
+}
+
+.cgsi-nondiag-column {
+  display: grid;
+  gap: clamp(0.72rem, 1.45vmin, 1rem);
+  min-width: 0;
+}
+.cgsi-nondiag-main-equation + .cgsi-nondiag-note {
+  margin-top: -0.35rem;
+}
+
+.cgsi-nondiag-section {
+  display: grid;
+  gap: clamp(1.4rem, 3.1vmin, 2.1rem);
+  min-width: 0;
+}
+
+.cgsi-nondiag-but-section {
+  gap: clamp(0.42rem, 0.95vmin, 0.68rem);
+}
+
+.cgsi-nondiag-schur-label {
+  margin-top: clamp(0.16rem, 0.5vmin, 0.32rem) !important;
+}
+
+.cgsi-nondiag-schur-equation .katex-display {
+  font-size: 0.96em;
+}
+
+.cgsi-nondiag-section h3 {
+  margin: 0;
+  color: var(--cgsi-gold);
+  font-size: 0.86em;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.cgsi-nondiag-copy {
+  display: grid;
+  gap: 0.12rem;
+}
+
+.cgsi-nondiag-copy p,
+.cgsi-nondiag-section p,
+.cgsi-nondiag-note,
+.cgsi-nondiag-footer p {
+  margin: 0;
+}
+
+.cgsi-nondiag-copy em {
+  color: #050505;
+  font-style: italic;
+}
+
+.cgsi-nondiag-copy strong {
+  color: #050505;
+  font-weight: 850;
+}
+
+.cgsi-nondiag-blue-label {
+  color: var(--cgsi-blue);
+  font-weight: 850;
+}
+
+.cgsi-slide-citation {
+  position: absolute;
+  right: var(--cgsi-slide-pad-inline);
+  bottom: clamp(0.24rem, 0.7vmin, 0.46rem);
+  left: var(--cgsi-slide-pad-inline);
+  margin: 0;
+  color: var(--cgsi-muted);
+  font-size: clamp(0.25em, 1.1vmin, 0.34em);
+  line-height: 1.18;
+}
+
+.cgsi-slide-citation em {
+  color: inherit;
+  font-style: italic;
+}
+
+.cgsi-nondiag-slide .katex-display {
+  margin: 0;
+  font-size: 1.05em;
+  line-height: 1.05;
+}
+
+.cgsi-nondiag-equation {
+  text-align: center;
+}
+
+.cgsi-nondiag-block-equation .katex-display {
+  font-size: 1.02em;
+}
+
+.cgsi-nondiag-block-equation + .cgsi-nondiag-note {
+  margin-top: calc(-1 * clamp(0.54rem, 1.1vmin, 0.78rem));
+}
+
+.cgsi-nondiag-note,
+.cgsi-nondiag-footer {
+  color: #050505;
+}
+
+.cgsi-nondiag-footer {
+  display: grid;
+  gap: 0.18rem;
+}
+
+.cgsi-stable-computational-slide {
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: clamp(1.1rem, 2.6vmin, 1.8rem);
+}
+
+.cgsi-stable-computational-slide h2 {
+  margin: 0;
+}
+
+.cgsi-stable-computational-layout {
+  display: grid;
+  grid-template-columns: minmax(18rem, 0.52fr) minmax(0, 1.48fr);
+  gap: clamp(1rem, 2.2vw, 1.8rem);
+  align-items: center;
+  min-height: 0;
+}
+
+.cgsi-stable-computational-copy {
+  display: grid;
+  gap: clamp(0.72rem, 1.8vmin, 1.15rem);
+  align-self: start;
+  align-content: start;
+  padding-top: clamp(3.7rem, 9.4vmin, 5.8rem);
+  color: var(--cgsi-ink);
+  font-size: 0.74em;
+  line-height: 1.18;
+  transform: none;
+}
+
+.cgsi-stable-computational-method {
+  display: grid;
+  gap: 0.34rem;
+}
+
+.cgsi-stable-computational-line {
+  margin: 0;
+  color: #000;
+  font-weight: 650;
+}
+
+.cgsi-stable-computational-line strong {
+  color: var(--cgsi-gold);
+  font-weight: 850;
+}
+
+.cgsi-stable-computational-line span {
+  display: block;
+  margin-top: 0.18rem;
+  color: #000;
+  font-weight: 400;
+}
+
+.cgsi-thank-you-slide {
+  display: grid !important;
+  place-items: center;
+  min-height: 100%;
+}
+
+.cgsi-thank-you-slide h2 {
+  margin: 0;
+  color: var(--cgsi-blue);
+  font-size: clamp(2.6em, 13vmin, 5.2em);
+  line-height: 1;
+  text-align: center;
+}
+
+.cgsi-stable-computational-cost {
+  width: 100%;
+  margin: 0.08rem 0 0;
+  font-size: 1.14em;
+  justify-self: center;
+}
+
+.cgsi-stable-computational-cost.cgsi-katex-cost-light {
+  transform: translateX(-0.18em);
+}
+
+.cgsi-stable-computational-figure {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  place-items: center;
+}
+
+.cgsi-stable-computational-figure img {
+  display: block;
+  width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.cgsi-lizard-stage {
+  position: absolute;
+  right: 5.7%;
+  bottom: 5.5%;
+  left: 5.7%;
+  height: 56%;
+}
+
+.cgsi-lizard-track-wrap {
+  position: absolute;
+  top: 23%;
+  right: 5.5%;
+  left: 10%;
+  height: 7rem;
+}
+
+.cgsi-lizard-track-line {
+  position: absolute;
+  top: 4.25rem;
+  right: 0;
+  left: 0;
+  height: 0.16rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--cgsi-ink), #6d706a, var(--cgsi-ink));
+}
+
+.cgsi-lizard-dot {
+  position: absolute;
+  top: 3.86rem;
+  width: 0.92rem;
+  height: 0.92rem;
+  margin-left: -0.46rem;
+  border-radius: 50%;
+  background: #11160f;
+  box-shadow: 0 0 0 0.24rem rgb(23 32 51 / 8%);
+}
+
+.cgsi-lizard-dot-left {
+  left: 0;
+}
+
+.cgsi-lizard-dot-right {
+  left: 100%;
+}
+
+.cgsi-lizard-time-label {
+  position: absolute;
+  top: 5.25rem;
+  color: var(--cgsi-muted);
+  font-size: 0.42em;
+  font-weight: 650;
+  transform: translateX(-50%);
+}
+
+.cgsi-lizard-time-label-left {
+  left: 0;
+}
+
+.cgsi-lizard-time-label-right {
+  left: 100%;
+}
+
+.cgsi-lizard-command-row {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.58rem;
+}
+
+.cgsi-lizard-release {
+  min-height: 2.05rem;
+  border: 0;
+  border-radius: 0.35rem;
+  padding: 0 0.9rem;
+  background: var(--cgsi-blue);
+  color: white;
+  font: inherit;
+  font-size: 0.5em;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: none;
+  transition:
+    background 150ms ease,
+    transform 150ms ease;
+}
+
+.cgsi-lizard-release:hover,
+.cgsi-lizard-release:focus-visible {
+  background: #163866;
+  transform: translateY(-1px);
+}
+
+.cgsi-lizard-readout {
+  min-width: 13rem;
+  color: var(--cgsi-muted);
+  font-size: 0.43em;
+}
+
+.cgsi-lizard-trait-note {
+  position: absolute;
+  top: calc(23% + 5.55rem);
+  left: 50%;
+  width: min(82%, 58rem);
+  margin: 0;
+  color: var(--cgsi-muted);
+  font-size: 0.84em;
+  line-height: 1.26;
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+.cgsi-lizard {
+  position: absolute;
+  width: clamp(6.2rem, 17vmin, 9.7rem);
+  aspect-ratio: 300 / 130;
+  opacity: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 0.28rem 0.28rem rgb(23 32 51 / 18%));
+  transform: translate(-50%, -100%);
+  transform-origin: center bottom;
+}
+
+.cgsi-lizard-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.cgsi-lizard-svg * {
+  transform-box: fill-box;
+}
+
+.cgsi-lizard-body {
+  fill: #669341;
+  stroke: #20391f;
+  stroke-width: 3.5;
+}
+
+.cgsi-lizard-head {
+  fill: #7faf48;
+  stroke: #20391f;
+  stroke-width: 3.5;
+}
+
+.cgsi-lizard-tail {
+  fill: none;
+  stroke: #557b36;
+  stroke-width: 17;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cgsi-lizard-tail-tip {
+  fill: none;
+  stroke: #314e2a;
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+.cgsi-lizard-limb {
+  fill: none;
+  stroke: #43692f;
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cgsi-lizard-toe {
+  fill: none;
+  stroke: #20391f;
+  stroke-width: 3.2;
+  stroke-linecap: round;
+}
+
+.cgsi-lizard-eye {
+  fill: #11160f;
+}
+
+.cgsi-lizard-spot {
+  fill: rgb(255 240 180 / 65%);
+  stroke: rgb(30 50 25 / 35%);
+  stroke-width: 1;
+}
+
+.cgsi-lizard-dewlap {
+  fill: #dc9c4f;
+  opacity: 0.76;
+  stroke: #8a542e;
+  stroke-width: 2;
+}
+
+.cgsi-lizard.is-animating .cgsi-lizard-body {
+  animation: cgsiLizardBodyMorph 6.8s ease-in-out both;
+  transform-origin: center center;
+}
+
+.cgsi-lizard.is-animating .cgsi-lizard-head {
+  animation: cgsiLizardHeadMorph 6.8s ease-in-out both;
+  transform-origin: 50% 50%;
+}
+
+.cgsi-lizard.is-animating .cgsi-lizard-tail {
+  animation: cgsiLizardTailMorph 6.8s ease-in-out both;
+  transform-origin: 100% 50%;
+}
+
+.cgsi-lizard.is-animating .cgsi-lizard-hind {
+  animation: cgsiLizardHindMorph 6.8s ease-in-out both;
+  transform-origin: 50% 50%;
+}
+
+.cgsi-lizard.is-animating .cgsi-lizard-fore {
+  animation: cgsiLizardForeMorph 6.8s ease-in-out both;
+  transform-origin: 50% 50%;
+}
+
+.cgsi-lizard.is-animating .cgsi-lizard-spot {
+  animation: cgsiLizardSpotPulse 1.35s ease-in-out infinite alternate;
+  transform-origin: center center;
+}
+
+.cgsi-lizard.is-animating .cgsi-lizard-dewlap {
+  animation: cgsiLizardDewlapPulse 1.05s ease-in-out infinite alternate;
+  transform-origin: 50% 0%;
+}
+
+@keyframes cgsiLizardBodyMorph {
+  0% {
+    fill: #669341;
+    transform: scale(1);
+  }
+
+  28% {
+    fill: #6e9c46;
+    transform: scale(1.18, 0.82);
+  }
+
+  62% {
+    fill: #7aa34b;
+    transform: scale(1.42, 1.26);
+  }
+
+  100% {
+    fill: #648e42;
+    transform: scale(1.12, 0.82);
+  }
+}
+
+@keyframes cgsiLizardHeadMorph {
+  0% {
+    transform: scale(1);
+  }
+
+  45% {
+    transform: scale(1.42, 0.82) rotate(-6deg);
+  }
+
+  100% {
+    transform: scale(1.18, 1.32) rotate(6deg);
+  }
+}
+
+@keyframes cgsiLizardTailMorph {
+  0% {
+    stroke-width: 17;
+    transform: scaleX(1) rotate(0deg);
+  }
+
+  50% {
+    stroke-width: 27;
+    transform: scaleX(1.42) rotate(-10deg);
+  }
+
+  100% {
+    stroke-width: 18;
+    transform: scaleX(1.16) rotate(8deg);
+  }
+}
+
+@keyframes cgsiLizardHindMorph {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+
+  45% {
+    transform: scale(1.74) rotate(-14deg);
+  }
+
+  100% {
+    transform: scale(1.28) rotate(10deg);
+  }
+}
+
+@keyframes cgsiLizardForeMorph {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+
+  45% {
+    transform: scale(1.26) rotate(13deg);
+  }
+
+  100% {
+    transform: scale(1.58) rotate(-11deg);
+  }
+}
+
+@keyframes cgsiLizardSpotPulse {
+  from {
+    opacity: 0.65;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1.75);
+  }
+}
+
+@keyframes cgsiLizardDewlapPulse {
+  from {
+    opacity: 0.76;
+    transform: scaleY(1);
+  }
+
+  to {
+    opacity: 0.94;
+    transform: scaleY(1.62);
+  }
+}
+
 .cgsi-app-slide {
   position: relative;
   width: 100%;
@@ -180,9 +2100,9 @@ body.presentation-page {
 
 .cgsi-app-navigation {
   position: absolute;
-  right: 1.2rem;
-  bottom: 1.2rem;
-  left: 1.2rem;
+  right: var(--cgsi-deck-control-offset);
+  bottom: var(--cgsi-deck-control-offset);
+  left: var(--cgsi-deck-control-offset);
   z-index: 20;
   display: flex;
   align-items: center;
@@ -198,16 +2118,18 @@ body.presentation-page {
 .cgsi-control-button {
   display: inline-grid;
   place-items: center;
-  width: 3.15rem;
-  height: 3.15rem;
+  width: var(--cgsi-deck-control-size);
+  height: var(--cgsi-deck-control-size);
   border: 1px solid var(--cgsi-line);
   border-radius: 999px;
   background: rgb(255 255 255 / 82%);
   color: var(--cgsi-ink);
   font: inherit;
+  font-size: var(--cgsi-deck-control-font-size);
+  line-height: 1;
   cursor: pointer;
   opacity: 0.72;
-  box-shadow: 0 0.7rem 1.8rem rgb(23 32 51 / 10%);
+  box-shadow: 0 clamp(0.3rem, 1.1vmin, 0.7rem) clamp(0.9rem, 2.7vmin, 1.8rem) rgb(23 32 51 / 10%);
   transition:
     opacity 160ms ease,
     transform 160ms ease,
@@ -238,9 +2160,9 @@ body.presentation-page {
 
 .cgsi-app-slide-side-nav .cgsi-app-navigation {
   top: 50%;
-  right: 0.75rem;
+  right: var(--cgsi-deck-control-offset);
   bottom: auto;
-  left: 0.75rem;
+  left: var(--cgsi-deck-control-offset);
   transform: translateY(-50%);
 }
 
@@ -249,8 +2171,8 @@ body.presentation-page {
 }
 
 .presentation-page:has(.cgsi-app-slide-side-nav.present) .cgsi-deck-controls {
-  top: 0.75rem;
-  right: 0.75rem;
+  top: var(--cgsi-deck-control-offset);
+  right: var(--cgsi-deck-control-offset);
   bottom: auto;
 }
 
@@ -260,18 +2182,23 @@ body.presentation-page {
 
 .cgsi-deck-controls {
   position: fixed;
-  right: 1rem;
-  bottom: 1rem;
+  right: var(--cgsi-deck-control-offset);
+  bottom: var(--cgsi-deck-control-offset);
   z-index: 40;
   display: flex;
-  gap: 0.55rem;
+  gap: var(--cgsi-deck-control-gap);
   align-items: center;
+  pointer-events: none;
+}
+
+.cgsi-deck-controls > * {
+  pointer-events: auto;
 }
 
 .cgsi-fullscreen-button {
-  width: 2.65rem;
-  height: 2.65rem;
-  font-size: 0.72rem;
+  width: calc(var(--cgsi-deck-control-size) * 0.84);
+  height: calc(var(--cgsi-deck-control-size) * 0.84);
+  font-size: calc(var(--cgsi-deck-control-font-size) * 0.74);
 }
 
 .print-only {
@@ -280,7 +2207,10 @@ body.presentation-page {
 
 .cgsi-app-print-fallback {
   height: 100%;
-  padding: 4.2rem 5rem;
+  padding:
+    var(--cgsi-slide-pad-top)
+    var(--cgsi-slide-pad-inline)
+    var(--cgsi-slide-pad-bottom);
   background: var(--cgsi-paper);
 }
 
@@ -291,7 +2221,10 @@ body.presentation-page {
 
   .cgsi-slide,
   .cgsi-app-print-fallback {
-    padding: 3.2rem 2.2rem !important;
+    padding:
+      clamp(0.4rem, 1.35vmin, 0.72rem)
+      clamp(0.42rem, 1.45vmin, 0.78rem)
+      clamp(0.46rem, 1.35vmin, 0.8rem) !important;
   }
 
   .cgsi-title-slide h1 {
@@ -306,7 +2239,7 @@ body.presentation-page {
 
   .cgsi-slide,
   .cgsi-app-print-fallback {
-    padding: 2.5rem 1.25rem !important;
+    padding: 0.45rem 0.5rem 0.65rem !important;
   }
 
   .cgsi-title-slide h1 {
@@ -322,8 +2255,8 @@ body.presentation-page {
   }
 
   .cgsi-deck-controls {
-    right: 0.7rem;
-    bottom: 0.7rem;
+    right: var(--cgsi-deck-control-offset);
+    bottom: var(--cgsi-deck-control-offset);
   }
 }
 

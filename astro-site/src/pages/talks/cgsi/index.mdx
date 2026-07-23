@@ -9,21 +9,22 @@ import TitleSlide from "../../../components/presentation/TitleSlide.astro";
 import AppSlide from "../../../components/presentation/AppSlide.astro";
 
 export const talk = {
-  title: "CGSI",
-  subtitle: "Interactive statistical and computational models",
+  title: "Scalable inference for continuous-time Markov processes",
+  titleLines: ["Scalable inference for", "continuous-time Markov processes"],
+  subtitle: "Application to phylogenetics",
   author: "Filippo Monti",
   affiliation: "UCLA Biostatistics",
-  event: "CGSI",
-  date: "2026"
+  event: "CGSI 2026"
 };
 
 <TitleSlide
   title={talk.title}
+  titleLines={talk.titleLines}
+  headline={talk.headline}
   subtitle={talk.subtitle}
   author={talk.author}
   affiliation={talk.affiliation}
   event={talk.event}
-  date={talk.date}
 />
 
 <AppSlide
@@ -35,26 +36,812 @@ export const talk = {
   showNavigation={false}
 />
 
-<AppSlide
-  id="coalescent-grid"
-  class="cgsi-app-slide-side-nav"
-  src="/apps/interactive-coalescent/index.html?embed=1&theme=light&presentation=1&v=20260722-responsive-toolbar"
-  title="Discrete-time coalescent on a grid"
-  printSummary="The live version opens the coalescent explorer with time-varying population controls."
-  showNavigation={false}
-/>
+<Slide id="nucleotide-ctmc" class="cgsi-nucleotide-slide">
 
-<Slide id="motivation">
+<h2>Continuous-Time Markov Chains (CTMCs)</h2>
 
-<h2>Motivation</h2>
+<div class="cgsi-ctmc-slide-body">
 
-- Present the scientific problem.
-- Introduce the computational bottleneck.
-- Explain why an interactive visualization is useful during the talk.
+<div class="cgsi-nucleotide-visual-row">
+
+<figure class="cgsi-nucleotide-ctmc-figure" aria-label="Nucleotide continuous-time Markov chain with separate directed arrows for every ordered transition">
+  <svg viewBox="0 0 420 540" role="img" aria-labelledby="nucleotideCtmcTitle nucleotideCtmcDesc">
+    <title id="nucleotideCtmcTitle">Nucleotide transition graph</title>
+    <desc id="nucleotideCtmcDesc">A, T, C, and G are placed at the corners of a square. Every nucleotide pair is connected by two parallel arrows, one in each direction.</desc>
+    <defs>
+      <marker id="nucleotide-arrowhead" viewBox="0 0 10 10" refX="8.2" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10 z" />
+      </marker>
+    </defs>
+
+    <g class="cgsi-nucleotide-arrows">
+      <path d="M 128 122 H 262" />
+      <path d="M 262 138 H 128" />
+
+      <path d="M 82 168 V 302" />
+      <path d="M 98 302 V 168" />
+
+      <path d="M 292 168 V 302" />
+      <path d="M 308 302 V 168" />
+
+      <path d="M 128 332 H 262" />
+      <path d="M 262 348 H 128" />
+
+      <path d="M 107 159 L 271 323" />
+      <path d="M 283 311 L 119 147" />
+
+      <path d="M 271 147 L 107 311" />
+      <path d="M 119 323 L 283 159" />
+    </g>
+
+    <g class="cgsi-nucleotide-rate-labels" aria-hidden="true">
+      <text x="195" y="108" data-nucleotide-rate-source="qAT">q<tspan>AT</tspan></text>
+      <text x="195" y="158">q<tspan>TA</tspan></text>
+      <text x="50" y="236">q<tspan>AC</tspan></text>
+      <text x="130" y="236">q<tspan>CA</tspan></text>
+      <text x="260" y="236">q<tspan>TG</tspan></text>
+      <text x="340" y="236">q<tspan>GT</tspan></text>
+      <text x="195" y="318">q<tspan>CG</tspan></text>
+      <text x="195" y="378" data-nucleotide-rate-source="qGC">q<tspan>GC</tspan></text>
+    </g>
+
+    <g class="cgsi-nucleotide-node cgsi-nucleotide-node-a" transform="translate(90 130)">
+      <circle r="28" />
+      <text>A</text>
+    </g>
+
+    <g class="cgsi-nucleotide-node cgsi-nucleotide-node-t" transform="translate(300 130)">
+      <circle r="28" />
+      <text>T</text>
+    </g>
+
+    <g class="cgsi-nucleotide-node cgsi-nucleotide-node-c" transform="translate(90 340)">
+      <circle r="28" />
+      <text>C</text>
+    </g>
+
+    <g class="cgsi-nucleotide-node cgsi-nucleotide-node-g" transform="translate(300 340)">
+      <circle r="28" />
+      <text>G</text>
+    </g>
+
+    <g class="cgsi-nucleotide-legend" transform="translate(92 456)">
+      <g>
+        <rect class="cgsi-nucleotide-swatch-a" x="0" y="0" width="28" height="28" rx="1.5" />
+        <text class="cgsi-nucleotide-swatch-letter" x="14" y="14">A</text>
+        <text class="cgsi-nucleotide-legend-label" x="40" y="15">Adenine</text>
+      </g>
+      <g transform="translate(148 0)">
+        <rect class="cgsi-nucleotide-swatch-t" x="0" y="0" width="28" height="28" rx="1.5" />
+        <text class="cgsi-nucleotide-swatch-letter" x="14" y="14">T</text>
+        <text class="cgsi-nucleotide-legend-label" x="40" y="15">Thymine</text>
+      </g>
+      <g transform="translate(0 44)">
+        <rect class="cgsi-nucleotide-swatch-c" x="0" y="0" width="28" height="28" rx="1.5" />
+        <text class="cgsi-nucleotide-swatch-letter" x="14" y="14">C</text>
+        <text class="cgsi-nucleotide-legend-label" x="40" y="15">Cytosine</text>
+      </g>
+      <g transform="translate(148 44)">
+        <rect class="cgsi-nucleotide-swatch-g" x="0" y="0" width="28" height="28" rx="1.5" />
+        <text class="cgsi-nucleotide-swatch-letter" x="14" y="14">G</text>
+        <text class="cgsi-nucleotide-legend-label" x="40" y="15">Guanine</text>
+      </g>
+    </g>
+  </svg>
+</figure>
+
+<div class="cgsi-nucleotide-q-matrix" aria-hidden="true">
+  <span class="cgsi-nucleotide-q-symbol"><strong>Q</strong><sub>DNA</sub> =</span>
+  <div class="cgsi-nucleotide-matrix-brackets" aria-label="Q matrix">
+    <table>
+      <tbody>
+        <tr>
+          <td>·</td>
+          <td data-nucleotide-rate-target="qAT">q<sub>AT</sub></td>
+          <td>q<sub>AC</sub></td>
+          <td>q<sub>AG</sub></td>
+        </tr>
+        <tr>
+          <td>q<sub>TA</sub></td>
+          <td>·</td>
+          <td>q<sub>TC</sub></td>
+          <td>q<sub>TG</sub></td>
+        </tr>
+        <tr>
+          <td>q<sub>CA</sub></td>
+          <td>q<sub>CT</sub></td>
+          <td>·</td>
+          <td>q<sub>CG</sub></td>
+        </tr>
+        <tr>
+          <td>q<sub>GA</sub></td>
+          <td>q<sub>GT</sub></td>
+          <td data-nucleotide-rate-target="qGC">q<sub>GC</sub></td>
+          <td>·</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<svg class="cgsi-nucleotide-matrix-link" aria-hidden="true" focusable="false">
+  <defs>
+    <marker id="nucleotide-matrix-arrowhead" viewBox="0 0 10 10" refX="8.2" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" />
+    </marker>
+  </defs>
+      <path data-nucleotide-matrix-link-path="qAT" d="" />
+      <path data-nucleotide-matrix-link-path="qGC" d="" />
+</svg>
+
+</div>
+
+<div class="cgsi-geo-ctmc-row" aria-label="Geographic continuous-time Markov chain and Q geo rate matrix">
+
+<figure class="cgsi-geo-ctmc-figure" aria-label="Geographic states from the interactive tree app connected by directed transition arrows">
+  <svg viewBox="0 0 620 430" role="img" aria-labelledby="geoCtmcTitle geoCtmcDesc">
+    <title id="geoCtmcTitle">Geographic CTMC state graph</title>
+    <desc id="geoCtmcDesc">North America, South America, Europe, Africa, Middle East, East Asia, and Australia are placed around a circle. Thin grey arrows connect every pair of states.</desc>
+    <defs>
+      <marker id="geo-arrowhead" viewBox="0 0 10 10" refX="8.2" refY="5" markerWidth="4.2" markerHeight="4.2" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" />
+      </marker>
+    </defs>
+
+    <circle class="cgsi-geo-ring" cx="305" cy="215" r="138" />
+
+    <g class="cgsi-geo-arrow-network">
+      <path d="M 243.5 102.5 L 306.5 86.8" />
+      <path d="M 243.7 115.1 L 401.6 148.7" />
+      <path d="M 238.4 126.5 L 407.0 258.3" />
+      <path d="M 228.6 134.5 L 321.4 324.8" />
+      <path d="M 216.3 137.3 L 216.3 292.7" />
+      <path d="M 204.0 134.5 L 179.4 185.0" />
+      <path d="M 355.8 97.3 L 407.0 137.3" />
+      <path d="M 346.0 105.2 L 416.8 250.3" />
+      <path d="M 333.7 108.0 L 333.7 322.0" />
+      <path d="M 321.4 105.2 L 228.6 295.5" />
+      <path d="M 311.6 97.3 L 189.1 192.9" />
+      <path d="M 429.0 182.5 L 429.0 247.5" />
+      <path d="M 416.8 179.7 L 346.0 324.8" />
+      <path d="M 407.0 171.7 L 238.4 303.5" />
+      <path d="M 401.6 160.3 L 194.5 204.4" />
+      <path d="M 407.0 292.7 L 355.8 332.7" />
+      <path d="M 401.6 281.3 L 243.7 314.9" />
+      <path d="M 401.9 268.7 L 194.3 217.0" />
+      <path d="M 306.5 343.2 L 243.5 327.5" />
+      <path d="M 312.2 332.0 L 188.5 228.2" />
+      <path d="M 204.9 295.1 L 178.5 235.8" />
+    </g>
+
+    <g class="cgsi-geo-node cgsi-geo-node-na" transform="translate(216.3 109.3)">
+      <circle r="27" />
+      <text>NA</text>
+    </g>
+    <g class="cgsi-geo-node cgsi-geo-node-eu" transform="translate(333.7 80.0)">
+      <circle r="27" />
+      <text>EU</text>
+    </g>
+    <g class="cgsi-geo-node cgsi-geo-node-me" transform="translate(429.0 154.5)">
+      <circle r="27" />
+      <text>ME</text>
+    </g>
+    <g class="cgsi-geo-node cgsi-geo-node-ea" transform="translate(429.0 275.5)">
+      <circle r="27" />
+      <text>EA</text>
+    </g>
+    <g class="cgsi-geo-node cgsi-geo-node-au" transform="translate(333.7 350.0)">
+      <circle r="27" />
+      <text>AU</text>
+    </g>
+    <g class="cgsi-geo-node cgsi-geo-node-af" transform="translate(216.3 320.7)">
+      <circle r="27" />
+      <text>AF</text>
+    </g>
+    <g class="cgsi-geo-node cgsi-geo-node-sa" transform="translate(167.1 210.2)">
+      <circle r="27" />
+      <text>SA</text>
+    </g>
+
+    <g class="cgsi-geo-labels">
+      <text x="124" y="102">
+        <tspan x="124" dy="0">North</tspan>
+        <tspan x="124" dy="20">America</tspan>
+      </text>
+      <text x="334" y="36">Europe</text>
+      <text x="526" y="151">
+        <tspan x="526" dy="0">Middle</tspan>
+        <tspan x="526" dy="20">East</tspan>
+      </text>
+      <text x="526" y="274">
+        <tspan x="526" dy="0">East</tspan>
+        <tspan x="526" dy="20">Asia</tspan>
+      </text>
+      <text x="334" y="405">Australia</text>
+      <text x="124" y="326">Africa</text>
+      <text x="72" y="202">
+        <tspan x="72" dy="0">South</tspan>
+        <tspan x="72" dy="20">America</tspan>
+      </text>
+    </g>
+  </svg>
+</figure>
+
+<div class="cgsi-geo-q-matrix" aria-hidden="true">
+  <span class="cgsi-geo-q-symbol"><strong>Q</strong><sub>geo</sub> =</span>
+  <div class="cgsi-geo-matrix-stack">
+    <div class="cgsi-geo-state-order">
+      <span><strong>1</strong> North America</span>
+      <span><strong>2</strong> South America</span>
+      <span><strong>3</strong> Europe</span>
+      <span><strong>4</strong> Africa</span>
+      <span><strong>5</strong> Middle East</span>
+      <span><strong>6</strong> East Asia</span>
+      <span><strong>7</strong> Australia</span>
+    </div>
+    <div class="cgsi-geo-matrix-brackets" aria-label="Q geo matrix">
+      <table>
+        <tbody>
+          <tr>
+            <td>&middot;</td>
+            <td>q<sub>12</sub></td>
+            <td>q<sub>13</sub></td>
+            <td>q<sub>14</sub></td>
+            <td>q<sub>15</sub></td>
+            <td>q<sub>16</sub></td>
+            <td>q<sub>17</sub></td>
+          </tr>
+          <tr>
+            <td>q<sub>21</sub></td>
+            <td>&middot;</td>
+            <td>q<sub>23</sub></td>
+            <td>q<sub>24</sub></td>
+            <td>q<sub>25</sub></td>
+            <td>q<sub>26</sub></td>
+            <td>q<sub>27</sub></td>
+          </tr>
+          <tr>
+            <td>q<sub>31</sub></td>
+            <td>q<sub>32</sub></td>
+            <td>&middot;</td>
+            <td>q<sub>34</sub></td>
+            <td>q<sub>35</sub></td>
+            <td>q<sub>36</sub></td>
+            <td>q<sub>37</sub></td>
+          </tr>
+          <tr>
+            <td>q<sub>41</sub></td>
+            <td>q<sub>42</sub></td>
+            <td>q<sub>43</sub></td>
+            <td>&middot;</td>
+            <td>q<sub>45</sub></td>
+            <td>q<sub>46</sub></td>
+            <td>q<sub>47</sub></td>
+          </tr>
+          <tr>
+            <td>q<sub>51</sub></td>
+            <td>q<sub>52</sub></td>
+            <td>q<sub>53</sub></td>
+            <td>q<sub>54</sub></td>
+            <td>&middot;</td>
+            <td>q<sub>56</sub></td>
+            <td>q<sub>57</sub></td>
+          </tr>
+          <tr>
+            <td>q<sub>61</sub></td>
+            <td>q<sub>62</sub></td>
+            <td>q<sub>63</sub></td>
+            <td>q<sub>64</sub></td>
+            <td>q<sub>65</sub></td>
+            <td>&middot;</td>
+            <td>q<sub>67</sub></td>
+          </tr>
+          <tr>
+            <td>q<sub>71</sub></td>
+            <td>q<sub>72</sub></td>
+            <td>q<sub>73</sub></td>
+            <td>q<sub>74</sub></td>
+            <td>q<sub>75</sub></td>
+            <td>q<sub>76</sub></td>
+            <td>&middot;</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div>
+
+</div>
+
+<div class="cgsi-nucleotide-rate-controls" aria-label="Rate annotation controls">
+  <button type="button" data-nucleotide-rate-step="previous" aria-label="Go back one rate annotation step">←</button>
+  <button type="button" data-nucleotide-rate-step="next" aria-label="Add rate annotation">→</button>
+</div>
 
 </Slide>
 
-<Slide id="mathematical-model">
+<Slide id="modeling-ctmc" class="cgsi-modeling-ctmc-slide">
+
+<h2>Modeling CTMCs</h2>
+
+<div class="cgsi-modeling-ctmc-body">
+
+<div class="cgsi-modeling-panels">
+
+<section class="cgsi-modeling-block cgsi-modeling-questions">
+  <h3>Questions</h3>
+  <ol>
+    <li>
+      <span class="cgsi-modeling-question-text">How to infer </span><span class="cgsi-modeling-question-q">Q</span><span class="cgsi-modeling-question-text">?</span>
+      <span class="cgsi-modeling-aside">sparsity: not all transitions are represented in the data</span>
+    </li>
+    <li>
+      <span class="cgsi-modeling-question-text">Are there external predictors for the entries of </span><span class="cgsi-modeling-question-q">Q</span><span class="cgsi-modeling-question-text">?</span>
+    </li>
+  </ol>
+</section>
+
+<section class="cgsi-modeling-block cgsi-modeling-solution">
+  <h3>Proposed solution</h3>
+  <p>Gaussian process model:</p>
+
+  $$
+  \log(q_{ij}) = f(x_{ij}) + \epsilon,
+  \qquad
+  f(\cdot) \sim \mathrm{GP}(\mathbf{0}, K(\cdot, \cdot)).
+  $$
+</section>
+
+</div>
+
+<div class="cgsi-geo-q-matrix cgsi-modeling-qgeo-matrix" aria-hidden="true">
+  <p class="cgsi-modeling-example"><strong>Example:</strong> $x_{ij}$ is the population density of country $i$</p>
+  <span class="cgsi-geo-q-symbol"><strong>Q</strong><sub>geo</sub> =</span>
+  <div class="cgsi-geo-matrix-stack">
+    <div class="cgsi-geo-state-order">
+      <span><strong>1</strong> North America</span>
+      <span><strong>2</strong> South America</span>
+      <span><strong>3</strong> Europe</span>
+      <span><strong>4</strong> Africa</span>
+      <span><strong>5</strong> Middle East</span>
+      <span><strong>6</strong> East Asia</span>
+      <span><strong>7</strong> Australia</span>
+    </div>
+    <div class="cgsi-geo-matrix-brackets" aria-label="Covariate-dependent Q geo matrix">
+      <table>
+        <tbody>
+          <tr>
+            <td>&middot;</td>
+            <td>q<sub>12</sub>&thinsp;(&thinsp;x<sub>12</sub>&thinsp;)</td>
+            <td>q<sub>13</sub>&thinsp;(&thinsp;x<sub>13</sub>&thinsp;)</td>
+            <td>q<sub>14</sub>&thinsp;(&thinsp;x<sub>14</sub>&thinsp;)</td>
+            <td>q<sub>15</sub>&thinsp;(&thinsp;x<sub>15</sub>&thinsp;)</td>
+            <td>q<sub>16</sub>&thinsp;(&thinsp;x<sub>16</sub>&thinsp;)</td>
+            <td>q<sub>17</sub>&thinsp;(&thinsp;x<sub>17</sub>&thinsp;)</td>
+          </tr>
+          <tr>
+            <td>q<sub>21</sub>&thinsp;(&thinsp;x<sub>21</sub>&thinsp;)</td>
+            <td>&middot;</td>
+            <td>q<sub>23</sub>&thinsp;(&thinsp;x<sub>23</sub>&thinsp;)</td>
+            <td>q<sub>24</sub>&thinsp;(&thinsp;x<sub>24</sub>&thinsp;)</td>
+            <td>q<sub>25</sub>&thinsp;(&thinsp;x<sub>25</sub>&thinsp;)</td>
+            <td>q<sub>26</sub>&thinsp;(&thinsp;x<sub>26</sub>&thinsp;)</td>
+            <td>q<sub>27</sub>&thinsp;(&thinsp;x<sub>27</sub>&thinsp;)</td>
+          </tr>
+          <tr>
+            <td>q<sub>31</sub>&thinsp;(&thinsp;x<sub>31</sub>&thinsp;)</td>
+            <td>q<sub>32</sub>&thinsp;(&thinsp;x<sub>32</sub>&thinsp;)</td>
+            <td>&middot;</td>
+            <td>q<sub>34</sub>&thinsp;(&thinsp;x<sub>34</sub>&thinsp;)</td>
+            <td>q<sub>35</sub>&thinsp;(&thinsp;x<sub>35</sub>&thinsp;)</td>
+            <td>q<sub>36</sub>&thinsp;(&thinsp;x<sub>36</sub>&thinsp;)</td>
+            <td>q<sub>37</sub>&thinsp;(&thinsp;x<sub>37</sub>&thinsp;)</td>
+          </tr>
+          <tr>
+            <td>q<sub>41</sub>&thinsp;(&thinsp;x<sub>41</sub>&thinsp;)</td>
+            <td>q<sub>42</sub>&thinsp;(&thinsp;x<sub>42</sub>&thinsp;)</td>
+            <td>q<sub>43</sub>&thinsp;(&thinsp;x<sub>43</sub>&thinsp;)</td>
+            <td>&middot;</td>
+            <td>q<sub>45</sub>&thinsp;(&thinsp;x<sub>45</sub>&thinsp;)</td>
+            <td>q<sub>46</sub>&thinsp;(&thinsp;x<sub>46</sub>&thinsp;)</td>
+            <td>q<sub>47</sub>&thinsp;(&thinsp;x<sub>47</sub>&thinsp;)</td>
+          </tr>
+          <tr>
+            <td>q<sub>51</sub>&thinsp;(&thinsp;x<sub>51</sub>&thinsp;)</td>
+            <td>q<sub>52</sub>&thinsp;(&thinsp;x<sub>52</sub>&thinsp;)</td>
+            <td>q<sub>53</sub>&thinsp;(&thinsp;x<sub>53</sub>&thinsp;)</td>
+            <td>q<sub>54</sub>&thinsp;(&thinsp;x<sub>54</sub>&thinsp;)</td>
+            <td>&middot;</td>
+            <td>q<sub>56</sub>&thinsp;(&thinsp;x<sub>56</sub>&thinsp;)</td>
+            <td>q<sub>57</sub>&thinsp;(&thinsp;x<sub>57</sub>&thinsp;)</td>
+          </tr>
+          <tr>
+            <td>q<sub>61</sub>&thinsp;(&thinsp;x<sub>61</sub>&thinsp;)</td>
+            <td>q<sub>62</sub>&thinsp;(&thinsp;x<sub>62</sub>&thinsp;)</td>
+            <td>q<sub>63</sub>&thinsp;(&thinsp;x<sub>63</sub>&thinsp;)</td>
+            <td>q<sub>64</sub>&thinsp;(&thinsp;x<sub>64</sub>&thinsp;)</td>
+            <td>q<sub>65</sub>&thinsp;(&thinsp;x<sub>65</sub>&thinsp;)</td>
+            <td>&middot;</td>
+            <td>q<sub>67</sub>&thinsp;(&thinsp;x<sub>67</sub>&thinsp;)</td>
+          </tr>
+          <tr>
+            <td>q<sub>71</sub>&thinsp;(&thinsp;x<sub>71</sub>&thinsp;)</td>
+            <td>q<sub>72</sub>&thinsp;(&thinsp;x<sub>72</sub>&thinsp;)</td>
+            <td>q<sub>73</sub>&thinsp;(&thinsp;x<sub>73</sub>&thinsp;)</td>
+            <td>q<sub>74</sub>&thinsp;(&thinsp;x<sub>74</sub>&thinsp;)</td>
+            <td>q<sub>75</sub>&thinsp;(&thinsp;x<sub>75</sub>&thinsp;)</td>
+            <td>q<sub>76</sub>&thinsp;(&thinsp;x<sub>76</sub>&thinsp;)</td>
+            <td>&middot;</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <img class="cgsi-modeling-flu-rates" src="/talks/cgsi/figures/fluLogRates.png" alt="" />
+</div>
+
+</div>
+
+</Slide>
+
+<Slide id="global-flu-example" class="cgsi-figure-slide cgsi-global-flu-slide">
+
+<h2>Global Flu example</h2>
+
+<div class="cgsi-global-flu-layout">
+
+<div class="cgsi-global-flu-copy">
+
+<dl class="cgsi-global-flu-facts">
+  <div>
+    <dt>Virus:</dt>
+    <dd>Global Influenza H3N2</dd>
+  </div>
+  <div>
+    <dt>Host:</dt>
+    <dd>Humans</dd>
+  </div>
+  <div>
+    <dt>When:</dt>
+    <dd>2002-2007</dd>
+  </div>
+  <div class="cgsi-global-flu-data">
+    <dt>Data:</dt>
+    <dd>
+      1441 H3N2 hemagglutinin sequences + locations
+    </dd>
+  </div>
+</dl>
+
+</div>
+
+<figure class="cgsi-left-inset-figure cgsi-global-flu-rates">
+  <img
+    src="/talks/cgsi/figures/fluLogRates.png"
+    alt="Log rates as a function of origin population density"
+    loading="eager"
+  />
+</figure>
+
+<figure class="cgsi-right-figure cgsi-global-flu-tree">
+  <img
+    src="/talks/cgsi/figures/fluTreeWithRewards.png"
+    alt="Global influenza phylogeny with geographic reward summaries"
+    loading="eager"
+  />
+</figure>
+
+<div class="cgsi-global-flu-citation">
+  Monti, F., Ji, X., Shao, Y., and Suchard, M. A. (2026).
+  <em class="paper-title">Nonparametric Modeling of Continuous-Time Markov Chains with Scalable Exact and Approximate Gradients.</em>
+</div>
+
+</div>
+
+</Slide>
+
+<Slide id="computational-contribution" class="cgsi-figure-slide cgsi-computational-slide">
+
+<h2>Computational contribution</h2>
+
+<div class="cgsi-figure-split">
+
+<div class="cgsi-figure-copy">
+
+<div class="cgsi-computational-copy">
+
+<p class="cgsi-computational-intro">Let $N$ be the number of observations and $K$ the number of states.</p>
+
+<section class="cgsi-computational-section">
+  <h3>Challenges</h3>
+  <ul>
+    <li>
+      $Q$ has $K^2$ <u>highly dependent</u> entries <span aria-hidden="true">→</span> gradient-based inference.
+    </li>
+    <li>
+      $Q$ enters the likelihood through <span class="cgsi-inline-matrix-exp">$e^{tQ} := \sum_{n=0}^{\infty} \frac{(tQ)^n}{n!}$</span>.
+    </li>
+    <li>
+      The gradient of $e^{tQ}$ is super expensive:
+
+      <div class="cgsi-katex-cost cgsi-katex-cost-heavy" aria-label="O of N K cubed with a heavy constant">
+        <span class="cgsi-cost-math-part">$O($</span>
+
+        <span class="cgsi-cost-slot">
+          <span class="cgsi-cost-sticker cgsi-cost-weight" aria-hidden="true"></span>
+          <span class="cgsi-cost-callout" aria-hidden="true">
+            <span class="cgsi-cost-callout-arrow"></span>
+            <span>heavy constant</span>
+          </span>
+        </span>
+
+        <span class="cgsi-cost-math-part">$N K^3)$</span>
+      </div>
+    </li>
+  </ul>
+</section>
+
+<section class="cgsi-computational-section">
+  <h3>Solution</h3>
+  <ul>
+    <li>
+      New adjoint-based matrix-exponential gradient to get:
+
+      <div class="cgsi-katex-cost cgsi-katex-cost-light" aria-label="O of N K squared with a light constant">
+        <span class="cgsi-cost-math-part">$O($</span>
+
+        <span class="cgsi-cost-slot">
+          <span class="cgsi-cost-sticker cgsi-cost-feather" aria-hidden="true"></span>
+          <span class="cgsi-cost-callout" aria-hidden="true">
+            <span class="cgsi-cost-callout-arrow"></span>
+            <span>light constant</span>
+          </span>
+        </span>
+
+        <span class="cgsi-cost-math-part">$N K^2)$</span>
+      </div>
+    </li>
+  </ul>
+</section>
+
+</div>
+
+</div>
+
+<figure class="cgsi-right-figure">
+  <img
+    src="/talks/cgsi/figures/gradientBenchmark.png"
+    alt="Gradient benchmark comparing exact and approximate methods against autodiff and PhyloGrad"
+    loading="eager"
+  />
+</figure>
+
+</div>
+
+<p class="cgsi-slide-citation">Monti, F., Ji, X., Shao, Y., and Suchard, M. A. (2026). <em>Nonparametric Modeling of Continuous-Time Markov Chains with Scalable Exact and Approximate Gradients</em>.</p>
+
+</Slide>
+
+<Slide id="lizard-ou-diffusion" class="cgsi-lizard-slide">
+
+<h2>Trait evolution as continuous-time diffusion</h2>
+
+<div class="cgsi-lizard-layout">
+
+<div class="cgsi-lizard-intro" aria-label="Ornstein-Uhlenbeck diffusion equation">
+  <div class="cgsi-lizard-equation" aria-label="d X of t equals S times X of t minus theta, d t, plus Sigma to the one half, d W of t">
+    <span>dX(t)</span>
+    <span>=</span>
+    <span class="cgsi-lizard-term cgsi-lizard-term-a">
+      <span class="cgsi-lizard-symbol">S</span>
+      <span class="cgsi-lizard-arrow" aria-hidden="true"></span>
+      <span class="cgsi-lizard-label"><strong>Drift</strong><span>pulls morphology toward equilibrium</span></span>
+    </span>
+    <span>{`{`}X(t) -</span>
+    <span class="cgsi-lizard-term cgsi-lizard-term-theta">
+      <span class="cgsi-lizard-symbol">&theta;</span>
+      <span class="cgsi-lizard-arrow" aria-hidden="true"></span>
+      <span class="cgsi-lizard-label"><strong>Equilibrium mean</strong></span>
+    </span>
+    <span>{`}`}dt</span>
+    <span>+</span>
+    <span class="cgsi-lizard-term cgsi-lizard-term-sigma">
+      <span class="cgsi-lizard-symbol">&Sigma;<sup>1/2</sup></span>
+      <span class="cgsi-lizard-arrow" aria-hidden="true"></span>
+      <span class="cgsi-lizard-label"><strong>Diffusion</strong><span>injects stochastic variation along the branch</span></span>
+    </span>
+    <span>dW(t)</span>
+  </div>
+</div>
+
+<div class="cgsi-lizard-stage" aria-label="Dynamic Lizard trait evolution along a branch">
+  <div class="cgsi-lizard-track-wrap" data-lizard-track>
+    <div class="cgsi-lizard-track-line"></div>
+    <div class="cgsi-lizard-dot cgsi-lizard-dot-left" data-lizard-dot-left></div>
+    <div class="cgsi-lizard-dot cgsi-lizard-dot-right" data-lizard-dot-right></div>
+    <div class="cgsi-lizard-time-label cgsi-lizard-time-label-left">start of branch</div>
+    <div class="cgsi-lizard-time-label cgsi-lizard-time-label-right">end of branch</div>
+
+    <div class="cgsi-lizard" data-lizard aria-hidden="true">
+      <svg class="cgsi-lizard-svg" viewBox="0 0 300 130" role="img">
+        <path class="cgsi-lizard-tail" d="M112,67 C76,70 44,61 16,48 C4,43 -4,48 -10,56" />
+        <path class="cgsi-lizard-tail-tip" d="M16,48 C4,43 -4,48 -10,56" />
+        <path class="cgsi-lizard-limb cgsi-lizard-hind" d="M105,78 C82,99 70,112 49,117" />
+        <path class="cgsi-lizard-toe cgsi-lizard-hind" d="M49,117 l-12,8 M50,117 l-2,14 M50,117 l10,10" />
+        <path class="cgsi-lizard-limb cgsi-lizard-hind" d="M108,51 C88,31 77,21 55,18" />
+        <path class="cgsi-lizard-toe cgsi-lizard-hind" d="M55,18 l-13,-3 M55,18 l-5,-12 M55,18 l11,-8" />
+        <path class="cgsi-lizard-limb cgsi-lizard-fore" d="M168,79 C187,97 199,107 221,108" />
+        <path class="cgsi-lizard-toe cgsi-lizard-fore" d="M221,108 l13,6 M221,108 l2,13 M221,108 l10,-8" />
+        <path class="cgsi-lizard-limb cgsi-lizard-fore" d="M170,47 C190,32 204,24 226,26" />
+        <path class="cgsi-lizard-toe cgsi-lizard-fore" d="M226,26 l13,-5 M226,26 l6,-12 M226,26 l10,9" />
+        <ellipse class="cgsi-lizard-body" cx="137" cy="64" rx="63" ry="29" />
+        <ellipse class="cgsi-lizard-head" cx="205" cy="58" rx="32" ry="24" />
+        <path class="cgsi-lizard-dewlap" d="M194,77 C205,105 225,99 224,76 C214,84 204,84 194,77Z" />
+        <circle class="cgsi-lizard-eye" cx="218" cy="48" r="4.8" />
+        <circle class="cgsi-lizard-spot" cx="105" cy="58" r="5" />
+        <circle class="cgsi-lizard-spot" cx="128" cy="48" r="4" />
+        <circle class="cgsi-lizard-spot" cx="150" cy="69" r="5.8" />
+        <circle class="cgsi-lizard-spot" cx="175" cy="59" r="4.5" />
+      </svg>
+    </div>
+  </div>
+
+  <div class="cgsi-lizard-command-row">
+    <button class="cgsi-lizard-release" type="button" data-lizard-release>Release lizard</button>
+    <div class="cgsi-lizard-readout" data-lizard-readout>t = 0.00</div>
+  </div>
+
+  <p class="cgsi-lizard-trait-note"><strong>Evolving traits</strong>: body size, head, forelimb, hindlimb, lamellae, and tail.</p>
+</div>
+
+</div>
+
+</Slide>
+
+<Slide id="nondiag-s-contribution" class="cgsi-nondiag-slide">
+
+<h2>Inference of the drift matrix <span class="cgsi-nondiag-title-symbol">S</span></h2>
+
+<div class="cgsi-nondiag-content">
+
+<div class="cgsi-nondiag-columns">
+
+<div class="cgsi-nondiag-column cgsi-nondiag-left-column">
+  <section class="cgsi-nondiag-section">
+    <h3>Challenges</h3>
+    <div class="cgsi-nondiag-copy">
+      <p>(1) computational complexity (lots of $e^{tS}$);</p>
+      <p>(2) <span class="cgsi-nondiag-title-symbol">S</span> must be (Hurwitz) stable: $(\operatorname{Re}(\lambda) \le 0)$</p>
+      <p>(3) moving from unconstrained real eigenvalues to complex-conjugate pairs</p>
+    </div>
+  </section>
+
+  <section class="cgsi-nondiag-section cgsi-nondiag-but-section">
+    <p><em>Current scalable solutions:</em> diagonal or symmetric parametrizations</p>
+    <p> </p>
+    <p><strong>But</strong>: they can only describe "monotone" evolution</p>
+    <p class="cgsi-nondiag-schur-label">Using Schur blocks:</p>
+    <div class="cgsi-nondiag-equation cgsi-nondiag-schur-equation">
+
+$$
+\begin{pmatrix}
+\alpha & \beta \\
+-\beta & \alpha
+\end{pmatrix}
+$$
+
+    </div>
+    <p>Need to pre-specify the number of complex conjugate pairs</p>
+  </section>
+</div>
+
+<div class="cgsi-nondiag-column cgsi-nondiag-right-column">
+  <section class="cgsi-nondiag-section">
+    <h3>Proposed parametrization</h3>
+    <p>A matrix $S \in \mathbb{R}^{K \times K}$ is represented under the <strong><em>Hurwitz-smooth spectral block parametrization</em></strong> (<strong>SSBP</strong>) if it can be written as</p>
+  </section>
+
+  <div class="cgsi-nondiag-equation cgsi-nondiag-main-equation">
+
+$$
+S = RBR^{-1},
+$$
+
+  </div>
+
+  <p class="cgsi-nondiag-note">where $B = \operatorname{bdiag}(B_1,\ldots,B_{n_B})$ is block diagonal, with</p>
+  <div class="cgsi-nondiag-equation cgsi-nondiag-block-equation">
+$$
+B_b = B(\rho_b,\theta_b,\omega_b) :=
+\begin{pmatrix}
+\rho_b \cos \theta_b & \rho_b \sin \theta_b + \omega_b \\
+\rho_b \sin \theta_b - \omega_b & \rho_b \cos \theta_b
+\end{pmatrix}
+$$
+  </div>
+  <p class="cgsi-nondiag-note">
+  If $K$ is odd, one block is scalar.<br />
+  <strong class="cgsi-nondiag-blue-label">Smooth transition between coupled complex eigenvalues and decoupled real eigenvalues</strong><br />
+  <strong class="cgsi-nondiag-blue-label">Stability</strong> is guaranteed by $\rho_b \lt 0, \theta_b \in [-\frac{\pi}{4}, \frac{\pi}{4}]$<br />
+  <strong class="cgsi-nondiag-blue-label">Matrix support</strong>: all matrices diagonalizable over $\mathbb{C}$ and some defective cases $\implies$ full Lebesgue measure over the stable cone
+  </p>
+
+</div>
+
+</div>
+
+</div>
+
+<p class="cgsi-slide-citation">Monti, F., Holbrook, A., Glatt-Holtz, N. E., and Suchard, M. A. (2026+). <em>Stable Matrix Parametrizations and Structured Adjoints for Ornstein--Uhlenbeck Processes</em>.</p>
+
+</Slide>
+
+<Slide id="stable-computational-contribution" class="cgsi-figure-slide cgsi-stable-computational-slide">
+
+<h2>Computational contribution</h2>
+
+<div class="cgsi-stable-computational-layout">
+
+<div class="cgsi-stable-computational-copy">
+  <section class="cgsi-stable-computational-method">
+    <p class="cgsi-stable-computational-line">
+      <strong>State of the art:</strong>
+      <span>Gaussian message passing algorithm</span>
+    </p>
+
+    <div class="cgsi-katex-cost cgsi-katex-cost-heavy cgsi-stable-computational-cost" aria-label="O of N K cubed with a heavy constant">
+      <span class="cgsi-cost-math-part">$O($</span>
+
+      <span class="cgsi-cost-slot">
+        <span class="cgsi-cost-sticker cgsi-cost-weight" aria-hidden="true"></span>
+        <span class="cgsi-cost-callout" aria-hidden="true">
+          <span class="cgsi-cost-callout-arrow"></span>
+          <span>heavy constant</span>
+        </span>
+      </span>
+
+      <span class="cgsi-cost-math-part">$N K^3)$</span>
+    </div>
+  </section>
+
+  <section class="cgsi-stable-computational-method">
+    <p class="cgsi-stable-computational-line">
+      <strong>Using H-SSBP:</strong>
+    </p>
+
+    <div class="cgsi-katex-cost cgsi-katex-cost-light cgsi-stable-computational-cost" aria-label="O of N K squared with a light constant">
+      <span class="cgsi-cost-math-part">$O($</span>
+
+      <span class="cgsi-cost-slot">
+        <span class="cgsi-cost-sticker cgsi-cost-feather" aria-hidden="true"></span>
+        <span class="cgsi-cost-callout" aria-hidden="true">
+          <span class="cgsi-cost-callout-arrow"></span>
+          <span>light constant</span>
+        </span>
+      </span>
+
+      <span class="cgsi-cost-math-part">$N K^2)$</span>
+    </div>
+  </section>
+</div>
+
+<figure class="cgsi-stable-computational-figure">
+  <img
+    src="/talks/cgsi/figures/ou_exp_adjoint_cached_benchmarks.png"
+    alt="Benchmark figure for matrix exponential, matrix exponential adjoint, Lyapunov equation, full edge message, and full edge message gradient computations"
+    loading="eager"
+  />
+</figure>
+
+</div>
+
+<p class="cgsi-slide-citation">Monti, F., Holbrook, A., Glatt-Holtz, N. E., and Suchard, M. A. (2026+). <em>Stable Matrix Parametrizations and Structured Adjoints for Ornstein--Uhlenbeck Processes</em>.</p>
+
+</Slide>
+
+<Slide id="mathematical-model" hidden>
 
 <h2>Mathematical model</h2>
 
@@ -74,40 +861,17 @@ which turns repeated propagation into a structured computational problem.
 
 </Slide>
 
+<Slide id="conclusion" class="cgsi-thank-you-slide">
+
+<h2>Thank you</h2>
+
+</Slide>
+
 <AppSlide
-  id="interactive-demo"
-  src="/apps/cgsi-demo/"
-  title="CGSI interactive demonstration"
-  printSummary="The live version includes a stateful same-origin app with slide navigation, reset controls, and visibility messages from the deck."
+  id="coalescent-grid"
+  class="cgsi-app-slide-side-nav"
+  src="/apps/interactive-coalescent/index.html?embed=1&theme=light&presentation=1&v=20260722-seed-first-line-fit"
+  title="Discrete-Time Coalescent on a Grid"
+  printSummary="The live version opens the coalescent explorer with time-varying population controls."
+  showNavigation={false}
 />
-
-<Slide id="static-backup">
-
-<h2>Static backup</h2>
-
-- The demo represents how coupling strength changes relaxation and propagation.
-- App state is stored locally and the iframe stays mounted while moving through the deck.
-- The next slide summarizes the interpretation if the live app cannot be used.
-
-</Slide>
-
-<Slide id="interpretation">
-
-<h2>Interpretation</h2>
-
-- Interactive state changes make the computational tradeoff visible.
-- The Lyapunov balance links model stability, covariance structure, and numerical propagation.
-- Same-origin embedding keeps the presentation reliable on ordinary GitHub Pages hosting.
-
-</Slide>
-
-<Slide id="conclusion">
-
-<h2>Conclusions</h2>
-
-- Build the talk as a fullscreen web deck, separate from the ordinary site layout.
-- Use MDX for slides, KaTeX for mathematics, and Reveal hashes for direct URLs.
-- Embed larger applications under `/apps/` with explicit presentation navigation.
-- Keep a static fallback available for rehearsal, export, and venue failures.
-
-</Slide>

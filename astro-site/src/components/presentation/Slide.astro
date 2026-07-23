@@ -4,16 +4,19 @@ interface Props {
   class?: string;
   background?: string;
   transition?: string;
+  hidden?: boolean;
 }
 
 const {
   id,
   class: className,
   background,
-  transition
+  transition,
+  hidden = false
 } = Astro.props;
 ---
 
+{!hidden && (
 <section
   id={id}
   class:list={["cgsi-slide", className]}
@@ -22,3 +25,4 @@ const {
 >
   <slot />
 </section>
+)}
