@@ -1,6 +1,8 @@
 ---
 interface Props {
   title: string;
+  titleLines?: string[];
+  headline?: string;
   subtitle?: string;
   author?: string;
   affiliation?: string;
@@ -11,6 +13,8 @@ interface Props {
 
 const {
   title,
+  titleLines = [],
+  headline,
   subtitle,
   author,
   affiliation,
@@ -18,12 +22,21 @@ const {
   event,
   logos = []
 } = Astro.props;
+
+const displayTitle = titleLines.length > 0 ? titleLines.join(" ") : title;
 ---
 
 <section id="title" class="cgsi-slide cgsi-title-slide">
   <div class="cgsi-title-content">
     {event && <p class="cgsi-title-event">{event}</p>}
-    <h1>{title}</h1>
+    <h1 aria-label={displayTitle}>
+      {
+        titleLines.length > 0
+          ? titleLines.map((line) => <span class="cgsi-title-line">{line}</span>)
+          : title
+      }
+    </h1>
+    {headline && <p class="cgsi-title-headline">{headline}</p>}
     {subtitle && <p class="cgsi-title-subtitle">{subtitle}</p>}
 
     <div class="cgsi-title-meta" aria-label="Speaker information">

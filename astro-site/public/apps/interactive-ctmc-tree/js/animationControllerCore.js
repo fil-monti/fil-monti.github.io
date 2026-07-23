@@ -196,10 +196,12 @@ export function createAnimationController({
 
         const tree = getTree();
         tree.children.forEach(child => {
+            const isSingleTipBranch = tree.children.length === 1 && child.children.length === 0;
             const goesToInternal = child.id === 'internal';
-            const seq = buildSequence(tree.x, tree.y, child.x, child.y, initialSequence, 'root', false, goesToInternal, child.id);
-            seq.branchIndex = goesToInternal ? 0 : 1;
-            seq.trackedGeo = goesToInternal;
+            const isTrackedRootBranch = goesToInternal || isSingleTipBranch;
+            const seq = buildSequence(tree.x, tree.y, child.x, child.y, initialSequence, 'root', false, isTrackedRootBranch, child.id);
+            seq.branchIndex = isTrackedRootBranch ? 0 : 1;
+            seq.trackedGeo = isTrackedRootBranch;
             sequences.push(seq);
         });
 

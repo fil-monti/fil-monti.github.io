@@ -10,6 +10,12 @@ export const DEFAULT_GEO_STAR_COLOR = CANVAS_NEUTRALS.ink;
 export const RANDOM_VIRUS_COLOR_POOL = CANVAS_LINEAGE_COLORS;
 
 const THREE_TIP_HOST_STYLES = {
+    singleTip: {
+        lineage: 'single-tip',
+        color: CANVAS_THREE_TIP_LINEAGE_COLORS.primary,
+        trackSlot: 'center',
+        markerSide: 'left',
+    },
     rootInternal: {
         lineage: 'root-internal',
         color: CANVAS_THREE_TIP_LINEAGE_COLORS.primary,
@@ -55,6 +61,10 @@ export function createThreeTipInitialHostStyle(sequence) {
         ? THREE_TIP_HOST_STYLES.rootTip3
         : THREE_TIP_HOST_STYLES.rootInternal;
     return cloneStyle(style);
+}
+
+export function createSingleTipHostStyle() {
+    return cloneStyle(THREE_TIP_HOST_STYLES.singleTip);
 }
 
 export function createThreeTipSplitHostStyle(child) {

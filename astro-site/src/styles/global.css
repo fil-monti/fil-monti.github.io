@@ -68,6 +68,10 @@ a {
   text-decoration: none;
 }
 
+.paper-title {
+  color: var(--blue);
+}
+
 img {
   display: block;
   max-width: 100%;
@@ -691,7 +695,6 @@ html[data-theme="light"] .mobile-nav button {
   display: block;
   width: 100%;
   margin-top: 13px;
-  color: var(--ink);
   font-family: var(--sans);
   font-size: 17px;
   font-weight: 800;

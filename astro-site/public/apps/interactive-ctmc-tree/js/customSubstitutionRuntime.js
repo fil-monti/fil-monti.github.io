@@ -3,7 +3,12 @@ import { createDiscreteProcessAdapter } from './animationProcesses.js';
 import { createDiscreteStateCTMCClass } from './ctmcModel.js';
 import { createFigureCTMCRenderer } from './ctmcFigureRenderer.js';
 import { createFigureModelRuntime } from './modelPanelRuntimes.js';
-import { createHostStyle, createThreeTipInitialHostStyle, createThreeTipSplitHostStyle } from './renderStyles.js';
+import {
+    createHostStyle,
+    createSingleTipHostStyle,
+    createThreeTipInitialHostStyle,
+    createThreeTipSplitHostStyle,
+} from './renderStyles.js';
 import { CANVAS_FIGURE_LABEL_COLORS, CANVAS_NEUTRALS } from './canvasPalette.js';
 import { generateRandomVirusColor } from './sequenceSimulation.js';
 import {
@@ -204,7 +209,9 @@ export function createCustomSubstitutionModelManifest({
                     if (!CustomCTMC) return null;
                     const nTips = getNumTips();
                     const stateCount = Math.max(2, resolveStateCount() || 2);
-                    const style = nTips === 3
+                    const style = nTips === 1
+                        ? createSingleTipHostStyle()
+                        : nTips === 3
                         ? createThreeTipInitialHostStyle(sequence)
                         : (() => {
                             const color = generateRandomVirusColor(initContext.usedColors, nextHostVisualRandom);

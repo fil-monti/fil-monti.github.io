@@ -6,7 +6,7 @@ export function setYearFooter(doc = document, year = new Date().getFullYear()) {
 }
 
 export function populateTreeSizeOptions(doc = document, {
-  minTips = 2,
+  minTips = 1,
   maxTips = 40,
   defaultTips = 3,
 } = {}) {

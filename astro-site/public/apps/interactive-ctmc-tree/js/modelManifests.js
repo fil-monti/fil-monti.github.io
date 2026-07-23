@@ -11,6 +11,7 @@ import {
 import { createCustomSubstitutionModelManifest } from './customSubstitutionModels.js';
 import {
     createHostStyle,
+    createSingleTipHostStyle,
     createThreeTipInitialHostStyle,
     createThreeTipSplitHostStyle,
     DEFAULT_GEO_STAR_COLOR,
@@ -86,7 +87,9 @@ export function createDefaultModelManifests({
                     getTrackAll: () => getTrackAllHostBranches(),
                     buildEntry: ({ sequence, initContext }) => {
                         const nTips = getNumTips();
-                        const style = nTips === 3
+                        const style = nTips === 1
+                            ? createSingleTipHostStyle()
+                            : nTips === 3
                             ? createThreeTipInitialHostStyle(sequence)
                             : (() => {
                                 const color = generateRandomVirusColor(initContext.usedColors, nextHostVisualRandom);

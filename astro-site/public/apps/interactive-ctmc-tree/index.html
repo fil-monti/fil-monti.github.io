@@ -110,15 +110,22 @@
                 </div>
             </div>
         </div>
-        <button
-            id="presentationCommandsToggle"
-            class="presentation-command-toggle"
-            type="button"
-            aria-pressed="false"
-        >
-            Hide commands
-        </button>
         <div class="button-group" role="toolbar" aria-label="Simulation controls">
+            <button
+                id="presentationCommandsToggle"
+                class="presentation-command-toggle"
+                type="button"
+                aria-label="Hide toolbar commands"
+                aria-pressed="false"
+                title="Hide toolbar commands"
+            >
+                <span class="presentation-command-toggle-mark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false">
+                        <path d="M5 15 L12 8 L19 15" />
+                    </svg>
+                </span>
+            </button>
+
             <div class="toolbar-section toolbar-actions" aria-label="Playback controls">
                 <button id="playBtn" class="toolbar-button" type="button">
                     <span class="toolbar-button-icon" aria-hidden="true">▶</span>
@@ -134,7 +141,7 @@
                 </button>
             </div>
 
-            <div class="toolbar-section toolbar-parameters" aria-label="Simulation parameters">
+            <div class="toolbar-section toolbar-speed" aria-label="Animation speed">
                 <div class="control-item toolbar-field toolbar-field-speed">
                     <label for="speedSlider">Animation Speed</label>
                     <div class="slider-container">
@@ -142,7 +149,9 @@
                         <span class="slider-value" id="speedValue">0.1x</span>
                     </div>
                 </div>
+            </div>
 
+            <div class="toolbar-section toolbar-tree-seed" aria-label="Tree parameters">
                 <div class="control-item toolbar-field toolbar-field-tree-size">
                     <label for="numTipsSelect">Tree size</label>
                     <select id="numTipsSelect">
@@ -895,6 +904,38 @@
             const button = document.querySelector("#presentationCommandsToggle");
             if (!(button instanceof HTMLButtonElement)) return;
 
+            const toolbar = document.querySelector(".button-group");
+
+            const syncToolbarContentWidth = () => {
+                if (!(toolbar instanceof HTMLElement)) return;
+                if (root.hasAttribute("data-commands-hidden")) return;
+
+                const clusters = Array.from(toolbar.children).filter((child) => (
+                    child instanceof HTMLElement &&
+                    !child.classList.contains("presentation-command-toggle")
+                ));
+                let left = Infinity;
+                let right = -Infinity;
+
+                clusters.forEach((cluster) => {
+                    const style = window.getComputedStyle(cluster);
+                    if (style.display === "none" || style.visibility === "hidden") return;
+
+                    const rect = cluster.getBoundingClientRect();
+                    if (rect.width <= 0 || rect.height <= 0) return;
+
+                    left = Math.min(left, rect.left);
+                    right = Math.max(right, rect.right);
+                });
+
+                if (!Number.isFinite(left) || !Number.isFinite(right)) return;
+
+                const toolbarRect = toolbar.getBoundingClientRect();
+                const measuredWidth = Math.max(1, right - left);
+                const clampedWidth = Math.min(measuredWidth, Math.max(1, toolbarRect.width));
+                root.style.setProperty("--toolbar-content-width", `${Math.ceil(clampedWidth)}px`);
+            };
+
             const fitCanvas = () => {
                 const wrapper = document.querySelector(".canvas-wrapper");
                 const canvas = document.querySelector("#canvas");
@@ -921,6 +962,7 @@
 
             const refitCanvas = (notifyApp = true) => {
                 window.requestAnimationFrame(() => {
+                    syncToolbarContentWidth();
                     fitCanvas();
                     if (notifyApp) {
                         window.dispatchEvent(new Event("resize"));
@@ -931,7 +973,9 @@
             const setHidden = (hidden) => {
                 root.toggleAttribute("data-commands-hidden", hidden);
                 button.setAttribute("aria-pressed", hidden ? "true" : "false");
-                button.textContent = hidden ? "Show commands" : "Hide commands";
+                const commandLabel = hidden ? "Show toolbar commands" : "Hide toolbar commands";
+                button.setAttribute("aria-label", commandLabel);
+                button.setAttribute("title", commandLabel);
                 refitCanvas();
             };
 
@@ -946,6 +990,7 @@
             });
 
             window.addEventListener("resize", () => {
+                syncToolbarContentWidth();
                 fitCanvas();
             });
 
@@ -955,11 +1000,16 @@
 
             if (typeof ResizeObserver === "function") {
                 const wrapper = document.querySelector(".canvas-wrapper");
-                if (wrapper) {
+                const resizeTargets = [
+                    wrapper,
+                    toolbar,
+                    ...(toolbar instanceof HTMLElement ? Array.from(toolbar.children) : [])
+                ].filter((element) => element instanceof Element);
+                if (resizeTargets.length > 0) {
                     const resizeObserver = new ResizeObserver(() => {
                         refitCanvas();
                     });
-                    resizeObserver.observe(wrapper);
+                    resizeTargets.forEach((element) => resizeObserver.observe(element));
                 }
             }
         })();

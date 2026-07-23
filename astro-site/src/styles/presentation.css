@@ -1677,7 +1677,7 @@ body.presentation-page {
   gap: clamp(0.72rem, 1.8vmin, 1.15rem);
   align-self: start;
   align-content: start;
-  padding-top: clamp(3.7rem, 9.4vmin, 5.8rem);
+  padding-top: clamp(7.4rem, 18.8vmin, 11.6rem);
   color: var(--cgsi-ink);
   font-size: 0.74em;
   line-height: 1.18;
@@ -1746,6 +1746,337 @@ body.presentation-page {
   width: 100%;
   max-height: 100%;
   object-fit: contain;
+}
+
+.cgsi-model-gravity-slide {
+  --cgsi-gravity-rose: #a84d6a;
+  --cgsi-gravity-sky: #32758d;
+  --cgsi-gravity-violet: #7560a7;
+}
+
+.cgsi-model-gravity-slide h2 {
+  margin-bottom: 0.1em;
+}
+
+.cgsi-gravity-map-wrap {
+  display: grid;
+  width: 100%;
+  height: calc(100% - 4.5rem);
+  min-height: 0;
+  place-items: center;
+  transform: translateY(26px);
+}
+
+.cgsi-gravity-map {
+  position: relative;
+  width: min(100%, 1360px);
+  height: min(100%, 735px);
+  min-height: 680px;
+  --cgsi-gravity-planet-orbit: 188px;
+}
+
+.cgsi-gravity-orbit {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border: 2px dashed rgb(23 32 51 / 18%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.cgsi-gravity-orbit-a {
+  width: 510px;
+  aspect-ratio: 1 / 1;
+}
+
+.cgsi-gravity-orbit-b {
+  width: 650px;
+  aspect-ratio: 1 / 1;
+  opacity: 0.78;
+}
+
+.cgsi-gravity-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 138px;
+  aspect-ratio: 1 / 1;
+  border: 2px solid rgb(23 32 51 / 12%);
+  border-radius: 50%;
+  background: var(--cgsi-paper);
+  color: var(--cgsi-ink);
+  font-size: 0.72em;
+  font-weight: 850;
+  line-height: 1;
+  transform: translate(-50%, -50%);
+}
+
+.cgsi-orbit-body {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 50%;
+}
+
+.cgsi-body-trees {
+  transform: translate(-50%, -50%) translateY(calc(-1 * var(--cgsi-gravity-planet-orbit)));
+}
+
+.cgsi-body-discrete {
+  transform: translate(-50%, -50%) translateX(var(--cgsi-gravity-planet-orbit));
+}
+
+.cgsi-body-continuous {
+  transform: translate(-50%, -50%) translateY(var(--cgsi-gravity-planet-orbit));
+}
+
+.cgsi-body-clock {
+  transform: translate(-50%, -50%) translateX(calc(-1 * var(--cgsi-gravity-planet-orbit)));
+}
+
+.cgsi-body-node,
+.cgsi-moon,
+.cgsi-micro-moon {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.cgsi-body-node {
+  position: relative;
+  z-index: 2;
+  width: 156px;
+  aspect-ratio: 1 / 1;
+  padding: 0.64rem;
+  background: var(--cgsi-gravity-planet-color, var(--cgsi-blue));
+  border: 2px solid color-mix(in srgb, var(--cgsi-gravity-planet-color, var(--cgsi-blue)) 72%, var(--cgsi-ink));
+  color: #fff;
+  font-size: 0.5em;
+  font-weight: 800;
+  line-height: 1.14;
+}
+
+.cgsi-body-node-trees {
+  --cgsi-gravity-planet-color: color-mix(in srgb, var(--cgsi-gold) 88%, var(--cgsi-ink));
+}
+
+.cgsi-body-node-discrete {
+  --cgsi-gravity-planet-color: color-mix(in srgb, var(--cgsi-gravity-rose) 88%, var(--cgsi-ink));
+}
+
+.cgsi-body-node-continuous {
+  --cgsi-gravity-planet-color: color-mix(in srgb, var(--cgsi-gravity-sky) 90%, var(--cgsi-ink));
+}
+
+.cgsi-body-node-clock {
+  --cgsi-gravity-planet-color: color-mix(in srgb, var(--cgsi-gravity-violet) 88%, var(--cgsi-ink));
+}
+
+.cgsi-moon-cluster {
+  position: absolute;
+  display: flex;
+  gap: 0.42rem;
+}
+
+.cgsi-moon-cluster-top {
+  left: 50%;
+  bottom: calc(100% + 0.82rem);
+  transform: translateX(-50%);
+}
+
+.cgsi-moon-cluster-bottom {
+  left: 50%;
+  top: calc(100% + 0.82rem);
+  transform: translateX(-50%);
+}
+
+.cgsi-moon-cluster-left {
+  right: calc(100% + 0.82rem);
+  top: 50%;
+  flex-direction: column;
+  align-items: flex-end;
+  transform: translateY(-50%);
+}
+
+.cgsi-moon-cluster-right {
+  left: calc(100% + 0.82rem);
+  top: 50%;
+  flex-direction: column;
+  align-items: flex-start;
+  transform: translateY(-50%);
+}
+
+.cgsi-body-discrete .cgsi-moon-cluster {
+  left: 50%;
+  top: 50%;
+  width: 330px;
+  height: 330px;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.cgsi-body-discrete .cgsi-moon {
+  position: absolute;
+  pointer-events: auto;
+}
+
+.cgsi-body-discrete .cgsi-moon:nth-child(1) {
+  left: 67%;
+  top: 3%;
+  transform: translate(-50%, -50%);
+}
+
+.cgsi-body-discrete .cgsi-moon:nth-child(2) {
+  left: 96%;
+  top: 30%;
+  transform: translate(-50%, -50%);
+}
+
+.cgsi-body-discrete .cgsi-moon:nth-child(3) {
+  left: 96%;
+  top: 70%;
+  transform: translate(-50%, -50%);
+}
+
+.cgsi-body-discrete .cgsi-moon:nth-child(4) {
+  left: 67%;
+  top: 97%;
+  transform: translate(-50%, -50%);
+}
+
+.cgsi-moon {
+  position: relative;
+  width: 122px;
+  aspect-ratio: 1 / 1;
+  padding: 0.45rem;
+  border: 2px solid var(--cgsi-gravity-moon-color, var(--cgsi-line));
+  background: color-mix(in srgb, var(--cgsi-gravity-moon-color, var(--cgsi-line)) 24%, transparent);
+  color: color-mix(in srgb, var(--cgsi-gravity-moon-color, var(--cgsi-ink)) 86%, var(--cgsi-ink));
+  font-size: 0.4em;
+  font-weight: 750;
+  line-height: 1.14;
+  transition: border-width 180ms ease, box-shadow 180ms ease;
+}
+
+.cgsi-gravity-highlight-toggle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.cgsi-gravity-highlight-button {
+  position: absolute;
+  left: clamp(0.8rem, 2vmin, 1.25rem);
+  bottom: clamp(0.8rem, 2vmin, 1.15rem);
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 8.9rem;
+  min-height: 2.25rem;
+  padding: 0.28rem 0.72rem;
+  border: 2px solid rgb(36 77 143 / 34%);
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--cgsi-blue-soft) 72%, var(--cgsi-paper));
+  color: var(--cgsi-blue);
+  cursor: pointer;
+  font-size: 0.36em;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: 0 0.35rem 1rem rgb(23 32 51 / 8%);
+  user-select: none;
+}
+
+.cgsi-gravity-highlight-button:hover,
+.cgsi-gravity-highlight-toggle:focus-visible + .cgsi-gravity-highlight-button {
+  border-color: rgb(36 77 143 / 58%);
+  background: color-mix(in srgb, var(--cgsi-blue-soft) 88%, var(--cgsi-paper));
+}
+
+.cgsi-gravity-highlight-toggle:checked + .cgsi-gravity-highlight-button {
+  background: var(--cgsi-blue);
+  border-color: var(--cgsi-blue);
+  color: #fff;
+}
+
+.cgsi-gravity-highlight-toggle:checked ~ .cgsi-gravity-map-wrap .cgsi-moon-emphasis-target {
+  border-width: 6px;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--cgsi-gravity-moon-color) 18%, transparent);
+}
+
+.cgsi-moon-cluster-top .cgsi-moon {
+  --cgsi-gravity-moon-color: color-mix(in srgb, var(--cgsi-gold) 88%, var(--cgsi-ink));
+}
+
+.cgsi-moon-cluster-right .cgsi-moon {
+  --cgsi-gravity-moon-color: color-mix(in srgb, var(--cgsi-gravity-rose) 88%, var(--cgsi-ink));
+}
+
+.cgsi-moon-cluster-bottom .cgsi-moon {
+  --cgsi-gravity-moon-color: color-mix(in srgb, var(--cgsi-gravity-sky) 90%, var(--cgsi-ink));
+}
+
+.cgsi-moon-cluster-left .cgsi-moon {
+  --cgsi-gravity-moon-color: color-mix(in srgb, var(--cgsi-gravity-violet) 88%, var(--cgsi-ink));
+}
+
+.cgsi-micro-moons {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.cgsi-micro-moon {
+  position: absolute;
+  width: 47px;
+  aspect-ratio: 1 / 1;
+  padding: 0.12rem;
+  border: 1.5px solid var(--cgsi-gravity-moon-color);
+  background: color-mix(in srgb, var(--cgsi-gravity-moon-color) 22%, var(--cgsi-paper));
+  color: color-mix(in srgb, var(--cgsi-gravity-moon-color) 82%, var(--cgsi-ink));
+  font-size: 0.58em;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.cgsi-micro-moon:nth-child(1) {
+  left: 50%;
+  top: -31%;
+  transform: translate(-50%, -50%);
+}
+
+.cgsi-micro-moon:nth-child(2) {
+  left: 91%;
+  top: -23%;
+  transform: translate(-50%, -50%);
+}
+
+.cgsi-micro-moon:nth-child(3) {
+  left: 132%;
+  top: 7%;
+  transform: translate(-50%, -50%);
+}
+
+.cgsi-micro-moon:nth-child(4) {
+  left: 132%;
+  top: 48%;
+  transform: translate(-50%, -50%);
 }
 
 .cgsi-lizard-stage {

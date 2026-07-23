@@ -89,10 +89,12 @@ export function drawTreeScene({
         }
     }
 
-    ctx.fillStyle = treePalette.label;
-    ctx.font = `${fontSize}px "DM Sans"`;
-    ctx.textAlign = 'center';
-    ctx.fillText('Root', nextTree.x, nextTree.y - 20 * scaleFactor);
+    if (nTips !== 1) {
+        ctx.fillStyle = treePalette.label;
+        ctx.font = `${fontSize}px "DM Sans"`;
+        ctx.textAlign = 'center';
+        ctx.fillText('Root', nextTree.x, nextTree.y - 20 * scaleFactor);
+    }
     drawNode(nextTree);
     return nextTree;
 }

@@ -28,6 +28,15 @@ export const talk = {
 />
 
 <AppSlide
+  id="single-tip-phylogenetics"
+  class="cgsi-app-slide-side-nav"
+  src="/apps/interactive-ctmc-tree/index.html?embed=1&theme=light&presentation=1&state=default&treeSize=1&models=phylo"
+  title="Single-lineage nucleotide evolution"
+  printSummary="The live version opens a one-tip nucleotide-only tree view."
+  showNavigation={false}
+/>
+
+<AppSlide
   id="interactive-tree"
   class="cgsi-app-slide-side-nav"
   src="/apps/interactive-ctmc-tree/index.html?embed=1&theme=light&presentation=1"
@@ -712,9 +721,16 @@ export const talk = {
   <section class="cgsi-nondiag-section">
     <h3>Challenges</h3>
     <div class="cgsi-nondiag-copy">
-      <p>(1) computational complexity (lots of $e^{tS}$);</p>
-      <p>(2) <span class="cgsi-nondiag-title-symbol">S</span> must be (Hurwitz) stable: $(\operatorname{Re}(\lambda) \le 0)$</p>
-      <p>(3) moving from unconstrained real eigenvalues to complex-conjugate pairs</p>
+      
+      <p>(1) <span class="cgsi-nondiag-title-symbol">S</span> must be (Hurwitz) stable: $(\operatorname{Re}(\lambda) \le 0)$</p>
+      <p>(2) computational complexity of branch variances(lots of $e^{tS}$);</p>
+    </div>
+        <div class="cgsi-nondiag-equation cgsi-nondiag-schur-equation">
+
+$$
+\int_{0}^{t} e^{(t-\tau) S} \Sigma  e^{\tau S}   d\tau
+$$
+
     </div>
   </section>
 
@@ -740,7 +756,7 @@ $$
 <div class="cgsi-nondiag-column cgsi-nondiag-right-column">
   <section class="cgsi-nondiag-section">
     <h3>Proposed parametrization</h3>
-    <p>A matrix $S \in \mathbb{R}^{K \times K}$ is represented under the <strong><em>Hurwitz-smooth spectral block parametrization</em></strong> (<strong>SSBP</strong>) if it can be written as</p>
+    <p>A matrix $S \in \mathbb{R}^{K \times K}$ is represented under the <strong><em>Hurwitz-smooth spectral block parametrization</em></strong> (<strong>H-SSBP</strong>) if it can be written as</p>
   </section>
 
   <div class="cgsi-nondiag-equation cgsi-nondiag-main-equation">
@@ -875,3 +891,71 @@ which turns repeated propagation into a structured computational problem.
   printSummary="The live version opens the coalescent explorer with time-varying population controls."
   showNavigation={false}
 />
+
+<Slide id="evolution-model-gravity-map" class="cgsi-model-gravity-slide">
+
+<h2>Evolution Models</h2>
+
+<input
+  id="cgsiGravityHighlightToggle"
+  class="cgsi-gravity-highlight-toggle"
+  type="checkbox"
+  aria-label="Highlight selected evolution models"
+/>
+<label class="cgsi-gravity-highlight-button" for="cgsiGravityHighlightToggle">
+  <span>Highlight models</span>
+</label>
+
+<div class="cgsi-gravity-map-wrap">
+<div class="cgsi-gravity-map" role="img" aria-label="Model gravity map with central models node, four model families, and subfamily moons">
+  <div class="cgsi-gravity-orbit cgsi-gravity-orbit-a" aria-hidden="true"></div>
+  <div class="cgsi-gravity-orbit cgsi-gravity-orbit-b" aria-hidden="true"></div>
+  <div class="cgsi-gravity-core">Evolution</div>
+
+  <div class="cgsi-orbit-body cgsi-body-trees">
+    <span class="cgsi-body-node cgsi-body-node-trees">Evolutionary Trees</span>
+    <div class="cgsi-moon-cluster cgsi-moon-cluster-top">
+      <span class="cgsi-moon cgsi-moon-emphasis-target">Coalescent models</span>
+      <span class="cgsi-moon">Speciation models</span>
+    </div>
+  </div>
+
+  <div class="cgsi-orbit-body cgsi-body-discrete">
+    <span class="cgsi-body-node cgsi-body-node-discrete">Discrete Trait (CTMCs)</span>
+    <div class="cgsi-moon-cluster cgsi-moon-cluster-right">
+      <span class="cgsi-moon cgsi-moon-nucleotide">
+        <span>Nucleotides</span>
+        {/*
+        <span class="cgsi-micro-moons" aria-hidden="true">
+          <span class="cgsi-micro-moon">JC69</span>
+          <span class="cgsi-micro-moon">HKY</span>
+          <span class="cgsi-micro-moon">TN93</span>
+          <span class="cgsi-micro-moon">GTR</span>
+        </span>
+        */}
+      </span>
+      <span class="cgsi-moon cgsi-moon-emphasis-target">Amino acids</span>
+      <span class="cgsi-moon cgsi-moon-emphasis-target">Phylogeography</span>
+      <span class="cgsi-moon cgsi-moon-emphasis-target">Host transmission</span>
+    </div>
+  </div>
+
+  <div class="cgsi-orbit-body cgsi-body-continuous">
+    <span class="cgsi-body-node cgsi-body-node-continuous">Continuous Traits</span>
+    <div class="cgsi-moon-cluster cgsi-moon-cluster-bottom">
+      <span class="cgsi-moon">Brownian Motion</span>
+      <span class="cgsi-moon cgsi-moon-emphasis-target">OU process</span>
+    </div>
+  </div>
+
+  <div class="cgsi-orbit-body cgsi-body-clock">
+    <span class="cgsi-body-node cgsi-body-node-clock">Evolutionary Rates</span>
+    <div class="cgsi-moon-cluster cgsi-moon-cluster-left">
+      <span class="cgsi-moon">Free</span>
+      <span class="cgsi-moon cgsi-moon-emphasis-target">Dependent</span>
+    </div>
+  </div>
+</div>
+</div>
+
+</Slide>

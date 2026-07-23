@@ -35,6 +35,8 @@ import {
     createMutableLayoutState,
     createTreeLayoutFactory,
     createUniformTransitionMatrix,
+    applyLaunchDefaults,
+    getProjectStateLaunchOptions,
     getNumTipsFromSelect,
     getSafeStorage,
 } from './appBootstrap.js';
@@ -144,7 +146,15 @@ export default function initApp() {
         panelView: PANEL_VIEW,
         customModelController: null,
     });
-    const restoredProjectState = projectStateController.restore();
+    const projectStateLaunchOptions = getProjectStateLaunchOptions({ windowObject: window });
+    const restoredProjectState = projectStateLaunchOptions.restore
+        ? projectStateController.restore()
+        : { selectedCustomModelId: null };
+    applyLaunchDefaults({
+        windowObject: window,
+        dom,
+        appState,
+    });
     const playback = createPlaybackHelpers({
         dom,
         appState,
@@ -281,9 +291,11 @@ export default function initApp() {
         defaultTreeView: DEFAULT_TREE_VIEW,
         defaultPanelView: DEFAULT_PANEL_VIEW,
         onRebuildTree: rebuildTree,
-        onStateChange: () => persistProjectState.schedulePersist(),
+        onStateChange: () => {
+            if (projectStateLaunchOptions.persist) persistProjectState.schedulePersist();
+        },
         customModelController,
     });
-    persistProjectState.persistNow();
+    if (projectStateLaunchOptions.persist) persistProjectState.persistNow();
     initializer.start();
 }

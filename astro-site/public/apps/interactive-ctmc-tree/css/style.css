@@ -12,6 +12,7 @@
     --body: #b0bdd4;
     --head: #e8edf5;
     --white: #f4f7fc;
+    --site-blue: #025196;
 
     --teal: #00c9a7;
     --teal-dim: rgba(0,201,167,0.12);
@@ -265,6 +266,10 @@
     max-width: 100%;
   }
 
+  :root[data-presentation="1"] {
+    --toolbar-content-width: 100%;
+  }
+
   :root[data-presentation="1"],
   :root[data-presentation="1"] body {
     width: 100%;
@@ -349,73 +354,136 @@
   }
 
   :root[data-presentation="1"] .presentation-command-toggle {
-    position: fixed;
-    right: 0.8rem;
-    bottom: calc(20vh + 0.8rem);
+    position: absolute;
+    top: 0;
+    right: 0;
     z-index: 2300;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    display: inline-grid;
+    place-items: center;
+    width: var(--presentation-command-toggle-size);
+    height: var(--presentation-command-toggle-size);
     min-height: 0;
-    border-radius: 999px;
-    padding: 0.34rem 0.68rem;
-    background: color-mix(in srgb, var(--surface) 88%, transparent);
-    color: var(--text-primary);
-    font-size: 0.68rem;
-    line-height: 1;
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
+    appearance: none;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--site-blue);
+    box-shadow: none;
+    cursor: pointer;
+    transition: color 0.15s var(--ease);
   }
 
   :root[data-presentation="1"] .presentation-command-toggle:hover {
+    color: color-mix(in srgb, var(--site-blue) 82%, var(--sky));
     transform: none;
   }
 
-  :root[data-presentation="1"][data-commands-hidden] .presentation-command-toggle {
-    bottom: 0.8rem;
+  :root[data-presentation="1"] .presentation-command-toggle:focus-visible {
+    outline: 1.5px solid var(--site-blue);
+    outline-offset: 0.08rem;
+  }
+
+  :root[data-presentation="1"] .presentation-command-toggle-mark {
+    display: block;
+    width: 0.52rem;
+    height: 0.52rem;
+  }
+
+  :root[data-presentation="1"] .presentation-command-toggle-mark svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  :root[data-presentation="1"] .presentation-command-toggle-mark path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 3.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
   :root[data-presentation="1"][data-commands-hidden] .app-surface {
     grid-template-rows: minmax(0, 1fr);
   }
 
-  :root[data-presentation="1"][data-commands-hidden] .button-group,
   :root[data-presentation="1"][data-commands-hidden] .control-panel,
   :root[data-presentation="1"][data-commands-hidden] .custom-ctmc-panel-row {
     display: none;
   }
 
+  :root[data-presentation="1"][data-commands-hidden] .button-group {
+    position: fixed;
+    right: 0.45rem;
+    bottom: 0.45rem;
+    z-index: 2300;
+    display: block;
+    width: var(--presentation-command-toggle-size);
+    height: var(--presentation-command-toggle-size);
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  :root[data-presentation="1"][data-commands-hidden] .button-group > :not(.presentation-command-toggle) {
+    display: none;
+  }
+
+  :root[data-presentation="1"][data-commands-hidden] .presentation-command-toggle {
+    position: relative;
+    inset: auto;
+  }
+
   :root[data-presentation="1"] .button-group {
+    --presentation-command-toggle-size: 0.52rem;
+    --toolbar-cluster-gap: clamp(2mm, 1vw, 5mm);
     --toolbar-control-height: 1.22rem;
+    --toolbar-tree-seed-control-height: calc(var(--toolbar-control-height) * 0.75);
     --history-control-height: 0.92rem;
     --toolbar-label-height: 0.48rem;
     --toolbar-field-gap: 0.06rem;
-    --toolbar-gap: 0.22rem;
+    --toolbar-gap: var(--toolbar-cluster-gap);
     --toolbar-radius: 7px;
+    --toolbar-tree-seed-gap: 0.18rem;
     --history-font-size: 0.46rem;
+    --toolbar-edge-reserve: calc(var(--presentation-command-toggle-size) + 0.18rem);
     --toolbar-speed-slider-width: 8.8rem;
+    --toolbar-seed-width: 48px;
+    --toolbar-tree-size-width: var(--toolbar-seed-width);
     --toolbar-speed-value-width: 1.35rem;
     grid-row: 2;
     grid-column: 1;
     align-self: start;
     display: grid;
-    grid-template-columns: max-content max-content minmax(5.2rem, auto) minmax(6.5rem, auto);
-    justify-content: start;
+    grid-template-columns: max-content max-content max-content max-content max-content;
+    justify-content: center;
     gap: var(--toolbar-gap);
     height: 1.86rem;
     min-height: 0;
     margin: 0;
     overflow: hidden;
-    padding: 0;
+    padding: 0 var(--toolbar-edge-reserve);
+    position: relative;
+    width: 100%;
   }
 
-  :root[data-presentation="1"] .button-group button:not(.segmented-btn),
-  :root[data-presentation="1"] #numTipsSelect,
-  :root[data-presentation="1"] #seedInput {
+  :root[data-presentation="1"] .button-group button:not(.segmented-btn):not(.presentation-command-toggle) {
     height: var(--toolbar-control-height);
     min-height: 0;
     border-radius: var(--toolbar-radius);
     padding: 0 0.38rem;
     font-size: 0.58rem;
+    line-height: 1;
+  }
+
+  :root[data-presentation="1"] #numTipsSelect,
+  :root[data-presentation="1"] #seedInput {
+    min-height: 0;
+    border-radius: 7px;
+    font-size: 0.55rem;
+    font-weight: 550;
     line-height: 1;
   }
 
@@ -466,15 +534,17 @@
     gap: 0.18rem;
   }
 
-  :root[data-presentation="1"] .toolbar-parameters {
-    grid-template-columns: max-content var(--toolbar-tree-size-width) var(--toolbar-seed-width);
-    gap: 0.18rem;
+  :root[data-presentation="1"] .toolbar-tree-seed {
+    grid-template-columns: var(--toolbar-tree-size-width) var(--toolbar-seed-width);
+    gap: var(--toolbar-tree-seed-gap);
   }
 
   :root[data-presentation="1"] .toolbar-modes {
+    --toolbar-modes-y-offset: 0.28rem;
     align-self: center;
     padding: 0;
     border-inline: 0;
+    transform: translateY(var(--toolbar-modes-y-offset));
   }
 
   :root[data-presentation="1"] .button-group .slider-container {
@@ -487,12 +557,11 @@
   }
 
   :root[data-presentation="1"] #numTipsSelect {
-    padding-left: 0.26rem;
-    padding-right: 0.82rem;
+    padding-inline: 8px;
   }
 
   :root[data-presentation="1"] #seedInput {
-    padding-inline: 0.26rem;
+    padding-inline: 8px;
   }
 
   :root[data-presentation="1"] .segmented {
@@ -510,9 +579,12 @@
     grid-row: 2;
     grid-column: 1;
     align-self: end;
+    justify-self: center;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.38rem;
+    width: min(100%, var(--toolbar-content-width));
+    max-width: var(--toolbar-content-width);
     height: calc(100% - 2.35rem);
     min-height: 0;
     margin: 0;
@@ -978,21 +1050,24 @@
 
   /* ── Button group ───────────────────────────────────────── */
   .button-group {
+    --toolbar-cluster-gap: clamp(2mm, 1vw, 5mm);
     --toolbar-control-height: 42px;
+    --toolbar-tree-seed-control-height: calc(var(--toolbar-control-height) * 0.75);
     --history-control-height: 32px;
     --toolbar-label-height: 1rem;
     --toolbar-field-gap: 0.22rem;
-    --toolbar-gap: 0.65rem;
+    --toolbar-gap: var(--toolbar-cluster-gap);
     --toolbar-radius: 14px;
+    --toolbar-tree-seed-gap: 0.55rem;
     --history-font-size: 0.72rem;
     --toolbar-speed-slider-width: 180px;
-    --toolbar-tree-size-width: 72px;
-    --toolbar-seed-width: 76px;
+    --toolbar-seed-width: clamp(36px, 3.1vw, 48px);
+    --toolbar-tree-size-width: var(--toolbar-seed-width);
     --toolbar-speed-value-width: 42px;
     display: grid;
-    grid-template-columns: max-content max-content minmax(145px, auto) minmax(260px, auto);
+    grid-template-columns: max-content max-content max-content max-content max-content;
     gap: var(--toolbar-gap);
-    justify-content: start;
+    justify-content: center;
     align-items: end;
     margin-top: 0.95rem;
     margin-bottom: 0;
@@ -1054,10 +1129,10 @@
     transform: none;
   }
 
-  .toolbar-parameters {
+  .toolbar-tree-seed {
     display: grid;
-    grid-template-columns: max-content var(--toolbar-tree-size-width) var(--toolbar-seed-width);
-    gap: 0.55rem;
+    grid-template-columns: var(--toolbar-tree-size-width) var(--toolbar-seed-width);
+    gap: var(--toolbar-tree-seed-gap);
     align-items: end;
     min-width: 0;
   }
@@ -1100,21 +1175,25 @@
   #numTipsSelect,
   #seedInput {
     width: 100%;
-    height: var(--toolbar-control-height);
+    height: var(--toolbar-tree-seed-control-height);
     min-width: 0;
-    padding: 0 0.8rem;
-    border: 1px solid var(--line);
-    border-radius: var(--toolbar-radius);
-    background: color-mix(in srgb, var(--surface-2) 90%, var(--bg));
-    color: var(--text-primary);
-    font-family: inherit;
+    align-self: center;
+    padding: 0 8px;
+    border: 1px solid #e6e6e6;
+    border-radius: 7px;
+    background: #fff;
+    color: #2c3e50;
+    font-family: "SFMono-Regular", "JetBrains Mono", Consolas, monospace;
+    font-weight: 600;
     font-size: 0.9rem;
     cursor: pointer;
+    font-variant-numeric: tabular-nums;
     transition: border-color 0.18s var(--ease), box-shadow 0.18s var(--ease);
   }
 
-  #seedInput {
-    font-family: "SFMono-Regular", "JetBrains Mono", Consolas, monospace;
+  #numTipsSelect {
+    appearance: none;
+    -webkit-appearance: none;
   }
 
   .toolbar-field-speed {
@@ -1185,9 +1264,9 @@
   /* ── Segmented control ──────────────────────────────────── */
   .track-branches {
     display: grid;
-    grid-template-rows: var(--toolbar-label-height) var(--history-control-height);
+    grid-template-rows: var(--toolbar-label-height) var(--toolbar-control-height);
     gap: var(--toolbar-field-gap);
-    align-items: end;
+    align-items: start;
     justify-content: stretch;
     margin-top: 0;
     min-width: 0;
@@ -1202,6 +1281,7 @@
   .segmented {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-self: center;
     align-items: center;
     height: var(--history-control-height);
     min-width: 0;
@@ -2291,7 +2371,7 @@
       height: auto;
     }
 
-    :root:not([data-presentation="1"]) .toolbar-parameters {
+    :root:not([data-presentation="1"]) .toolbar-tree-seed {
       grid-template-columns: minmax(0, 1fr);
     }
 

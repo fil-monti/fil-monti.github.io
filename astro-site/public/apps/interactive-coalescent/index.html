@@ -74,6 +74,8 @@
       position: relative;
       height: fit-content;
       align-self: start;
+      min-height: 0;
+      overflow-y: auto;
     }
     .sidebar-toggle {
       background: transparent;
@@ -459,6 +461,14 @@
       background: #fff;
     }
 
+    .main-panel {
+      min-width: 0;
+      display: grid;
+      gap: 14px;
+      justify-items: center;
+      align-self: start;
+    }
+
     .canvas-wrapper { position: relative; display: flex; justify-content: center; align-items: center; width: 100%; }
 
     canvas {
@@ -651,13 +661,34 @@
       --toolbar-value-width: clamp(44px, 4cqw, 64px);
       --toolbar-input-width: clamp(56px, 5.8cqw, 98px);
       --toolbar-checkbox-scale: 1;
+      display: grid;
+      justify-content: center;
+      align-items: center;
+      gap: var(--toolbar-gap);
+      margin-top: 0;
+      width: 100%;
+      max-width: none;
+    }
+
+    .command-row {
       display: flex;
       justify-content: center;
       align-items: center;
       gap: var(--toolbar-gap);
       flex-wrap: wrap;
-      margin-top: 14px;
-      max-width: 100%;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .command-row-primary {
+      max-width: none;
+      --toolbar-button-pad-x: clamp(8px, 0.75cqw, 16px);
+      --toolbar-mini-pad-x: clamp(9px, 0.7cqw, 12px);
+      --toolbar-value-width: clamp(40px, 3.6cqw, 56px);
+    }
+
+    .command-row-secondary {
+      max-width: 980px;
     }
 
     button {
@@ -673,7 +704,7 @@
       transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
       box-shadow: 0 2px 10px rgba(44,62,80,0.22);
     }
-    .controls > button {
+    .command-row > button {
       box-sizing: border-box;
       display: inline-flex;
       align-items: center;
@@ -686,7 +717,7 @@
       line-height: 1;
       white-space: nowrap;
     }
-    .controls > #settingsBtn {
+    .command-row > #settingsBtn {
       flex: 0 0 var(--toolbar-control-height);
       width: var(--toolbar-control-height);
       padding: 0;
@@ -724,6 +755,11 @@
       min-width: 72px;
       accent-color: var(--interactive-control-accent);
     }
+
+    .speed-pill {
+      --toolbar-range-width: clamp(78px, 7.2cqw, 136px);
+    }
+
     .pill .value {
       font-family: 'JetBrains Mono', monospace;
       font-size: var(--toolbar-label-size);
@@ -757,6 +793,17 @@
       font-size: var(--toolbar-font-size);
       line-height: 1;
       white-space: nowrap;
+    }
+
+    .seed-pill {
+      --toolbar-gap: clamp(4px, 0.35cqw, 7px);
+      --toolbar-pill-pad-x: clamp(5px, 0.45cqw, 8px);
+      --toolbar-mini-pad-x: clamp(6px, 0.5cqw, 9px);
+    }
+
+    .seed-pill input[type="text"] {
+      width: clamp(36px, 3.1cqw, 48px);
+      padding-inline: 6px;
     }
 
     .toggle {
@@ -1012,11 +1059,23 @@
 
     .number-stepper-control {
       --number-stepper-min-font-size: 7px;
-      display: grid;
-      grid-template-columns: minmax(0, 4fr) minmax(10px, 1fr);
+      --number-stepper-input-size: var(--toolbar-input-size, 0.9rem);
+      --number-stepper-arrow-inset: max(0.5mm, 2px);
+      --number-stepper-arrow-mark-width: 5px;
+      --number-stepper-arrow-mark-height: 2px;
+      --number-stepper-rail-width: 14px;
+      --number-stepper-control-height: 32px;
+      --number-stepper-input-pad-right: calc(
+        var(--number-stepper-rail-width) +
+        var(--number-stepper-arrow-inset) +
+        7px
+      );
+      position: relative;
+      display: block;
       width: 100%;
       min-width: 0;
-      overflow: hidden;
+      min-height: var(--number-stepper-control-height);
+      overflow: visible;
       border: 1px solid var(--line, #e6e6e6);
       border-radius: 10px;
       background: color-mix(in srgb, var(--surface-2, #ffffff) 92%, var(--bg, #ffffff));
@@ -1027,18 +1086,20 @@
       -moz-appearance: textfield;
       box-sizing: border-box;
       min-width: 0;
+      display: block;
       width: 100% !important;
-      height: auto !important;
-      padding: 6px 4px 6px 7px !important;
+      height: var(--number-stepper-control-height) !important;
+      padding: 0 var(--number-stepper-input-pad-right) 0 7px !important;
       border: 0 !important;
       border-radius: 0 !important;
       background: transparent !important;
       color: var(--white) !important;
       font-family: 'JetBrains Mono', monospace;
       font-weight: 700;
-      font-size: 0.88rem;
-      line-height: 1.2;
+      font-size: var(--number-stepper-input-size);
+      line-height: 1;
       text-align: left;
+      transform: translateY(-0.5px);
     }
 
     .number-stepper-control > input[type="number"]::-webkit-inner-spin-button,
@@ -1048,12 +1109,17 @@
     }
 
     .number-stepper {
+      position: absolute;
+      top: 50%;
+      right: var(--number-stepper-arrow-inset);
+      z-index: 1;
       display: grid;
       grid-template-rows: 1fr 1fr;
-      align-self: center;
+      width: var(--number-stepper-rail-width);
       height: 20px;
       min-width: 0;
       border-left: 1px solid transparent;
+      transform: translateY(-50%);
     }
 
     .number-stepper-button {
@@ -1062,6 +1128,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
       min-width: 0;
       min-height: 0;
       cursor: pointer;
@@ -1079,20 +1146,33 @@
       transform: none;
     }
 
-    .number-stepper-button::before {
+    .number-stepper-button::before,
+    .number-stepper-button::after {
       content: "";
-      width: 0;
-      height: 0;
-      border-left: 3px solid transparent;
-      border-right: 3px solid transparent;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: var(--number-stepper-arrow-mark-width);
+      height: var(--number-stepper-arrow-mark-height);
+      border-radius: 999px;
+      background: currentColor;
+      transform-origin: center;
     }
 
     .number-stepper-up::before {
-      border-bottom: 4px solid currentColor;
+      transform: translate(-76%, -45%) rotate(-45deg);
+    }
+
+    .number-stepper-up::after {
+      transform: translate(-24%, -45%) rotate(45deg);
     }
 
     .number-stepper-down::before {
-      border-top: 4px solid currentColor;
+      transform: translate(-76%, -55%) rotate(45deg);
+    }
+
+    .number-stepper-down::after {
+      transform: translate(-24%, -55%) rotate(-45deg);
     }
 
     .number-stepper-control.is-disabled {
@@ -1129,6 +1209,7 @@
     }
 
     .pill .number-stepper-control {
+      --number-stepper-control-height: var(--toolbar-inner-height);
       flex: 0 0 var(--toolbar-input-width);
       width: var(--toolbar-input-width);
       height: var(--toolbar-inner-height);
@@ -1139,9 +1220,8 @@
       width: 96px;
     }
 
-    .sidebar .number-stepper-control > input[type="number"] {
-      font-size: var(--sidebar-input-size);
-      line-height: 1.2;
+    .sidebar .number-stepper-control {
+      --number-stepper-input-size: var(--sidebar-input-size);
     }
 
     .standalone-footer {
@@ -1170,7 +1250,8 @@
 
     :root[data-embed="1"] .topbar,
     :root[data-embed="1"] .standalone-hero,
-    :root[data-embed="1"] .standalone-footer {
+    :root[data-embed="1"] .standalone-footer,
+    :root[data-embed="1"] .app-credit-footer {
       display: none;
     }
 
@@ -1218,6 +1299,10 @@
       overflow: hidden;
     }
 
+    :root[data-embed="1"] .main-panel {
+      gap: 12px;
+    }
+
     :root[data-embed="1"] canvas {
       width: min(100%, 980px) !important;
       max-width: 100%;
@@ -1253,6 +1338,7 @@
       }
 
       :root[data-embed="1"] .controls,
+      :root[data-embed="1"] .command-row,
       :root[data-embed="1"] .pill,
       :root[data-embed="1"] .toggle {
         align-items: stretch;
@@ -1298,6 +1384,7 @@
     :root[data-presentation="1"] .topbar,
     :root[data-presentation="1"] .standalone-hero,
     :root[data-presentation="1"] .standalone-footer,
+    :root[data-presentation="1"] .app-credit-footer,
     :root[data-presentation="1"] .controls + div {
       display: none;
     }
@@ -1408,6 +1495,12 @@
       overflow: hidden;
     }
 
+    :root[data-presentation="1"] .main-panel {
+      min-height: 0;
+      gap: 8px;
+      align-content: start;
+    }
+
     :root[data-presentation="1"] canvas {
       width: 100% !important;
       max-width: 100%;
@@ -1433,7 +1526,7 @@
       flex: 0 0 auto;
       justify-content: flex-start;
       gap: 7px;
-      margin-top: 8px;
+      margin-top: 0;
     }
 
     :root[data-presentation="1"] .controls button {
@@ -1472,7 +1565,7 @@
     }
 
     :root[data-presentation="1"] #seedInput {
-      width: 74px;
+      width: 48px;
     }
 
     :root {
@@ -1726,8 +1819,9 @@
         </div>
       </div>
 
-      <div class="canvas-wrapper" id="canvasWrap">
-        <canvas id="canvas" width="980" height="640"></canvas>
+      <div class="main-panel" id="mainPanel">
+        <div class="canvas-wrapper" id="canvasWrap">
+          <canvas id="canvas" width="980" height="640"></canvas>
 
         <!-- Settings menu -->
         <div class="settings-panel" id="settingsPanel" role="dialog" aria-label="Settings">
@@ -1750,7 +1844,7 @@
               <div class="t">Playback</div>
               <div class="srow">
                 <label>Max speed (×)</label>
-                <input id="maxSpeedInput" type="number" step="0.1" min="0.5" max="10" value="3.0"
+                <input id="maxSpeedInput" type="number" step="0.1" min="0.5" max="10" value="5.0"
                        style="width:150px;padding:8px 10px;border-radius:10px;border:1px solid #e6e6e6;font-family:'JetBrains Mono', monospace;font-weight:800;font-size:0.84rem;background:#fff;" />
               </div>
               <div class="minihelp">This sets the maximum value of the Speed slider.</div>
@@ -1851,54 +1945,59 @@
           </div>
         </div>
 
+        </div>
+
+        <div class="controls">
+          <div class="command-row command-row-primary">
+            <button id="playBtn">▶ Play</button>
+            <button id="pauseBtn">⏸ Pause</button>
+            <button id="stepBtn">⤴ Step</button>
+            <button id="resetBtn">↻ Reset</button>
+            <!-- NEW: settings wheel button -->
+            <button id="settingsBtn" title="Settings">⚙</button>
+
+            <div class="pill speed-pill">
+              <label for="speedSlider">Speed</label>
+              <input type="range" id="speedSlider" min="0.2" max="10.0" step="0.1" value="1.0" />
+              <div class="value" id="speedValue">1.0×</div>
+            </div>
+
+            <div class="pill seed-pill">
+              <label for="seedInput">Seed</label>
+              <input id="seedInput" type="text" value="42">
+              <button id="applySeedBtn" class="miniBtn">Apply</button>
+            </div>
+          </div>
+
+          <div class="command-row command-row-secondary">
+            <div class="pill grid-pill">
+              <label for="gensInput">Generations</label>
+              <input id="gensInput" type="number" min="2" max="200" value="20">
+              <label for="taxaInput" style="margin-left:10px;">Taxa</label>
+              <input id="taxaInput" type="number" min="1" max="500" value="10">
+              <button id="applyGridBtn" class="miniBtn">Apply</button>
+            </div>
+
+            <div class="toggle">
+              <input id="varyPopToggle" type="checkbox" checked />
+              <span>Time varying population<button class="help-btn" data-help="varyPop" style="margin-left:6px;">?</button></span>
+            </div>
+
+            <div class="toggle">
+              <input id="stopAtMRCAToggle" type="checkbox" checked />
+              <span>Stop at MRCA<button class="help-btn" data-help="mrca" style="margin-left:6px;">?</button></span>
+            </div>
+
+            <div class="toggle" id="displayTreeWrap" style="display:none;">
+              <input id="displayTreeToggle" type="checkbox" />
+              <span>Display Tree</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="controls">
-      <button id="playBtn">▶ Play</button>
-      <button id="pauseBtn">⏸ Pause</button>
-      <button id="stepBtn">⤴ Step</button>
-      <button id="resetBtn">↻ Reset</button>
-      <!-- NEW: settings wheel button -->
-      <button id="settingsBtn" title="Settings">⚙</button>
-
-      <div class="pill">
-        <label for="speedSlider">Speed</label>
-        <input type="range" id="speedSlider" min="0.2" max="10.0" step="0.1" value="1.0" />
-        <div class="value" id="speedValue">1.0×</div>
-      </div>
-
-      <div class="pill">
-        <label for="seedInput">Seed</label>
-        <input id="seedInput" type="text" value="42">
-        <button id="applySeedBtn" class="miniBtn">Apply</button>
-      </div>
-
-      <div class="pill">
-        <label for="gensInput">Generations</label>
-        <input id="gensInput" type="number" min="2" max="200" value="20">
-        <label for="taxaInput" style="margin-left:10px;">Taxa</label>
-        <input id="taxaInput" type="number" min="1" max="500" value="10">
-        <button id="applyGridBtn" class="miniBtn">Apply</button>
-      </div>
-
-      <div class="toggle">
-        <input id="varyPopToggle" type="checkbox" checked />
-        <span>Time varying population<button class="help-btn" data-help="varyPop" style="margin-left:6px;">?</button></span>
-      </div>
-
-      <div class="toggle">
-        <input id="stopAtMRCAToggle" type="checkbox" checked />
-        <span>Stop at MRCA<button class="help-btn" data-help="mrca" style="margin-left:6px;">?</button></span>
-      </div>
-
-      <div class="toggle" id="displayTreeWrap" style="display:none;">
-        <input id="displayTreeToggle" type="checkbox" />
-        <span>Display Tree</span>
-      </div>
-    </div>
-
-    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--line); text-align: center;">
+    <div class="app-credit-footer" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--line); text-align: center;">
       <p style="font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--muted); margin-bottom: 4px;">
         © Created by <strong style="color: var(--head);">Filippo Monti</strong> · <a href="https://fil-monti.github.io/" target="_blank" rel="noopener noreferrer" style="color: var(--head); text-decoration: none; font-weight: 500;">fil-monti.github.io</a>
       </p>
@@ -2100,7 +2199,7 @@
     personalize: false,
     displayTree: false,
     stopAtMRCA: true,
-    maxSpeed: 3.0,
+    maxSpeed: 5.0,
 
     // --- NEW: display settings with 3 groups for active lineage + coalescent/other + background ---
     style: {
@@ -3043,7 +3142,7 @@
       if (!sidebarCollapsed) {
         sidebar.style.display = "block";
         sidebar.classList.remove('collapsed');
-        stage.style.gridTemplateColumns = "187px 1fr";
+        stage.style.gridTemplateColumns = expandedStageColumns();
         sidebarToggleStandalone.style.display = "none";
       } else {
         sidebar.style.display = "block";
@@ -3073,6 +3172,7 @@
       stage.style.gridTemplateColumns = "1fr";
       sidebarCollapsed = false; // Reset collapsed state
     }
+    syncSidebarHeightToCanvas();
     resetSimulation();
   }
 
@@ -3288,7 +3388,7 @@
     g2Size.value  = String(params.style.g2SizeMul);
     g2Alpha.value = String(params.style.g2Alpha);
     g2Style.value = params.style.g2Style;
-    maxSpeedInput.value = speedSlider.max || "3.0";
+    maxSpeedInput.value = speedSlider.max || "5.0";
   }
 
   function attachSettingsHandlers() {
@@ -3326,6 +3426,31 @@
   const stage = document.querySelector('.stage');
   let sidebarCollapsed = false;
 
+  function expandedStageColumns() {
+    return document.documentElement.getAttribute("data-presentation") === "1"
+      ? "minmax(160px, 187px) minmax(0, 1fr)"
+      : "187px 1fr";
+  }
+
+  function syncSidebarHeightToCanvas() {
+    if (!sidebar || !canvas) return;
+    const isStacked = window.matchMedia('(max-width: 680px)').matches;
+    const isVisible = sidebar.style.display !== "none" && !sidebar.classList.contains('collapsed');
+
+    if (!params.varyPop || !isVisible || isStacked) {
+      sidebar.style.height = "";
+      sidebar.style.maxHeight = "";
+      return;
+    }
+
+    const canvasRect = canvas.getBoundingClientRect();
+    if (canvasRect.height > 0) {
+      const panelHeight = Math.round(canvasRect.height);
+      sidebar.style.height = `${panelHeight}px`;
+      sidebar.style.maxHeight = `${panelHeight}px`;
+    }
+  }
+
   function toggleSidebar() {
     if (!params.varyPop) return; // Only allow toggle when time varying population is enabled
 
@@ -3337,12 +3462,10 @@
       sidebarToggleStandalone.style.display = "flex";
     } else {
       sidebar.classList.remove('collapsed');
-      stage.style.gridTemplateColumns =
-        document.documentElement.getAttribute("data-presentation") === "1"
-          ? "minmax(160px, 187px) minmax(0, 1fr)"
-          : "187px 1fr";
+      stage.style.gridTemplateColumns = expandedStageColumns();
       sidebarToggleStandalone.style.display = "none";
     }
+    syncSidebarHeightToCanvas();
   }
 
   sidebarToggle.addEventListener('click', (e) => {
@@ -3532,11 +3655,13 @@
   function refreshCanvasForSizeChange() {
     canvasResizeFrame = 0;
     const resized = resizeCanvasBackingStore();
+    syncSidebarHeightToCanvas();
     if (!resized) return;
     if (nodes.length) {
       buildGrid({ applyAesthetic: false });
     }
     render();
+    syncSidebarHeightToCanvas();
   }
 
   function queueCanvasRefresh() {

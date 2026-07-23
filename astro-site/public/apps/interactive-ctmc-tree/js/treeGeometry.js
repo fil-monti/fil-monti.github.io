@@ -57,12 +57,32 @@ export function buildTree(params, treeZoom, nodeOffsets) {
 }
 
 export function buildTreeMulti(params, nTips, treeZoom, nodeOffsets, canvasSize) {
+    const tipCount = Math.max(1, Math.floor(Number(nTips) || 1));
     const rootX = params.rootX + 30 + params.horizontalShift + nodeOffsets.root.x;
     const rootY = params.rootY + params.verticalShift + nodeOffsets.root.y;
 
     const xStep = Math.max(18, 0.55 * params.L_internal_to_tips * treeZoom);
     const yStep = Math.max(26, 0.85 * params.L_internal_to_tips * treeZoom);
-    const xs = Array.from({ length: nTips }, (_, i) => rootX + (i - (nTips - 1) / 2) * xStep);
+    const xs = Array.from({ length: tipCount }, (_, i) => rootX + (i - (tipCount - 1) / 2) * xStep);
+
+    if (tipCount === 1) {
+        const branchLength = Math.max(
+            (params.L_root_to_internal + params.L_internal_to_tips) * treeZoom,
+            2.2 * yStep,
+        );
+        return {
+            id: 'root',
+            x: rootX,
+            y: rootY,
+            children: [{
+                id: 'tip1',
+                label: 'Tip 1',
+                x: rootX + nodeOffsets.tip1.x,
+                y: rootY + branchLength + nodeOffsets.tip1.y,
+                children: [],
+            }],
+        };
+    }
 
     function buildSpan(i0, i1, depth) {
         if (i0 === i1) {
@@ -71,7 +91,7 @@ export function buildTreeMulti(params, nTips, treeZoom, nodeOffsets, canvasSize)
                 x: xs[i0],
                 y: rootY + depth * yStep,
                 children: [],
-                label: nTips > 25 ? `${i0 + 1}` : `Tip ${i0 + 1}`,
+                label: tipCount > 25 ? `${i0 + 1}` : `Tip ${i0 + 1}`,
             };
         }
 
@@ -86,7 +106,7 @@ export function buildTreeMulti(params, nTips, treeZoom, nodeOffsets, canvasSize)
         };
     }
 
-    const treeNode = buildSpan(0, nTips - 1, 0);
+    const treeNode = buildSpan(0, tipCount - 1, 0);
     treeNode.id = 'root';
     treeNode.x = rootX;
     treeNode.y = rootY;
