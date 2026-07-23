@@ -205,6 +205,31 @@ export const teachingGroups = [
   }
 ];
 
+export const talks = [
+  {
+    title: "CGSI 2026",
+    label: "Talk",
+    description: "Computational Genomics Summer Institute. UCLA, California, USA.",
+    talkTitle:
+      "Scalable inference for continuous-time Markov processes: applications to phylogenetics",
+    slideDeckHref: "/talks/cgsi/",
+    image: "/assets/img/talks/cgsi-logo.jpg",
+    imageVariant: "wide-logo",
+    imageAlt: "CGSI logo",
+    href: "http://computationalgenomics.bioinformatics.ucla.edu/"
+  },
+  {
+    title: "SysBio 2025",
+    label: "Invited Talk",
+    description:
+      "Annual Systems Biology of Infectious Diseases Meeting, Rockville, MD, USA.",
+    talkTitle: "Flexibly Modeling Viral Substitution and Coalescent Processes with Covariates",
+    image: "/assets/img/talks/sysbio-2025.webp",
+    imageAlt: "SysBio 2025 meeting graphic",
+    href: "https://hpmi.ucsf.edu/sysbio-2025"
+  }
+];
+
 export const softwareEntries = [
   {
     title: "BEAST X",

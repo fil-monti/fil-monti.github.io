@@ -988,6 +988,93 @@ html[data-theme="light"] .mobile-nav button {
   padding-bottom: 56px;
 }
 
+.home-talks-section {
+  padding-top: 32px;
+}
+
+.talks-grid.home-talks-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  width: min(100%, 640px);
+}
+
+.home-talk-card {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.home-talk-card:hover,
+.home-talk-card:focus-within {
+  border-color: var(--blue);
+  transform: translateY(-2px);
+}
+
+.talk-image-link {
+  display: grid;
+  aspect-ratio: 16 / 9;
+  place-items: center;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.talk-image-link img {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding: clamp(10px, 2.2vw, 18px);
+  object-fit: contain;
+}
+
+.talk-image-link.is-wide-logo img {
+  padding: clamp(8px, 1.6vw, 14px);
+}
+
+.home-talk-card .card-label {
+  margin-bottom: 8px;
+  font-size: 10px;
+}
+
+.home-talk-card h3 {
+  margin-bottom: 8px;
+  font-size: 18px;
+  line-height: 1.22;
+}
+
+.home-talk-card p:not(.card-label) {
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.talk-title-line {
+  display: block;
+  margin-top: 0.2em;
+}
+
+.talk-title-label {
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+}
+
+.home-talk-card cite {
+  font-style: italic;
+}
+
+.talk-slide-link {
+  margin-left: 0.2em;
+  color: var(--gold);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.talk-slide-link:hover,
+.talk-slide-link:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.18em;
+}
+
 .education-timeline::before {
   content: "";
   position: absolute;
@@ -2597,6 +2684,10 @@ a.content-card:hover {
   }
 
   .teaching-grid.home-teaching-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .talks-grid.home-talks-grid {
     grid-template-columns: 1fr;
   }
 
