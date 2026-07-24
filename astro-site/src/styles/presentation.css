@@ -1287,14 +1287,57 @@ body.presentation-page {
   white-space: nowrap;
 }
 
+.cgsi-bat-rabies-slide .cgsi-global-flu-layout {
+  --cgsi-global-flu-art-bottom: 0.1rem;
+}
+
 .cgsi-bat-rabies-slide .cgsi-global-flu-copy {
-  width: 72%;
-  font-size: 0.72em;
+  width: 37%;
+  font-size: 0.62em;
 }
 
 .cgsi-bat-rabies-facts {
   row-gap: 0.46em;
   line-height: 1.45;
+}
+
+.cgsi-bat-rabies-objective {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  width: 61.5%;
+  color: var(--cgsi-ink);
+  font-size: 0.62em;
+  font-weight: 450;
+  line-height: 1.45;
+}
+
+.cgsi-bat-rabies-objective p {
+  max-width: 92%;
+  margin: 0;
+}
+
+.cgsi-bat-rabies-objective strong {
+  color: var(--cgsi-blue);
+  font-weight: 500;
+}
+
+.cgsi-bat-rabies-rates {
+  bottom: 0;
+  width: 34%;
+  max-height: 42%;
+}
+
+.cgsi-bat-rabies-rates img {
+  transform: none;
+}
+
+.cgsi-bat-rabies-tree {
+  top: 0.1rem;
+  bottom: 0;
+  width: 61.5%;
+  padding-top: 0;
 }
 
 .cgsi-global-flu-rates {

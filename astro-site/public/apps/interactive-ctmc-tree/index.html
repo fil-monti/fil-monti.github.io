@@ -47,9 +47,12 @@
             if (params.get("presentation") === "1") {
                 document.documentElement.setAttribute("data-presentation", "1");
             }
+            if (params.get("integrated") === "1") {
+                document.documentElement.setAttribute("data-integrated", "1");
+            }
         })();
     </script>
-    <link rel="stylesheet" href="css/style.css?v=20260722-slider-thumbs">
+    <link rel="stylesheet" href="css/style.css?v=20260723-panel-block-scale">
 </head>
 
 <body>
@@ -899,6 +902,44 @@
     <script>
         (() => {
             const root = document.documentElement;
+            if (root.getAttribute("data-embed") !== "1") return;
+            if (root.getAttribute("data-integrated") !== "1") return;
+            if (root.getAttribute("data-presentation") === "1") return;
+
+            const fullScaleWidth = 760;
+            let frame = 0;
+
+            const setPanelScale = () => {
+                frame = 0;
+                const surface = document.querySelector(".app-surface") || document.body;
+                const rect = surface.getBoundingClientRect();
+                const width = Math.max(1, rect.width || window.innerWidth || fullScaleWidth);
+                const scale = Math.min(1, width / fullScaleWidth);
+
+                root.style.setProperty("--integrated-panel-scale", scale.toFixed(3));
+                root.style.setProperty("--integrated-panel-width", `${fullScaleWidth}px`);
+            };
+
+            const schedulePanelScale = () => {
+                if (frame) return;
+                frame = window.requestAnimationFrame(setPanelScale);
+            };
+
+            schedulePanelScale();
+            window.addEventListener("load", schedulePanelScale, { once: true });
+            window.addEventListener("resize", schedulePanelScale);
+            document.addEventListener("DOMContentLoaded", () => {
+                schedulePanelScale();
+                const surface = document.querySelector(".app-surface");
+                if (surface && typeof ResizeObserver === "function") {
+                    new ResizeObserver(schedulePanelScale).observe(surface);
+                }
+            });
+        })();
+    </script>
+    <script>
+        (() => {
+            const root = document.documentElement;
             if (root.getAttribute("data-presentation") !== "1") return;
 
             const button = document.querySelector("#presentationCommandsToggle");
@@ -1014,7 +1055,7 @@
             }
         })();
     </script>
-    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/main.js?v=20260723-tree-visible"></script>
 </body>
 
 </html>

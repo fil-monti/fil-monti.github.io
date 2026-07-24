@@ -1492,13 +1492,22 @@
     :root[data-presentation="1"] .canvas-wrapper {
       min-width: 0;
       min-height: 0;
+      height: 100%;
+      align-self: stretch;
+      justify-self: stretch;
       overflow: hidden;
     }
 
     :root[data-presentation="1"] .main-panel {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      height: 100%;
       min-height: 0;
       gap: 8px;
-      align-content: start;
+      align-self: stretch;
+      align-content: stretch;
+      justify-items: stretch;
+      overflow: hidden;
     }
 
     :root[data-presentation="1"] canvas {

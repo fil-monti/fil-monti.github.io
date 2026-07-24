@@ -5,7 +5,7 @@ import {
     resetPlaybackState as resetPlaybackStateState,
 } from './appOrchestration.js';
 import { getGeoViewport } from './panelRenderers.js';
-import { renderVisualization } from './appRenderPipeline.js';
+import { renderVisualization } from './appRenderPipeline.js?v=20260723-tree-visible';
 import {
     createAnimationProcessDefinitionsFromModelManifests,
     createDefaultModelManifests,

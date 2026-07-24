@@ -168,7 +168,7 @@ export const talk = {
 <AppSlide
   id="single-tip-phylogenetics"
   class="cgsi-app-slide-side-nav"
-  src="/apps/interactive-ctmc-tree/index.html?embed=1&theme=light&presentation=1&state=default&treeSize=1&models=phylo"
+  src="/apps/interactive-ctmc-tree/index.html?embed=1&theme=light&presentation=1&state=default&treeSize=1&models=phylo&v=20260723-panel-block-scale"
   title="Single-lineage nucleotide evolution"
   printSummary="The live version opens a one-tip nucleotide-only tree view."
   showNavigation={false}
@@ -177,7 +177,7 @@ export const talk = {
 <AppSlide
   id="interactive-tree"
   class="cgsi-app-slide-side-nav"
-  src="/apps/interactive-ctmc-tree/index.html?embed=1&theme=light&presentation=1&state=default&treeSize=3"
+  src="/apps/interactive-ctmc-tree/index.html?embed=1&theme=light&presentation=1&state=default&treeSize=3&v=20260723-panel-block-scale"
   title="Interactive tree app"
   printSummary="The live version opens the app-only interactive tree view."
   showNavigation={false}
@@ -714,13 +714,29 @@ export const talk = {
     <dt>Genetic samples:</dt>
     <dd>372 DNA sequences (nucleotide positions: 594–1353)</dd>
   </div>
-  <div>
-    <dt>Objective:</dt>
-    <dd>Identify the drivers of cross-species transmissions, e.g. genetic distances between two host species.</dd>
-  </div>
 </dl>
 
 </div>
+
+<div class="cgsi-bat-rabies-objective">
+  <p><strong>Objective:</strong> Identify the drivers of cross-species transmissions, e.g. genetic distances between two host species.</p>
+</div>
+
+<figure class="cgsi-left-inset-figure cgsi-global-flu-rates cgsi-bat-rabies-rates">
+  <img
+    src="/talks/cgsi/figures/rabiesLogRates.png"
+    alt="Rabies log rates as a function of bat host genetic distance"
+    loading="eager"
+  />
+</figure>
+
+<figure class="cgsi-right-figure cgsi-global-flu-tree cgsi-bat-rabies-tree">
+  <img
+    src="/talks/cgsi/figures/rabiesTreeWithMap.png"
+    alt="Bat rabies phylogeny with North America map inset"
+    loading="eager"
+  />
+</figure>
 
 </div>
 
@@ -886,7 +902,7 @@ export const talk = {
 
 <Slide id="nondiag-s-contribution" class="cgsi-nondiag-slide">
 
-<h2>Inference of the drift matrix <span class="cgsi-nondiag-title-symbol">S</span></h2>
+## Inference of the drift matrix <span class="cgsi-nondiag-title-symbol">S</span>
 
 <div class="cgsi-nondiag-content">
 
@@ -894,11 +910,15 @@ export const talk = {
 
 <div class="cgsi-nondiag-column cgsi-nondiag-left-column">
   <section class="cgsi-nondiag-section">
-    <h3>Challenges</h3>
+
+### Challenges
+
     <div class="cgsi-nondiag-copy">
-      
-      <p>(1) <span class="cgsi-nondiag-title-symbol">S</span> must be (Hurwitz) stable: $(\operatorname{Re}(\lambda) \le 0)$</p>
-      <p>(2) computational complexity of branch variances(lots of $e^{tS}$);</p>
+
+(1) <span class="cgsi-nondiag-title-symbol">S</span> must be (Hurwitz) stable: $(\operatorname{Re}(\lambda) \le 0)$
+
+(2) computational complexity of branch variances(lots of $e^{tS}$);
+
     </div>
         <div class="cgsi-nondiag-equation cgsi-nondiag-schur-equation">
 
@@ -910,9 +930,13 @@ $$
   </section>
 
   <section class="cgsi-nondiag-section cgsi-nondiag-but-section">
-    <p><em>Current scalable solutions:</em> diagonal or symmetric parametrizations</p>
+
+*Current scalable solutions:* diagonal or symmetric parametrizations
+
     <p> </p>
-    <p><strong>But</strong>: they can only describe "monotone" evolution</p>
+
+**But**: they can only describe "monotone" evolution
+
     <p class="cgsi-nondiag-schur-label">Using Schur blocks:</p>
     <div class="cgsi-nondiag-equation cgsi-nondiag-schur-equation">
 
@@ -924,14 +948,19 @@ $$
 $$
 
     </div>
-    <p><strong>But</strong>: need to pre-specify the number of complex conjugate pairs</p>
+
+**But**: need to pre-specify the number of complex conjugate pairs
+
   </section>
 </div>
 
 <div class="cgsi-nondiag-column cgsi-nondiag-right-column">
   <section class="cgsi-nondiag-section">
-    <h3>Proposed parametrization</h3>
-    <p>A matrix $S \in \mathbb{R}^{K \times K}$ is represented under the <strong><em>Hurwitz-smooth spectral block parametrization</em></strong> (<strong>H-SSBP</strong>) if it can be written as</p>
+
+### Proposed parametrization
+
+A matrix $S \in \mathbb{R}^{K \times K}$ is represented under the ***Hurwitz-smooth spectral block parametrization*** (**H-SSBP**) if it can be written as
+
   </section>
 
   <div class="cgsi-nondiag-equation cgsi-nondiag-main-equation">
@@ -1236,7 +1265,7 @@ which turns repeated propagation into a structured computational problem.
 
 <strong class="musk-ox-gold-label">Question:</strong> Did climate warming have an effect on Ancestral Musk Ox population fluctuations?
 
-<strong class="musk-ox-gold-label">Covariate:</strong> ice core $\delta^{18}O$ oxygen isotopes as a proxy for temperature
+<strong class="musk-ox-gold-label">Covariate:</strong> ice core $\delta^{18}O$ oxygen isotopes as a proxy for historical temperature
 
     </div>
 

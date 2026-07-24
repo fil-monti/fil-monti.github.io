@@ -476,7 +476,7 @@ html[data-theme="light"] .mobile-nav button {
 
 .hero-lede,
 .page-hero p:not(.eyebrow),
-.section-heading p {
+.section-heading p:not(.section-kicker) {
   max-width: 760px;
   color: var(--body);
   font-size: 20px;
@@ -745,6 +745,9 @@ html[data-theme="light"] .mobile-nav button {
 }
 
 .portrait-panel {
+  --portrait-size: min(320px, calc(18vw + 70px));
+  --portrait-ring: clamp(6px, 0.8vw, 10px);
+  --portrait-ring-outer: calc(var(--portrait-ring) + 3px);
   position: relative;
   display: grid;
   justify-items: center;
@@ -757,14 +760,14 @@ html[data-theme="light"] .mobile-nav button {
 }
 
 .portrait-panel img {
-  width: min(320px, 78vw);
+  width: var(--portrait-size);
   aspect-ratio: 1;
   border-radius: 50%;
   object-fit: cover;
   object-position: 68% 58%;
   box-shadow:
-    0 0 0 10px var(--surface),
-    0 0 0 13px var(--gold),
+    0 0 0 var(--portrait-ring) var(--surface),
+    0 0 0 var(--portrait-ring-outer) var(--gold),
     var(--shadow);
 }
 
@@ -956,12 +959,23 @@ html[data-theme="light"] .mobile-nav button {
 .teaching-grid.home-teaching-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
+  width: min(100%, 640px);
 }
 
 .home-teaching-grid .content-card {
   border-color: transparent;
   background: transparent;
   box-shadow: none;
+}
+
+.home-teaching-grid .content-card img {
+  height: 170px;
+  aspect-ratio: auto;
+}
+
+.home-teaching-grid .card-body,
+.home-talk-card .card-body {
+  padding: 18px;
 }
 
 .home-teaching-column .section-heading h2 {
@@ -1013,7 +1027,7 @@ html[data-theme="light"] .mobile-nav button {
 
 .talk-image-link {
   display: grid;
-  aspect-ratio: 16 / 9;
+  height: 170px;
   place-items: center;
   background: var(--surface);
   overflow: hidden;
@@ -2204,6 +2218,12 @@ a.content-card:hover {
   gap: 18px;
 }
 
+.interactive-app-page-native {
+  width: min(1180px, 100%);
+  margin: 0 auto 72px;
+  padding-inline: 28px;
+}
+
 .interactive-app-note {
   display: flex;
   flex-wrap: wrap;
@@ -2228,16 +2248,22 @@ a.content-card:hover {
   position: relative;
   width: 100%;
   min-width: 0;
-  overflow: hidden;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  box-shadow: var(--shadow);
+  overflow: visible;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .embed-status {
+  position: absolute;
+  inset: 0 auto auto 0;
+  z-index: 1;
   padding: 18px;
   color: var(--muted);
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .embed-status a {
@@ -2248,20 +2274,31 @@ a.content-card:hover {
 .app-frame {
   display: block;
   width: 100%;
-  height: 760px;
-  min-height: 520px;
+  height: var(--embed-min-height, 760px);
+  min-height: min(520px, var(--embed-min-height, 760px));
   border: 0;
   background: transparent;
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    height 220ms ease,
+    opacity 220ms ease,
+    transform 220ms ease;
 }
 
 .ctmc-frame .app-frame {
-  height: 760px;
+  height: var(--embed-min-height, 760px);
 }
 
 .ctmc-frame.app-embed {
   background: transparent;
   border-color: transparent;
   box-shadow: none;
+}
+
+.app-embed.is-loaded .app-frame {
+  opacity: 1;
+  transform: none;
 }
 
 .coalescent-frame .app-frame {
@@ -2442,6 +2479,104 @@ a.content-card:hover {
   color: var(--gold);
 }
 
+@media (max-width: 1280px) {
+  body {
+    font-size: 18.5px;
+  }
+
+  .hero-copy h1,
+  .page-hero h1 {
+    font-size: 46px;
+  }
+
+  .hero-lede,
+  .page-hero p:not(.eyebrow),
+  .section-heading p:not(.section-kicker),
+  .notable-contributions,
+  .notable-contributions strong,
+  .research-intro,
+  .thesis-index {
+    font-size: 18.5px;
+  }
+
+  .section-heading h2 {
+    font-size: 32px;
+  }
+
+  .focus-card h3,
+  .teaching-card h3,
+  .project-card h3,
+  .post-list-item h2 {
+    font-size: 20px;
+  }
+
+  .software-card h3 {
+    font-size: 24px;
+  }
+
+  .software-card p:not(.card-label) {
+    font-size: 17.5px;
+  }
+
+  .teaching-list li {
+    font-size: 16.5px;
+  }
+
+  .home-teaching-grid .content-card img,
+  .talk-image-link {
+    height: 158px;
+  }
+}
+
+@media (max-width: 1080px) {
+  body {
+    font-size: 17.5px;
+  }
+
+  .hero-copy h1,
+  .page-hero h1 {
+    font-size: 42px;
+  }
+
+  .hero-lede,
+  .page-hero p:not(.eyebrow),
+  .section-heading p:not(.section-kicker),
+  .notable-contributions,
+  .notable-contributions strong,
+  .research-intro,
+  .thesis-index {
+    font-size: 17.5px;
+  }
+
+  .section-heading h2 {
+    font-size: 30px;
+  }
+
+  .focus-card h3,
+  .teaching-card h3,
+  .project-card h3,
+  .post-list-item h2 {
+    font-size: 19px;
+  }
+
+  .software-card h3 {
+    font-size: 23px;
+  }
+
+  .software-card p:not(.card-label) {
+    font-size: 16.5px;
+  }
+
+  .teaching-list li {
+    font-size: 16px;
+  }
+
+  .home-teaching-grid .content-card img,
+  .talk-image-link {
+    height: 148px;
+  }
+}
+
 @media (max-width: 1100px) {
   .gravity-map {
     --gravity-planet-orbit: clamp(107px, 11vw, 123px);
@@ -2531,6 +2666,10 @@ a.content-card:hover {
 }
 
 @media (max-width: 920px) {
+  body {
+    font-size: 16.5px;
+  }
+
   .desktop-nav {
     display: none;
   }
@@ -2539,7 +2678,6 @@ a.content-card:hover {
     display: inline-flex;
   }
 
-  .hero-grid,
   .section-heading.split,
   .research-top-grid,
   .research-page-layout,
@@ -2593,7 +2731,36 @@ a.content-card:hover {
 
   .hero-copy h1,
   .page-hero h1 {
-    font-size: 48px;
+    font-size: 38px;
+  }
+
+  .hero-lede,
+  .page-hero p:not(.eyebrow),
+  .section-heading p:not(.section-kicker),
+  .notable-contributions,
+  .notable-contributions strong,
+  .research-intro,
+  .thesis-index {
+    font-size: 16.5px;
+  }
+
+  .section-heading h2 {
+    font-size: 28px;
+  }
+
+  .focus-card h3,
+  .teaching-card h3,
+  .project-card h3,
+  .post-list-item h2 {
+    font-size: 18px;
+  }
+
+  .software-card h3 {
+    font-size: 21px;
+  }
+
+  .software-card p:not(.card-label) {
+    font-size: 16px;
   }
 
   .card-grid,
@@ -2606,18 +2773,61 @@ a.content-card:hover {
   }
 
   .education-teaching-grid {
-    grid-template-columns: 1fr;
-    gap: 36px;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    gap: 22px;
   }
 
   .metric-strip {
     gap: 12px;
   }
+
+  .hero-grid {
+    grid-template-columns: min(320px, calc(18vw + 70px)) minmax(0, 1fr);
+    align-items: start;
+    gap: 24px;
+  }
+
+  .teaching-grid.home-teaching-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    width: min(100%, 560px);
+  }
+
+  .talks-grid.home-talks-grid {
+    gap: 14px;
+    width: min(100%, 560px);
+  }
+
+  .home-teaching-grid .content-card img,
+  .talk-image-link {
+    height: 136px;
+  }
+
+  .home-teaching-grid .card-body,
+  .home-talk-card .card-body {
+    padding: 15px;
+  }
+
+  .home-teaching-grid .card-label,
+  .home-talk-card .card-label {
+    font-size: 9px;
+  }
+
+  .home-teaching-grid .content-card h3,
+  .home-talk-card h3 {
+    font-size: 16px;
+  }
+
+  .home-teaching-grid .content-card p:not(.card-label),
+  .home-talk-card p:not(.card-label) {
+    font-size: 14px;
+    line-height: 1.38;
+  }
 }
 
 @media (max-width: 620px) {
   body {
-    font-size: 18px;
+    font-size: 15.75px;
   }
 
   .header-inner,
@@ -2639,8 +2849,13 @@ a.content-card:hover {
     padding-inline: 10px;
   }
 
-  .brand span:last-child {
-    display: none;
+  .brand {
+    font-size: 16px;
+  }
+
+  .hero-grid {
+    grid-template-columns: min(320px, calc(18vw + 70px)) minmax(0, 1fr);
+    gap: 16px;
   }
 
   .hero-section,
@@ -2657,51 +2872,155 @@ a.content-card:hover {
     padding-inline: 18px;
   }
 
+  .section-block {
+    padding-block: 34px;
+  }
+
+  .page-hero {
+    padding-bottom: 14px;
+  }
+
   .hero-copy h1,
   .page-hero h1 {
-    font-size: 38px;
+    font-size: 31px;
+  }
+
+  .hero-title {
+    height: 3.1em;
+  }
+
+  .hero-copy h1 {
+    font-size: 27px;
+  }
+
+  .portrait-caption {
+    margin-top: 20px;
+    padding-left: 10px;
+    font-size: 12px;
+  }
+
+  .portrait-links {
+    gap: 5px;
+    padding-left: 0;
+  }
+
+  .portrait-links > a,
+  .email-pill {
+    min-width: 0;
+    min-height: 24px;
+    font-size: 10px;
+    padding: 6px 7px;
   }
 
   .hero-lede,
   .page-hero p:not(.eyebrow),
-  .section-heading p {
-    font-size: 19px;
+  .section-heading p:not(.section-kicker) {
+    font-size: 16px;
   }
 
   .hero-lede,
   .page-hero p:not(.eyebrow),
   .notable-contributions,
   .notable-contributions strong {
-    font-size: 18px;
+    font-size: 16px;
+  }
+
+  .hero-lede,
+  .notable-contributions,
+  .notable-contributions strong {
+    font-size: 14px;
+    line-height: 1.42;
+  }
+
+  .section-heading h2 {
+    font-size: 24px;
+  }
+
+  .card-body,
+  .focus-card,
+  .software-card,
+  .teaching-card,
+  .project-card,
+  .cv-panel,
+  .post-list-item {
+    padding: 20px;
+  }
+
+  .focus-card h3,
+  .software-card h3,
+  .teaching-card h3,
+  .project-card h3,
+  .post-list-item h2 {
+    font-size: 16px;
   }
 
   .education-timeline {
-    --timeline-x: 14px;
-    --timeline-offset: 40px;
-    --entry-height: 84px;
-    --row-gap: 26px;
-    --education-logo-column: 46px;
+    --timeline-x: 9px;
+    --timeline-offset: 24px;
+    --entry-height: 68px;
+    --row-gap: 18px;
+    --education-logo-column: 28px;
+    padding: 18px 0 16px var(--timeline-offset);
+  }
+
+  .education-teaching-section {
+    padding-top: 28px;
+  }
+
+  .education-teaching-grid {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 12px;
   }
 
   .teaching-grid.home-teaching-grid {
     grid-template-columns: 1fr;
+    width: min(100%, 380px);
   }
 
   .talks-grid.home-talks-grid {
     grid-template-columns: 1fr;
+    width: min(100%, 380px);
+  }
+
+  .home-teaching-grid .content-card img,
+  .talk-image-link {
+    height: 122px;
+  }
+
+  .home-teaching-grid .card-body,
+  .home-talk-card .card-body {
+    padding: 13px;
+  }
+
+  .home-teaching-grid .content-card h3,
+  .home-talk-card h3 {
+    font-size: 15px;
+  }
+
+  .home-teaching-grid .content-card p:not(.card-label),
+  .home-talk-card p:not(.card-label) {
+    font-size: 13px;
+    line-height: 1.34;
   }
 
   .education-item {
-    gap: 10px;
+    gap: 6px;
   }
 
   .education-logo img {
-    max-width: 40px;
-    max-height: 40px;
+    max-width: 22px;
+    max-height: 22px;
   }
 
   .education-item h3 {
-    font-size: 19px;
+    font-size: 12px;
+    line-height: 1.12;
+  }
+
+  .education-item p {
+    margin-top: 4px;
+    font-size: 9.5px;
+    line-height: 1.24;
   }
 
   .project-head,
@@ -2717,14 +3036,14 @@ a.content-card:hover {
 
   .research-intro,
   .thesis-index {
-    font-size: 18px;
+    font-size: 16px;
   }
 
   .teaching-card {
     grid-template-columns: 1fr;
     gap: 18px;
     min-height: 0;
-    padding: 24px;
+    padding: 20px;
   }
 
   .teaching-card img {
@@ -2736,7 +3055,7 @@ a.content-card:hover {
     grid-template-columns: 1fr;
     gap: 18px;
     min-height: 0;
-    padding: 24px;
+    padding: 20px;
   }
 
   .software-logo-wrap {
@@ -2768,10 +3087,294 @@ a.content-card:hover {
 
   .app-frame,
   .ctmc-frame .app-frame {
-    height: 720px;
+    height: var(--embed-min-height, 720px);
+    min-height: 640px;
   }
 
   .coalescent-frame .app-frame {
     height: 1120px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 15px;
+  }
+
+  .header-inner,
+  .footer-inner,
+  .section-block,
+  .hero-grid,
+  .metric-strip,
+  .page-hero,
+  .research-page-layout,
+  .interactive-app-page-native {
+    padding-inline: 16px;
+  }
+
+  .brand {
+    font-size: 15px;
+  }
+
+  .portrait-panel {
+    --portrait-size: calc(12vw + 72px);
+    --portrait-ring: 5px;
+    --portrait-ring-outer: 7px;
+  }
+
+  .hero-grid {
+    grid-template-columns: calc(12vw + 72px) minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .section-block {
+    padding-block: 28px;
+  }
+
+  .hero-copy h1,
+  .page-hero h1 {
+    font-size: 27px;
+  }
+
+  .hero-copy h1 {
+    font-size: 20px;
+  }
+
+  .hero-title {
+    height: 3.18em;
+  }
+
+  .hero-lede,
+  .page-hero p:not(.eyebrow),
+  .section-heading p:not(.section-kicker),
+  .notable-contributions,
+  .notable-contributions strong,
+  .research-intro,
+  .thesis-index {
+    font-size: 15px;
+  }
+
+  .section-heading h2 {
+    font-size: 22px;
+  }
+
+  .card-body,
+  .focus-card,
+  .software-card,
+  .teaching-card,
+  .project-card,
+  .cv-panel,
+  .post-list-item {
+    padding: 18px;
+  }
+
+  .focus-card h3,
+  .software-card h3,
+  .teaching-card h3,
+  .project-card h3,
+  .post-list-item h2 {
+    font-size: 15px;
+  }
+
+  .paper-filter-button,
+  .paper-first-author-filter,
+  .tag-list li,
+  .project-meta-links {
+    font-size: 10.5px;
+  }
+
+  .teaching-grid.home-teaching-grid,
+  .talks-grid.home-talks-grid {
+    width: min(100%, 330px);
+  }
+
+  .education-teaching-grid {
+    grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
+    gap: 10px;
+  }
+
+  .education-timeline {
+    --timeline-x: 8px;
+    --timeline-offset: 20px;
+    --entry-height: 60px;
+    --row-gap: 14px;
+    --education-logo-column: 22px;
+    padding-block: 14px;
+  }
+
+  .education-item {
+    gap: 5px;
+  }
+
+  .education-logo img {
+    max-width: 18px;
+    max-height: 18px;
+  }
+
+  .education-item h3 {
+    font-size: 10.5px;
+  }
+
+  .education-item p {
+    margin-top: 3px;
+    font-size: 8.5px;
+    line-height: 1.2;
+  }
+
+  .home-teaching-grid .content-card img {
+    height: 86px;
+  }
+
+  .home-teaching-grid .card-body {
+    padding: 9px;
+  }
+
+  .home-teaching-grid .card-label {
+    margin-bottom: 5px;
+    font-size: 7.5px;
+  }
+
+  .home-teaching-grid .content-card h3 {
+    margin-bottom: 5px;
+    font-size: 11px;
+  }
+
+  .home-teaching-grid .content-card p:not(.card-label) {
+    font-size: 9.5px;
+    line-height: 1.25;
+  }
+
+  .talk-image-link {
+    height: 108px;
+  }
+
+  .home-talk-card .card-body {
+    padding: 12px;
+  }
+
+  .home-talk-card .card-label {
+    margin-bottom: 6px;
+    font-size: 8.5px;
+  }
+
+  .home-talk-card h3 {
+    margin-bottom: 6px;
+    font-size: 14px;
+  }
+
+  .home-talk-card p:not(.card-label) {
+    font-size: 12px;
+    line-height: 1.32;
+  }
+
+  .hero-lede,
+  .notable-contributions,
+  .notable-contributions strong {
+    font-size: 12px;
+    line-height: 1.34;
+  }
+
+  .portrait-caption {
+    margin-top: 14px;
+    border-left-width: 3px;
+    padding-left: 7px;
+    font-size: 10.5px;
+    line-height: 1.28;
+  }
+
+  .portrait-name {
+    font-size: 13px;
+  }
+
+  .portrait-links {
+    gap: 4px;
+  }
+
+  .portrait-links > a,
+  .email-pill {
+    min-height: 21px;
+    font-size: 8.5px;
+    padding: 5px 6px;
+  }
+}
+
+@media (max-width: 360px) {
+  .header-inner,
+  .footer-inner,
+  .section-block,
+  .hero-grid,
+  .metric-strip,
+  .page-hero,
+  .research-page-layout {
+    padding-inline: 14px;
+  }
+
+  .brand {
+    font-size: 14px;
+  }
+
+  .hero-copy h1,
+  .page-hero h1 {
+    font-size: 24px;
+  }
+
+  .portrait-panel {
+    --portrait-size: calc(10vw + 76px);
+    --portrait-ring: 4px;
+    --portrait-ring-outer: 6px;
+  }
+
+  .hero-grid {
+    grid-template-columns: calc(10vw + 76px) minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .hero-copy h1 {
+    font-size: 17px;
+  }
+
+  .hero-lede,
+  .notable-contributions,
+  .notable-contributions strong {
+    font-size: 11px;
+  }
+
+  .teaching-grid.home-teaching-grid,
+  .talks-grid.home-talks-grid {
+    width: min(100%, 300px);
+  }
+
+  .education-teaching-grid {
+    grid-template-columns: minmax(0, 0.84fr) minmax(0, 1.16fr);
+    gap: 8px;
+  }
+
+  .education-timeline {
+    --timeline-x: 7px;
+    --timeline-offset: 18px;
+    --entry-height: 56px;
+    --row-gap: 12px;
+    --education-logo-column: 20px;
+  }
+
+  .education-logo img {
+    max-width: 16px;
+    max-height: 16px;
+  }
+
+  .education-item h3 {
+    font-size: 9.5px;
+  }
+
+  .education-item p {
+    font-size: 7.8px;
+  }
+
+  .home-teaching-grid .content-card img {
+    height: 76px;
+  }
+
+  .talk-image-link {
+    height: 96px;
   }
 }

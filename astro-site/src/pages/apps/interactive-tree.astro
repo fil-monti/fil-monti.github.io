@@ -14,22 +14,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     description="A compact playground for watching discrete character, spatial, and host-transmission processes evolve on a tree."
   />
 
-  <section class="section-block interactive-app-page">
-    <div class="interactive-app-note">
-      <p>
-        The app runs entirely in the browser and is embedded from the site's static
-        assets.
-      </p>
-      <a
-        class="button"
-        href="/apps/interactive-ctmc-tree/index.html?embed=1&theme=light"
-        target="_blank"
-        rel="noreferrer"
-      >
-        Open full screen
-      </a>
-    </div>
-
+  <section class="interactive-app-page interactive-app-page-native" aria-label="Interactive tree app">
     <CtmcEmbed />
   </section>
 </BaseLayout>

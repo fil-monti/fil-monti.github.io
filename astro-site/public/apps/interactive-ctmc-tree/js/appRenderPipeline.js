@@ -55,17 +55,14 @@ export function renderVisualization({
         ctx.fillRect(0, 0, canvasWidth, canvasHeight);
     }
 
-    let nextTree = tree;
-    if (!appState.observationsMode) {
-        nextTree = drawing.drawTreeScene({
-            ctx,
-            tree,
-            getNumTips,
-            createTreeLayout,
-            branchTrackMode: appState.branchTrackMode,
-            branchSegments,
-        });
-    }
+    const nextTree = drawing.drawTreeScene({
+        ctx,
+        tree,
+        getNumTips,
+        createTreeLayout,
+        branchTrackMode: appState.branchTrackMode,
+        branchSegments,
+    });
 
     const runtimeContext = {
         ctx,

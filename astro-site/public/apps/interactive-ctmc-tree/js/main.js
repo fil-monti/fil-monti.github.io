@@ -1,4 +1,4 @@
-import initApp from "./app.js";
+import initApp from "./app.js?v=20260723-tree-visible";
 
 export function setYearFooter(doc = document, year = new Date().getFullYear()) {
   const el = doc?.getElementById?.("year");

@@ -210,11 +210,20 @@
     padding-bottom: 0.75rem;
   }
 
+  :root[data-embed="1"][data-integrated="1"] .app-footer {
+    display: none;
+  }
+
   :root[data-embed="1"] .app-surface {
     padding: 0;
     border-radius: 0;
     box-shadow: none;
     border: 0;
+    background: transparent;
+  }
+
+  :root[data-embed="1"][data-integrated="1"] .app-workbench,
+  :root[data-embed="1"][data-integrated="1"] .app-surface {
     background: transparent;
   }
 
@@ -332,7 +341,9 @@
   :root[data-presentation="1"] .time-slider-container {
     left: 0.4rem;
     height: 100%;
-    width: 2.2rem;
+    width: 3rem;
+    z-index: 30;
+    pointer-events: auto;
   }
 
   :root[data-presentation="1"] .time-slider-wrapper {
@@ -340,7 +351,9 @@
   }
 
   :root[data-presentation="1"] .time-slider-vertical {
+    width: 2rem;
     height: 100%;
+    background: transparent;
   }
 
   :root[data-presentation="1"] .signature,
@@ -405,6 +418,29 @@
     stroke-linejoin: round;
   }
 
+  :root[data-embed="1"]:not([data-presentation="1"]) .button-group {
+    --toolbar-control-height: clamp(32px, 4.5vw, 38px);
+    --toolbar-tree-seed-control-height: calc(var(--toolbar-control-height) * 0.78);
+    --history-control-height: clamp(24px, 3.6vw, 30px);
+    --toolbar-label-height: clamp(0.62rem, 1.4vw, 0.82rem);
+    --toolbar-field-gap: clamp(0.08rem, 0.7vw, 0.16rem);
+    --toolbar-radius: 10px;
+    --toolbar-tree-seed-gap: clamp(0.22rem, 1.1vw, 0.42rem);
+    --history-font-size: clamp(0.5rem, 1.3vw, 0.64rem);
+    --toolbar-speed-slider-width: clamp(7.2rem, 24vw, 10rem);
+    --toolbar-seed-width: clamp(42px, 5vw, 54px);
+    --toolbar-button-gap: clamp(0.18rem, 0.7vw, 0.28rem);
+    --toolbar-button-padding-inline: clamp(0.48rem, 1.25vw, 0.72rem);
+    --toolbar-button-font-size: clamp(0.62rem, 1.45vw, 0.78rem);
+    --toolbar-icon-size: 1em;
+    --toolbar-label-font-size: clamp(0.56rem, 1.25vw, 0.7rem);
+    --toolbar-number-font-size: clamp(0.62rem, 1.35vw, 0.76rem);
+    --toolbar-slider-value-font-size: clamp(0.58rem, 1.25vw, 0.72rem);
+    --toolbar-checkbox-size: clamp(0.66rem, 1.45vw, 0.82rem);
+    --toolbar-mode-gap: clamp(0.16rem, 0.7vw, 0.28rem);
+    --toolbar-segment-padding-inline: clamp(0.28rem, 0.8vw, 0.48rem);
+  }
+
   :root[data-presentation="1"][data-commands-hidden] .app-surface {
     grid-template-rows: minmax(0, 1fr);
   }
@@ -453,6 +489,16 @@
     --toolbar-seed-width: 48px;
     --toolbar-tree-size-width: var(--toolbar-seed-width);
     --toolbar-speed-value-width: 1.35rem;
+    --toolbar-button-gap: 0.22rem;
+    --toolbar-button-padding-inline: 0.46rem;
+    --toolbar-button-font-size: 0.58rem;
+    --toolbar-icon-size: 1em;
+    --toolbar-label-font-size: 0.5rem;
+    --toolbar-number-font-size: 0.55rem;
+    --toolbar-slider-value-font-size: 0.5rem;
+    --toolbar-checkbox-size: 0.55rem;
+    --toolbar-mode-gap: 0.18rem;
+    --toolbar-segment-padding-inline: 0.28rem;
     grid-row: 2;
     grid-column: 1;
     align-self: start;
@@ -473,8 +519,8 @@
     height: var(--toolbar-control-height);
     min-height: 0;
     border-radius: var(--toolbar-radius);
-    padding: 0 0.38rem;
-    font-size: 0.58rem;
+    padding: 0 var(--toolbar-button-padding-inline);
+    font-size: var(--toolbar-button-font-size);
     line-height: 1;
   }
 
@@ -509,7 +555,6 @@
 
   :root[data-presentation="1"] .button-group label,
   :root[data-presentation="1"] .control-item label,
-  :root[data-presentation="1"] .track-branches label,
   :root[data-presentation="1"] .control-item-inline label {
     font-size: 0.5rem;
     line-height: var(--toolbar-label-height);
@@ -571,7 +616,7 @@
   :root[data-presentation="1"] .button-group .segmented-btn {
     height: 100%;
     min-width: 0;
-    padding: 0 0.28rem;
+    padding: 0 var(--toolbar-segment-padding-inline);
     font-size: var(--history-font-size);
   }
 
@@ -624,14 +669,14 @@
   }
 
   :root[data-presentation="1"] .mode-checkbox input[type="checkbox"] {
-    width: 0.55rem;
-    height: 0.55rem;
-    flex-basis: 0.55rem;
+    width: var(--toolbar-checkbox-size);
+    height: var(--toolbar-checkbox-size);
+    flex-basis: var(--toolbar-checkbox-size);
     transform: none;
   }
 
   :root[data-presentation="1"] .mode-checkbox {
-    gap: 0.18rem;
+    gap: var(--toolbar-mode-gap);
   }
 
   :root[data-presentation="1"] .panel-visibility-btn {
@@ -1064,6 +1109,16 @@
     --toolbar-seed-width: clamp(36px, 3.1vw, 48px);
     --toolbar-tree-size-width: var(--toolbar-seed-width);
     --toolbar-speed-value-width: 42px;
+    --toolbar-button-gap: clamp(0.22rem, 0.8vw, 0.38rem);
+    --toolbar-button-padding-inline: clamp(0.62rem, 1.6vw, 1rem);
+    --toolbar-button-font-size: clamp(0.72rem, 1.45vw, 0.92rem);
+    --toolbar-icon-size: 1.08em;
+    --toolbar-label-font-size: clamp(0.68rem, 1.25vw, 0.82rem);
+    --toolbar-number-font-size: clamp(0.72rem, 1.35vw, 0.9rem);
+    --toolbar-slider-value-font-size: clamp(0.68rem, 1.2vw, 0.85rem);
+    --toolbar-checkbox-size: clamp(0.72rem, 1.4vw, 1rem);
+    --toolbar-mode-gap: 0.42rem;
+    --toolbar-segment-padding-inline: clamp(0.35rem, 1vw, 0.65rem);
     display: grid;
     grid-template-columns: max-content max-content max-content max-content max-content;
     gap: var(--toolbar-gap);
@@ -1072,6 +1127,15 @@
     margin-top: 0.95rem;
     margin-bottom: 0;
     width: 100%;
+  }
+
+  .button-group button:not(.segmented-btn):not(.presentation-command-toggle) {
+    height: var(--toolbar-control-height);
+    min-height: 0;
+    border-radius: var(--toolbar-radius);
+    padding: 0 var(--toolbar-button-padding-inline);
+    font-size: var(--toolbar-button-font-size);
+    line-height: 1;
   }
 
   .toolbar-section {
@@ -1091,11 +1155,12 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.38rem;
+    gap: var(--toolbar-button-gap);
     height: var(--toolbar-control-height);
     min-height: var(--toolbar-control-height);
-    padding: 0 1rem;
+    padding: 0 var(--toolbar-button-padding-inline);
     border-radius: var(--toolbar-radius);
+    font-size: var(--toolbar-button-font-size);
     white-space: nowrap;
     line-height: 1;
   }
@@ -1108,7 +1173,7 @@
   }
 
   .toolbar-button-icon {
-    font-size: 1.08em;
+    font-size: var(--toolbar-icon-size);
     transform: translateY(0.01em);
   }
 
@@ -1157,7 +1222,7 @@
 
   .button-group label {
     color: var(--text-secondary);
-    font-size: 0.82rem;
+    font-size: var(--toolbar-label-font-size);
     font-weight: 500;
     line-height: var(--toolbar-label-height);
   }
@@ -1185,7 +1250,7 @@
     color: #2c3e50;
     font-family: "SFMono-Regular", "JetBrains Mono", Consolas, monospace;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: var(--toolbar-number-font-size);
     cursor: pointer;
     font-variant-numeric: tabular-nums;
     transition: border-color 0.18s var(--ease), box-shadow 0.18s var(--ease);
@@ -1236,7 +1301,8 @@
   .control-item label {
     color: var(--text-secondary);
     font-weight: 500;
-    font-size: 0.88rem;
+    font-size: var(--panel-label-font-size, var(--toolbar-label-font-size, 0.88rem));
+    line-height: var(--panel-label-line-height, 1.2);
   }
 
   .control-item.toolbar-field {
@@ -1247,7 +1313,7 @@
   }
 
   .button-group .control-item label {
-    font-size: 0.82rem;
+    font-size: var(--toolbar-label-font-size, 0.82rem);
     line-height: var(--toolbar-label-height);
   }
 
@@ -1272,12 +1338,6 @@
     min-width: 0;
   }
 
-  .track-branches label {
-    color: var(--text-secondary);
-    font-size: 0.82rem;
-    font-weight: 500;
-  }
-
   .segmented {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1299,7 +1359,7 @@
     width: 100%;
     height: 100%;
     min-width: 0;
-    padding: 0 0.65rem;
+    padding: 0 var(--toolbar-segment-padding-inline, 0.65rem);
     border-radius: 0;
     font-family: inherit;
     font-size: var(--history-font-size);
@@ -1385,12 +1445,19 @@
   }
 
   .slider-value {
-    min-width: 42px;
+    min-width: var(--toolbar-speed-value-width, 42px);
     text-align: right;
     font-weight: 600;
     color: var(--accent);
     font-family: "SFMono-Regular", "JetBrains Mono", Consolas, monospace;
-    font-size: 0.85rem;
+    font-size: var(--toolbar-slider-value-font-size, 0.85rem);
+  }
+
+  .control-panel .slider-value,
+  .custom-ctmc-panel-row .slider-value {
+    min-width: var(--panel-slider-value-width, 2.25rem);
+    font-size: var(--panel-slider-value-font-size, var(--panel-label-font-size, 0.82rem));
+    line-height: var(--panel-label-line-height, 1.2);
   }
 
   /* ── Settings modal ─────────────────────────────────────── */
@@ -1593,6 +1660,10 @@
 
   /* ── Control panel grid ─────────────────────────────────── */
   .control-panel {
+    --panel-label-font-size: 0.82rem;
+    --panel-label-line-height: 1.2;
+    --panel-slider-value-font-size: 0.82rem;
+    --panel-slider-value-width: 2.25rem;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.35rem;
@@ -2184,15 +2255,15 @@
   .mode-checkbox {
     display: flex;
     align-items: center;
-    gap: 0.42rem;
+    gap: var(--toolbar-mode-gap, 0.42rem);
     min-width: 0;
     line-height: 1;
   }
 
   .mode-checkbox input[type="checkbox"] {
-    width: 1rem;
-    height: 1rem;
-    flex: 0 0 1rem;
+    width: var(--toolbar-checkbox-size, 1rem);
+    height: var(--toolbar-checkbox-size, 1rem);
+    flex: 0 0 var(--toolbar-checkbox-size, 1rem);
     transform: none;
     cursor: pointer;
     accent-color: var(--accent);
@@ -2202,7 +2273,7 @@
     cursor: pointer;
     font-weight: 500;
     color: var(--text-secondary);
-    font-size: 0.82rem;
+    font-size: var(--toolbar-label-font-size, 0.82rem);
     line-height: 1;
     white-space: nowrap;
   }
@@ -2580,6 +2651,302 @@
 
     :root[data-embed="1"] .control-item-inline {
       align-items: flex-start;
+    }
+  }
+
+  /* Integrated website embeds should feel native: shrink controls instead of wrapping them. */
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) body {
+    font-size: clamp(11px, 1.25vw, 15px);
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) {
+    --integrated-panel-scale: 1;
+    --integrated-panel-width: 760px;
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .button-group {
+    --toolbar-control-height: clamp(24px, 2.7vw, 34px);
+    --toolbar-tree-seed-control-height: calc(var(--toolbar-control-height) * 0.82);
+    --history-control-height: clamp(20px, 2.35vw, 28px);
+    --toolbar-label-height: clamp(0.46rem, 1.05vw, 0.68rem);
+    --toolbar-field-gap: clamp(0.03rem, 0.35vw, 0.1rem);
+    --toolbar-gap: clamp(0.18rem, 0.8vw, 0.55rem);
+    --toolbar-radius: 9px;
+    --toolbar-tree-seed-gap: clamp(0.15rem, 0.55vw, 0.36rem);
+    --history-font-size: clamp(0.44rem, 0.92vw, 0.62rem);
+    --toolbar-speed-slider-width: clamp(4.8rem, 13vw, 8.8rem);
+    --toolbar-speed-value-width: clamp(1.3rem, 3.1vw, 2rem);
+    --toolbar-seed-width: clamp(30px, 4.2vw, 46px);
+    --toolbar-tree-size-width: var(--toolbar-seed-width);
+    --toolbar-button-gap: clamp(0.12rem, 0.45vw, 0.24rem);
+    --toolbar-button-padding-inline: clamp(0.28rem, 0.78vw, 0.58rem);
+    --toolbar-button-font-size: clamp(0.54rem, 1.08vw, 0.74rem);
+    --toolbar-icon-size: 0.98em;
+    --toolbar-label-font-size: clamp(0.5rem, 1vw, 0.68rem);
+    --toolbar-number-font-size: clamp(0.56rem, 1.08vw, 0.74rem);
+    --toolbar-slider-value-font-size: clamp(0.5rem, 0.96vw, 0.66rem);
+    --toolbar-checkbox-size: clamp(0.58rem, 1.15vw, 0.78rem);
+    --toolbar-mode-gap: clamp(0.12rem, 0.42vw, 0.24rem);
+    --toolbar-segment-padding-inline: clamp(0.18rem, 0.52vw, 0.36rem);
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: max-content max-content max-content max-content max-content;
+    align-items: end;
+    justify-content: center;
+    gap: var(--toolbar-gap);
+    margin-top: clamp(0.45rem, 1.25vw, 0.85rem);
+    max-width: 100%;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .signature {
+    transform: scale(var(--integrated-panel-scale));
+    transform-origin: bottom right;
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .button-group > .toolbar-section {
+    min-width: 0;
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .toolbar-actions {
+    display: flex;
+    align-self: center;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: clamp(0.14rem, 0.55vw, 0.3rem);
+    height: var(--toolbar-control-height);
+    justify-content: center;
+    min-width: 0;
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .toolbar-button {
+    min-width: 0;
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .toolbar-actions .icon-button {
+    flex: 0 0 var(--toolbar-control-height);
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .toolbar-speed {
+    width: calc(var(--toolbar-speed-slider-width) + var(--toolbar-speed-value-width) + 0.45rem);
+    max-width: 100%;
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .toolbar-field-speed,
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .toolbar-field-speed .slider-container {
+    width: 100%;
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .toolbar-field-speed .slider-container {
+    gap: clamp(0.18rem, 0.62vw, 0.38rem);
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .toolbar-field-speed .slider-container input[type="range"] {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .toolbar-tree-seed {
+    --toolbar-tree-seed-control-height: calc(1.22rem * 0.75);
+    --toolbar-label-height: 0.48rem;
+    --toolbar-field-gap: 0.06rem;
+    --toolbar-tree-seed-gap: 0.18rem;
+    --toolbar-seed-width: 48px;
+    --toolbar-tree-size-width: var(--toolbar-seed-width);
+    --toolbar-number-font-size: 0.55rem;
+    grid-template-columns: var(--toolbar-tree-size-width) var(--toolbar-seed-width);
+    gap: var(--toolbar-tree-seed-gap);
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .toolbar-field-tree-size,
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .toolbar-field-tree-size #numTipsSelect,
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .toolbar-field-seed,
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .toolbar-field-seed #seedInput {
+    width: var(--toolbar-seed-width);
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) #numTipsSelect,
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) #seedInput {
+    min-height: 0;
+    border-radius: 7px;
+    padding-inline: 8px;
+    font-size: 0.55rem;
+    font-weight: 550;
+    line-height: 1;
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .toolbar-modes {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: clamp(0.05rem, 0.25vw, 0.12rem);
+    height: var(--toolbar-control-height);
+    min-width: 0;
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .mode-checkbox {
+    gap: var(--toolbar-mode-gap);
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .toolbar-history {
+    --history-control-height: 0.92rem;
+    --history-font-size: 0.46rem;
+    --toolbar-label-height: 0.48rem;
+    --toolbar-field-gap: 0.06rem;
+    --toolbar-segment-padding-inline: 0.28rem;
+    width: max-content;
+    min-width: 0;
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .segmented {
+    width: 100%;
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .button-group .control-item,
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .track-branches {
+    width: auto;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .control-panel {
+    --panel-label-font-size: clamp(0.5rem, 1vw, 0.7rem);
+    --panel-label-line-height: 1.15;
+    --panel-slider-value-font-size: clamp(0.5rem, 0.96vw, 0.66rem);
+    --panel-slider-value-width: clamp(1.55rem, 3vw, 2rem);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(0.35rem, 1.1vw, 1rem);
+    margin-top: clamp(0.55rem, 1.4vw, 1rem);
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .control-panel,
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .custom-ctmc-launcher,
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .custom-ctmc-panel-row {
+    transform-origin: top left;
+  }
+
+  @supports (zoom: 1) {
+    :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .control-panel,
+    :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .custom-ctmc-launcher,
+    :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .custom-ctmc-panel-row {
+      width: var(--integrated-panel-width);
+      max-width: none;
+      zoom: var(--integrated-panel-scale);
+    }
+  }
+
+  @supports not (zoom: 1) {
+    :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .control-panel,
+    :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .custom-ctmc-launcher,
+    :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .custom-ctmc-panel-row {
+      width: var(--integrated-panel-width);
+      max-width: none;
+      transform: scale(var(--integrated-panel-scale));
+    }
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .control-section {
+    min-width: 0;
+    border-radius: clamp(10px, 1.4vw, 16px);
+    padding: clamp(0.55rem, 1.25vw, 1rem);
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .control-section:hover {
+    transform: none;
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .control-section-header {
+    gap: clamp(0.18rem, 0.55vw, 0.36rem);
+    margin-bottom: clamp(0.42rem, 0.85vw, 0.75rem);
+    padding-bottom: clamp(0.26rem, 0.55vw, 0.45rem);
+    font-size: clamp(0.44rem, 0.92vw, 0.66rem);
+    letter-spacing: 0.04em;
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .control-section-header::before {
+    width: 2px;
+    height: clamp(8px, 1.25vw, 12px);
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .control-section-header .header-title {
+    min-width: 0;
+    gap: clamp(0.14rem, 0.45vw, 0.3rem);
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .control-section-header input[type="checkbox"],
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .control-item-inline input[type="checkbox"] {
+    transform: scale(0.9);
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .control-group,
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .child-controls {
+    gap: clamp(0.32rem, 0.85vw, 0.7rem);
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .child-controls {
+    margin-left: clamp(0.28rem, 0.75vw, 0.65rem);
+    padding-left: clamp(0.35rem, 0.8vw, 0.7rem);
+    border-left-width: 1px;
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .control-item {
+    gap: clamp(0.16rem, 0.48vw, 0.32rem);
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .control-item-inline {
+    gap: clamp(0.2rem, 0.62vw, 0.46rem);
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .control-item-inline label {
+    font-size: clamp(0.5rem, 1vw, 0.7rem);
+    line-height: 1.15;
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .checkbox-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(0.16rem, 0.52vw, 0.36rem);
+  }
+
+  :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .help-button {
+    --help-button-size: clamp(0.82rem, 1.65vw, 1.05rem);
+    font-size: clamp(0.48rem, 0.92vw, 0.62rem);
+  }
+
+  @media (max-width: 520px) {
+    :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .button-group {
+      --toolbar-control-height: clamp(20px, 5.2vw, 28px);
+      --history-control-height: clamp(18px, 4.7vw, 24px);
+      --toolbar-label-height: clamp(0.38rem, 2.2vw, 0.56rem);
+      --toolbar-gap: clamp(0.08rem, 1vw, 0.18rem);
+      --toolbar-speed-slider-width: clamp(2.9rem, 16vw, 4.6rem);
+      --toolbar-speed-value-width: clamp(0.95rem, 5vw, 1.25rem);
+      --toolbar-seed-width: clamp(23px, 7vw, 32px);
+      --toolbar-button-padding-inline: 0;
+      --toolbar-button-font-size: clamp(0.5rem, 2.5vw, 0.64rem);
+      --toolbar-label-font-size: clamp(0.42rem, 2.2vw, 0.55rem);
+      --toolbar-number-font-size: clamp(0.48rem, 2.35vw, 0.6rem);
+      --toolbar-slider-value-font-size: clamp(0.42rem, 2vw, 0.54rem);
+      --toolbar-checkbox-size: clamp(0.5rem, 2.5vw, 0.64rem);
+    }
+
+    :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .toolbar-button {
+      width: var(--toolbar-control-height);
+    }
+
+    :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .toolbar-button-label {
+      display: none;
+    }
+
+    :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .toolbar-speed {
+      width: clamp(4.6rem, 27vw, 6.2rem);
+      max-width: clamp(4.6rem, 27vw, 6.2rem);
+    }
+
+    :root[data-embed="1"][data-integrated="1"]:not([data-presentation="1"]) .toolbar-history {
+      width: max-content;
     }
   }
 

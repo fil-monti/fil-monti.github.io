@@ -48,7 +48,7 @@ import {
     createRenderCurrentState,
     createSimulationClasses,
     createTreeRebuilder,
-} from './appComposition.js';
+} from './appComposition.js?v=20260723-tree-visible';
 
 export default function initApp() {
 

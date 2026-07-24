@@ -1,13 +1,14 @@
 ---
 import InteractiveEmbed from "./InteractiveEmbed.astro";
 
-const src = "/apps/interactive-ctmc-tree/index.html?embed=1&theme=light";
+const src = "/apps/interactive-ctmc-tree/index.html?embed=1&theme=light&integrated=1&v=20260723-panel-block-scale";
 ---
 
 <InteractiveEmbed
   className="ctmc-frame"
   fallbackHref={src}
-  minHeight={720}
+  loading="eager"
+  minHeight={760}
   source="beastx-ctmc-embed"
   src={src}
   title="Interactive CTMC tree app"

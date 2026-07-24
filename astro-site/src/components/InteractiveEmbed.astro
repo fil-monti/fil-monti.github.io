@@ -2,6 +2,7 @@
 interface Props {
   className?: string;
   fallbackHref: string;
+  loading?: "eager" | "lazy";
   minHeight?: number;
   source: string;
   src: string;
@@ -11,6 +12,7 @@ interface Props {
 const {
   className = "",
   fallbackHref,
+  loading = "lazy",
   minHeight = 680,
   source,
   src,
@@ -18,7 +20,12 @@ const {
 } = Astro.props;
 ---
 
-<div class={`app-embed ${className}`} data-app-embed data-source={source}>
+<div
+  class={`app-embed ${className}`}
+  data-app-embed
+  data-source={source}
+  style={`--embed-min-height: ${minHeight}px;`}
+>
   <div class="embed-status" data-embed-status>Loading interactive app...</div>
   <iframe
     class="app-frame"
@@ -27,8 +34,9 @@ const {
     data-source={source}
     src={src}
     title={title}
-    loading="lazy"
+    loading={loading}
     allow="fullscreen"
+    allowtransparency="true"
   ></iframe>
   <noscript>
     <p>
@@ -49,6 +57,8 @@ const {
   const postTheme = (frame: HTMLIFrameElement) => {
     frame.contentWindow?.postMessage(
       {
+        source: "beastx-docs-host",
+        kind: "theme",
         type: "beastx:set-theme",
         theme: currentTheme(),
       },
@@ -63,12 +73,14 @@ const {
 
     let loaded = false;
 
-    frame.addEventListener("load", () => {
+    const markLoaded = () => {
       loaded = true;
       embed.classList.add("is-loaded");
       status?.setAttribute("hidden", "");
       postTheme(frame);
-    });
+    };
+
+    frame.addEventListener("load", markLoaded);
 
     window.setTimeout(() => {
       if (!loaded && status) {
@@ -79,19 +91,42 @@ const {
 
   window.addEventListener("message", (event) => {
     if (!event.data || typeof event.data !== "object") return;
-    if (event.data.type !== "beastx:embed-size") return;
 
     const source = event.data.source;
-    const height = Number(event.data.height);
-    if (!source || !Number.isFinite(height)) return;
+    if (!source) return;
 
-    document
-      .querySelectorAll(`[data-app-frame][data-source="${source}"]`)
-      .forEach((frame) => {
+    const frames = document
+      .querySelectorAll(`[data-app-frame][data-source="${source}"]`);
+
+    if (event.data.kind === "request-theme") {
+      frames.forEach((frame) => frame instanceof HTMLIFrameElement && postTheme(frame));
+      return;
+    }
+
+    if (event.data.kind === "ready") {
+      frames.forEach((frame) => {
+        if (!(frame instanceof HTMLIFrameElement)) return;
+        const embed = frame.closest("[data-app-embed]");
+        const status = embed?.querySelector("[data-embed-status]");
+        embed?.classList.add("is-loaded");
+        status?.setAttribute("hidden", "");
+        postTheme(frame);
+      });
+      return;
+    }
+
+    if (event.data.type !== "beastx:embed-size" && event.data.kind !== "height") return;
+
+    const height = Number(event.data.height);
+    if (!Number.isFinite(height)) return;
+
+    window.requestAnimationFrame(() => {
+      frames.forEach((frame) => {
         if (!(frame instanceof HTMLIFrameElement)) return;
         const minHeight = Number(frame.dataset.minHeight || 680);
         frame.style.height = `${Math.max(minHeight, Math.ceil(height))}px`;
       });
+    });
   });
 
   window.addEventListener("storage", () => {
