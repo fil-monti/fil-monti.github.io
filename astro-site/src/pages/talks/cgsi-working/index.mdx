@@ -1,8 +1,8 @@
 ---
-# Stable published CGSI deck. Keep new or experimental slides in ../cgsi-working/index.mdx.
+# Full working CGSI deck. The published homepage link targets the stable deck at /talks/cgsi/.
 layout: ../../../layouts/PresentationLayout.astro
-title: CGSI | Filippo Monti
-description: CGSI interactive presentation
+title: CGSI working deck | Filippo Monti
+description: Full working copy of the CGSI interactive presentation
 ---
 
 import Slide from "../../../components/presentation/Slide.astro";
@@ -165,6 +165,7 @@ export const talk = {
 </div>
 
 </Slide>
+
 <AppSlide
   id="single-tip-phylogenetics"
   class="cgsi-app-slide-side-nav"
@@ -689,6 +690,59 @@ export const talk = {
 
 </Slide>
 
+<Slide id="bat-rabies-example" class="cgsi-figure-slide cgsi-bat-rabies-slide">
+
+<h2>Bat rabies in North America</h2>
+
+<div class="cgsi-global-flu-layout">
+
+<div class="cgsi-global-flu-copy">
+
+<dl class="cgsi-global-flu-facts cgsi-bat-rabies-facts">
+  <div>
+    <dt>Where:</dt>
+    <dd>North America</dd>
+  </div>
+  <div>
+    <dt>What:</dt>
+    <dd>rabies viruses (RABV)</dd>
+  </div>
+  <div>
+    <dt>Host:</dt>
+    <dd>bats (classified in 17 species)</dd>
+  </div>
+  <div>
+    <dt>Genetic samples:</dt>
+    <dd>372 DNA sequences (nucleotide positions: 594–1353)</dd>
+  </div>
+</dl>
+
+</div>
+
+<div class="cgsi-bat-rabies-objective">
+  <p><strong>Objective:</strong> Identify the drivers of cross-species transmissions, e.g. genetic distances between two host species.</p>
+</div>
+
+<figure class="cgsi-left-inset-figure cgsi-global-flu-rates cgsi-bat-rabies-rates">
+  <img
+    src="/talks/cgsi/figures/rabiesLogRates.png"
+    alt="Rabies log rates as a function of bat host genetic distance"
+    loading="eager"
+  />
+</figure>
+
+<figure class="cgsi-right-figure cgsi-global-flu-tree cgsi-bat-rabies-tree">
+  <img
+    src="/talks/cgsi/figures/rabiesTreeWithMap.png"
+    alt="Bat rabies phylogeny with North America map inset"
+    loading="eager"
+  />
+</figure>
+
+</div>
+
+</Slide>
+
 <Slide id="computational-contribution" class="cgsi-figure-slide cgsi-computational-slide">
 
 <h2>Computational contribution</h2>
@@ -1043,5 +1097,197 @@ which turns repeated propagation into a structured computational problem.
     <p>National Institutes of Health grants U19 AI135995, R01 AI153044, and R01 AI162611.</p>
   </div>
 </div>
+
+</Slide>
+
+<AppSlide
+  id="coalescent-grid"
+  class="cgsi-app-slide-side-nav"
+  src="/apps/interactive-coalescent/index.html?embed=1&theme=light&presentation=1&v=20260722-seed-first-line-fit"
+  title="Discrete-Time Coalescent on a Grid"
+  printSummary="The live version opens the coalescent explorer with time-varying population controls."
+  showNavigation={false}
+/>
+
+<Slide id="yellow-fever-example" class="cgsi-figure-slide cgsi-yf-example-slide">
+
+<h2>Yellow fever example</h2>
+
+<div class="cgsi-yf-example-layout">
+  <div class="cgsi-yf-example-copy">
+    <dl class="cgsi-global-flu-facts cgsi-yf-example-facts">
+      <div>
+        <dt>Data:</dt>
+        <dd>705 YFV genomes</dd>
+      </div>
+      <div>
+        <dt>Virus:</dt>
+        <dd>Yellow Fever Virus (YFV)</dd>
+      </div>
+      <div>
+        <dt>Hosts:</dt>
+        <dd>Humans, primates, mosquitoes (and more)</dd>
+      </div>
+      <div>
+        <dt>Where:</dt>
+        <dd>San Paulo, Brazil</dd>
+      </div>
+      <div>
+        <dt>When:</dt>
+        <dd>2016-2018</dd>
+      </div>
+    </dl>
+
+    <figure class="cgsi-yf-covariate-figure">
+      <img
+        src="/talks/cgsi/figures/YFDemographicCovariate.png"
+        alt="Yellow fever demographic covariate relationship between temperature and effective population size"
+        loading="eager"
+      />
+    </figure>
+  </div>
+
+  <figure class="cgsi-yf-tree-figure">
+    <img
+      src="/talks/cgsi/figures/YFTree.png"
+      alt="Yellow fever phylogenetic tree"
+      loading="eager"
+    />
+  </figure>
+</div>
+
+<p class="cgsi-slide-citation">Monti, F., Faria, N. R., Ji, X., Lemey, P., Kraemer, M., and Suchard, M. A. (2026). <em>Nonlinear Drivers of Population Dynamics: A Nonparametric Coalescent Approach</em>.</p>
+
+</Slide>
+
+<Slide id="ancient-musk-ox-example" class="cgsi-figure-slide cgsi-musk-ox-slide">
+
+<h2>Ancient musk ox example</h2>
+
+<style>{`
+  #ancient-musk-ox-example .musk-ox-content {
+    --musk-ox-citation-reserve: clamp(1.35rem, 3vmin, 2.05rem);
+
+    display: grid;
+    grid-template-columns: minmax(0, 0.94fr) minmax(0, 1.06fr);
+    gap: clamp(1rem, 2.2vw, 1.65rem);
+    align-items: start;
+    height: calc(100% - var(--musk-ox-citation-reserve));
+    min-height: 0;
+  }
+
+  #ancient-musk-ox-example .musk-ox-left {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: clamp(0.9rem, 2vmin, 1.45rem);
+    align-content: stretch;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    padding-top: clamp(0.28rem, 0.9vmin, 0.58rem);
+    color: var(--cgsi-ink);
+    font-size: 0.64em;
+    line-height: 1.42;
+  }
+
+  #ancient-musk-ox-example .musk-ox-text {
+    width: 52rem;
+    max-width: none;
+    z-index: 2;
+  }
+
+  #ancient-musk-ox-example .musk-ox-text p {
+    margin: 0 0 0.38em;
+  }
+
+  #ancient-musk-ox-example .musk-ox-text strong {
+    color: var(--cgsi-blue);
+    font-weight: 500;
+  }
+
+  #ancient-musk-ox-example .musk-ox-text .musk-ox-gold-label {
+    color: var(--cgsi-gold);
+  }
+
+  #ancient-musk-ox-example .musk-ox-covariate-figure {
+    display: grid;
+    align-self: end;
+    justify-self: start;
+    width: min(100%, 27rem);
+    min-width: 0;
+    max-height: 100%;
+    margin: 0 0 clamp(0.25rem, 0.7vmin, 0.48rem);
+  }
+
+  #ancient-musk-ox-example .musk-ox-covariate-figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transform: translate(5.2rem, -2.1rem);
+  }
+
+  #ancient-musk-ox-example .musk-ox-tree-figure {
+    display: grid;
+    align-items: center;
+    justify-items: center;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    margin: 0;
+    overflow: visible;
+    transform: translate(0, -0.3rem);
+  }
+
+  #ancient-musk-ox-example .musk-ox-tree-figure img {
+    display: block;
+    width: 90%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    object-position: center top;
+  }
+`}</style>
+
+<div class="musk-ox-content">
+  <div class="musk-ox-left">
+    <div class="musk-ox-text">
+
+**Animal Species:** Ancestral Musk Ox
+
+**When:** 50K radiocarbon years before present - present
+
+**Data:** sequences from 682 bp of mitochondrial control region
+
+<div style="height: 1rem;"></div>
+
+<strong class="musk-ox-gold-label">Question:</strong> Did climate warming have an effect on Ancestral Musk Ox population fluctuations?
+
+<strong class="musk-ox-gold-label">Covariate:</strong> ice core $\delta^{18}O$ oxygen isotopes as a proxy for historical temperature
+
+    </div>
+
+    <figure class="musk-ox-covariate-figure">
+      <img
+        src="/talks/cgsi/figures/MoxDemographicCovariate.png"
+        alt="Ancient musk ox demographic covariate relationship"
+        loading="eager"
+      />
+    </figure>
+  </div>
+
+  <figure class="musk-ox-tree-figure">
+    <img
+      src="/talks/cgsi/figures/MoxTree.png"
+      alt="Ancient musk ox phylogenetic tree"
+      loading="eager"
+    />
+  </figure>
+</div>
+
+<p class="cgsi-slide-citation">Monti, F., Faria, N. R., Ji, X., Lemey, P., Kraemer, M., and Suchard, M. A. (2026). <em>Nonlinear Drivers of Population Dynamics: A Nonparametric Coalescent Approach</em>.</p>
 
 </Slide>
