@@ -185,7 +185,8 @@ Each paper has this shape:
   title: "Paper title",
   authors: "Monti, F., and Suchard, M. A.",
   year: "2026",
-  status: "Under review",
+  status: "In press",
+  journal: "Proceedings of the National Academy of Sciences",
   links: [
     { label: "arXiv", href: "https://arxiv.org/abs/..." },
     { label: "Code", href: "https://github.com/..." }

@@ -14,6 +14,9 @@ const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 
+const formatPaperDescription = (status: string, authors: string, journal?: string) =>
+  journal ? `${status}. ${journal}. ${authors}` : `${status}. ${authors}`;
+
 export function getSearchEntries(): SearchEntry[] {
   return [
     ...navItems.map((item) => ({
@@ -26,7 +29,7 @@ export function getSearchEntries(): SearchEntry[] {
       title: project.title,
       href: `/publications/#paper-${slugify(project.title)}`,
       category: "Research",
-      description: `${project.status}. ${project.authors}`,
+      description: formatPaperDescription(project.status, project.authors, project.journal),
       tags: project.topics
     })),
     ...teachingGroups.flatMap((group) =>

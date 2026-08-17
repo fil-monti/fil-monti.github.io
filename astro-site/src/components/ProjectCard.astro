@@ -12,12 +12,15 @@ interface Props {
   authors: string;
   year: string;
   status: string;
+  journal?: string;
   links: LinkItem[];
   topics: string[];
   abstract: string[];
 }
 
-const { id, title, authors, year, status, links, topics, abstract } = Astro.props;
+const { id, title, authors, year, status, journal, links, topics, abstract } = Astro.props;
+const statusesWithJournal = new Set(["In press", "Published"]);
+const visibleJournal = journal && statusesWithJournal.has(status) ? journal : undefined;
 const highlightedAuthor = "Monti, F.";
 const authorParts = authors.split(highlightedAuthor);
 const escapeHtml = (value: string) =>
@@ -56,8 +59,8 @@ const renderInlineMath = (value: string) => {
 
 <article class="project-card" id={id}>
   <div class="project-head">
-    <div>
-      <div class="project-meta">
+    <div class="project-title-block">
+      <div class={visibleJournal ? "project-meta has-venue" : "project-meta"}>
         <p class="card-label">{year}</p>
         {links.length > 0 && (
           <div class="project-meta-links" aria-label={`${title} links`}>
@@ -70,6 +73,7 @@ const renderInlineMath = (value: string) => {
           </ul>
         )}
       </div>
+      {visibleJournal && <p class="paper-venue-label">{visibleJournal}</p>}
       <h3 class="paper-title">{title}</h3>
     </div>
     <span class="status-pill">{status}</span>

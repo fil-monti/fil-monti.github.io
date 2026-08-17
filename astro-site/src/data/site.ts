@@ -45,7 +45,34 @@ export const applicationAreas = [
   }
 ];
 
-export const researchProjects = [
+export const paperStatusOrder = [
+  "In press",
+  "Published",
+  "R&R",
+  "Under review",
+  "Manuscript in preparation",
+  "Work in progress"
+] as const;
+
+export type PaperStatus = (typeof paperStatusOrder)[number];
+
+type ProjectLink = {
+  label: string;
+  href: string;
+};
+
+export type ResearchProject = {
+  title: string;
+  authors: string;
+  year: string;
+  status: PaperStatus;
+  journal?: string;
+  links: ProjectLink[];
+  topics: string[];
+  abstract: string[];
+};
+
+export const researchProjects: ResearchProject[] = [
   {
     title: "Nonparametric Modeling of Continuous-Time Markov Chains with Scalable Exact and Approximate Gradients",
     authors: "Monti, F., Ji, X., Shao, Y., and Suchard, M. A.",
@@ -89,14 +116,15 @@ export const researchProjects = [
     authors:
       "Frumence, E., Klitting, R., Serres, K., Shao, Y., Monti, F., Vincent, M., Gill, M. S., Suchard, M. A., Lemey, P., de Lamballerie, X., Jaffar-Bandjee, M., and Dellicour, S.",
     year: "2026",
-    status: "Under review",
+    status: "In press",
+    journal: "Proceedings of the National Academy of Sciences",
     links: [
       { label: "DOI", href: "https://doi.org/10.64898/2026.01.07.26343606" },
       { label: "Europe PMC", href: "https://europepmc.org/article/ppr/ppr1251646" }
     ],
     topics: ["Viral evolution", "Phylogeography", "Phylodynamics"],
     abstract: [
-      "This preprint studies the 2024-2025 chikungunya virus epidemic on Réunion island using a large genomic dataset and phylogeographic and phylodynamic methods to characterize the introduced transmission chain.",
+      "This study examines the 2024-2025 chikungunya virus epidemic on Réunion island using a large genomic dataset and phylogeographic and phylodynamic methods to characterize the introduced transmission chain.",
       "The analyses point to gravity-like spatial dispersal among populated areas, frequent exchanges across residential areas, and associations between epidemic intensity and climate variables, while suggesting that population immunity from the recent and historical epidemics may help explain the epidemic decline."
     ]
   },
@@ -109,9 +137,9 @@ export const researchProjects = [
     status: "Under review",
     links: [
       { label: "arXiv", href: "https://arxiv.org/abs/2507.08386" },
-      { label: "PDF", href: "https://arxiv.org/pdf/2507.08386" }
+      // { label: "PDF", href: "https://arxiv.org/pdf/2507.08386" }
     ],
-    topics: ["Change-points", "Substitution models", "Shrinkage priors"],
+    topics: ["Substitution models", "Shrinkage priors"],
     abstract: [
       "This preprint integrates branch-specific substitution models with shrinkage priors to identify evolutionary change-points without requiring prior knowledge of their locations on a phylogeny.",
       "The work develops a linear-time analytical gradient algorithm for branch-specific substitution parameters, enabling scalable maximum likelihood and Bayesian inference for high-dimensional substitution models.",
@@ -158,7 +186,7 @@ export const researchProjects = [
     year: "2026+",
     status: "Work in progress",
     links: [],
-    topics: ["Random positive integrals", "Basis expansions"],
+    topics: ["Random positive integrals", "Gaussian Processes", "Splines"],
     abstract: []
   },
   {
@@ -172,10 +200,10 @@ export const researchProjects = [
     abstract: []
   },
   {
-    title: "Stable Matrix Parametrization and Structured Adjoints for Ornstein--Uhlenbeck Processes",
+    title: "Stable Matrix Parametrizations and Structured Adjoints for Ornstein--Uhlenbeck Processes",
     authors: "Monti, F., Holbrook, A., Glatt-Holtz, N. E., and Suchard, M. A.",
     year: "2026+",
-    status: "Manuscript in preparation",
+    status: "Under review",
     links: [],
     topics: ["Diffusion processes", "Ornstein-Uhlenbeck processes", "Adjoint methods", "Stable matrices"],
     abstract: [

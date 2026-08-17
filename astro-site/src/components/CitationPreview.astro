@@ -15,6 +15,9 @@ const slugify = (value: string) =>
 
 const project = researchProjects.find((item) => item.title === title);
 const href = project ? `/publications/#paper-${slugify(project.title)}` : "/publications/";
+const statusesWithJournal = new Set(["In press", "Published"]);
+const visibleJournal =
+  project?.journal && statusesWithJournal.has(project.status) ? project.journal : undefined;
 const highlightedAuthor = "Monti, F.";
 const authorParts = project?.authors.split(highlightedAuthor) ?? [];
 ---
@@ -35,6 +38,7 @@ const authorParts = project?.authors.split(highlightedAuthor) ?? [];
           </span>
           <span class="status-pill">{project.status}</span>
         </span>
+        {visibleJournal && <span class="paper-venue-label citation-preview-venue">{visibleJournal}</span>}
         <span class="citation-preview-title paper-title">{project.title}</span>
         <span class="authors citation-preview-authors">
           {authorParts.map((part, index) => (

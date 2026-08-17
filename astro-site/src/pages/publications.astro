@@ -2,7 +2,7 @@
 import PageHero from "../components/PageHero.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { researchProjects } from "../data/site";
+import { paperStatusOrder, researchProjects } from "../data/site";
 
 const slugify = (value: string) =>
   value
@@ -10,18 +10,53 @@ const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 
-const projectsWithIds = researchProjects.map((project) => ({
+const isFirstAuthor = (authors: string) => authors.trim().startsWith("Monti, F.");
+const statusOrder: readonly string[] = paperStatusOrder;
+const getStatusRank = (status: string) => {
+  const rank = statusOrder.indexOf(status);
+  return rank === -1 ? paperStatusOrder.length : rank;
+};
+const leadFirstAuthorCount = 3;
+
+const projectEntries = researchProjects.map((project, originalIndex) => ({
   ...project,
-  id: `paper-${slugify(project.title)}`
+  id: `paper-${slugify(project.title)}`,
+  originalIndex
 }));
+
+const comparePapers = (
+  left: (typeof projectEntries)[number],
+  right: (typeof projectEntries)[number]
+) => {
+  const statusDifference = getStatusRank(left.status) - getStatusRank(right.status);
+  if (statusDifference !== 0) return statusDifference;
+
+  const authorDifference = Number(isFirstAuthor(right.authors)) - Number(isFirstAuthor(left.authors));
+  if (authorDifference !== 0) return authorDifference;
+
+  return left.originalIndex - right.originalIndex;
+};
+
+const statusSortedProjects = [...projectEntries].sort(comparePapers);
+const leadFirstAuthorProjects = statusSortedProjects
+  .filter((project) => isFirstAuthor(project.authors))
+  .slice(0, leadFirstAuthorCount);
+const leadFirstAuthorIndexes = new Set(leadFirstAuthorProjects.map((project) => project.originalIndex));
+const projectsWithIds = [
+  ...leadFirstAuthorProjects,
+  ...statusSortedProjects.filter((project) => !leadFirstAuthorIndexes.has(project.originalIndex))
+];
 
 const paperTopics = Array.from(
   new Set(researchProjects.flatMap((project) => project.topics))
 ).sort((a, b) => a.localeCompare(b));
 
-const paperStatuses = Array.from(
-  new Set(researchProjects.map((project) => project.status))
-).sort((a, b) => a.localeCompare(b));
+const statusSet = new Set(researchProjects.map((project) => project.status));
+const orderedPaperStatuses = paperStatusOrder.filter((status) => statusSet.has(status));
+const additionalPaperStatuses = Array.from(statusSet)
+  .filter((status) => !statusOrder.includes(status))
+  .sort((a, b) => a.localeCompare(b));
+const paperStatuses = [...orderedPaperStatuses, ...additionalPaperStatuses];
 ---
 
 <BaseLayout
@@ -74,7 +109,7 @@ const paperStatuses = Array.from(
             data-paper-item
             data-paper-topics={project.topics.join("|")}
             data-paper-status={project.status}
-            data-first-author={project.authors.trim().startsWith("Monti, F.") ? "true" : "false"}
+            data-first-author={isFirstAuthor(project.authors) ? "true" : "false"}
           >
             <ProjectCard {...project} />
           </div>
