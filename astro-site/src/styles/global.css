@@ -1511,6 +1511,10 @@ a.content-card:hover {
   margin-bottom: 12px;
 }
 
+.project-meta.has-venue {
+  margin-bottom: 8px;
+}
+
 .project-meta .card-label {
   margin-bottom: 0;
 }
@@ -1548,6 +1552,22 @@ a.content-card:hover {
   color: var(--ink);
 }
 
+.paper-venue-label {
+  margin: 0 0 8px;
+  color: var(--blue);
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+
+.paper-venue-initial {
+  font-size: 1.16em;
+  font-weight: inherit;
+  line-height: 1;
+}
+
 .status-pill {
   flex: 0 0 auto;
   border: 1px solid color-mix(in srgb, var(--gold) 56%, var(--line));
@@ -1564,6 +1584,7 @@ a.content-card:hover {
 .authors {
   color: var(--muted);
   font-style: italic;
+  line-height: 1.2;
 }
 
 .authors strong {
@@ -1583,22 +1604,65 @@ a.content-card:hover {
 }
 
 .abstract-block {
-  margin-top: 18px;
+  margin-top: 0;
+}
+
+.abstract-block summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: end;
+  align-items: last baseline;
+  gap: 14px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.abstract-block summary::-webkit-details-marker {
+  display: none;
+}
+
+.paper-authors {
+  min-width: 0;
+}
+
+.abstract-toggle-label {
+  align-self: end;
+  align-self: last baseline;
+  justify-self: end;
+  color: var(--blue);
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: inherit;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.abstract-toggle-label::after {
+  content: "▸";
+  display: inline-block;
+  margin-left: 0.3em;
+  transform-origin: 45% 50%;
+  transition: transform 140ms ease;
+}
+
+.abstract-block[open] .abstract-toggle-label::after {
+  transform: rotate(90deg);
+}
+
+.abstract-content {
+  margin-top: 14px;
   border-top: 1px solid var(--line);
   padding-top: 14px;
 }
 
-.abstract-block summary {
-  color: var(--blue);
-  cursor: pointer;
-  font-family: var(--sans);
-  font-size: 14px;
-  font-weight: 800;
-}
-
-.abstract-block p {
+.abstract-content p {
   max-width: 82ch;
   margin: 12px 0 0;
+}
+
+.abstract-content p:first-child {
+  margin-top: 0;
 }
 
 .two-column {

@@ -21,6 +21,17 @@ interface Props {
 const { id, title, authors, year, status, journal, links, topics, abstract } = Astro.props;
 const statusesWithJournal = new Set(["In press", "Published"]);
 const visibleJournal = journal && statusesWithJournal.has(status) ? journal : undefined;
+const journalParts = visibleJournal
+  ? visibleJournal.split(/(\s+)/).map((part) => {
+      const initial = part[0];
+      const shouldEnlargeInitial =
+        initial && initial === initial.toUpperCase() && initial !== initial.toLowerCase();
+
+      return shouldEnlargeInitial
+        ? { initial: initial.toUpperCase(), rest: part.slice(1).toUpperCase() }
+        : { text: part.toUpperCase() };
+    })
+  : [];
 const highlightedAuthor = "Monti, F.";
 const authorParts = authors.split(highlightedAuthor);
 const escapeHtml = (value: string) =>
@@ -73,25 +84,53 @@ const renderInlineMath = (value: string) => {
           </ul>
         )}
       </div>
-      {visibleJournal && <p class="paper-venue-label">{visibleJournal}</p>}
+      {visibleJournal && (
+        <p class="paper-venue-label">
+          {journalParts.map((part) =>
+            "initial" in part ? (
+              <>
+                <span class="paper-venue-initial">{part.initial}</span>
+                {part.rest}
+              </>
+            ) : (
+              part.text
+            )
+          )}
+        </p>
+      )}
       <h3 class="paper-title">{title}</h3>
     </div>
     <span class="status-pill">{status}</span>
   </div>
-  <p class="authors">
-    {
-      authorParts.map((part, index) => (
-        <>
-          {index > 0 && <strong>{highlightedAuthor}</strong>}
-          {part}
-        </>
-      ))
-    }
-  </p>
-  {abstract.length > 0 && (
+  {abstract.length > 0 ? (
     <details class="abstract-block">
-      <summary>Abstract</summary>
-      {abstract.map((paragraph) => <p set:html={renderInlineMath(paragraph)} />)}
+      <summary class="paper-byline-row">
+        <span class="authors paper-authors">
+          {
+            authorParts.map((part, index) => (
+              <>
+                {index > 0 && <strong>{highlightedAuthor}</strong>}
+                {part}
+              </>
+            ))
+          }
+        </span>
+        <span class="abstract-toggle-label">Abstract</span>
+      </summary>
+      <div class="abstract-content">
+        {abstract.map((paragraph) => <p set:html={renderInlineMath(paragraph)} />)}
+      </div>
     </details>
+  ) : (
+    <p class="authors">
+      {
+        authorParts.map((part, index) => (
+          <>
+            {index > 0 && <strong>{highlightedAuthor}</strong>}
+            {part}
+          </>
+        ))
+      }
+    </p>
   )}
 </article>
