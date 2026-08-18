@@ -204,7 +204,10 @@ export const researchProjects: ResearchProject[] = [
     authors: "Monti, F., Holbrook, A., Glatt-Holtz, N. E., and Suchard, M. A.",
     year: "2026+",
     status: "Under review",
-    links: [],
+    links: [
+       { label: "arXiv", href: "https://arxiv.org/pdf/2608.16401" },
+       { label: "Code", href: "https://github.com/suchard-group/stableMatrixParametrizationAndStructuredAdjoints"},
+    ],
     topics: ["Diffusion processes", "Ornstein-Uhlenbeck processes", "Adjoint methods", "Stable matrices"],
     abstract: [
       "Ornstein-Uhlenbeck process models with general multivariate drift matrices are attractive for continuous-time Gaussian modeling, but likelihood-based inference is difficult because the drift must remain Hurwitz stable and because each likelihood evaluation requires matrix exponentials and Lyapunov-equation computations. These operations are especially burdensome in gradient-based maximum likelihood and Bayesian inference, where derivatives through both the transition matrix and the stationary covariance are required.",
