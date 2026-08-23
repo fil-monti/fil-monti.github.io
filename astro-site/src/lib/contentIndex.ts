@@ -14,8 +14,13 @@ const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 
-const formatPaperDescription = (status: string, authors: string, journal?: string) =>
-  journal ? `${status}. ${journal}. ${authors}` : `${status}. ${authors}`;
+const formatPaperDescription = (status: string, authors: string, journal?: string) => {
+  if (status === "R&R" && journal) {
+    return `${status}. Minor revision at ${journal}. ${authors}`;
+  }
+
+  return journal ? `${status}. ${journal}. ${authors}` : `${status}. ${authors}`;
+};
 
 export function getSearchEntries(): SearchEntry[] {
   return [

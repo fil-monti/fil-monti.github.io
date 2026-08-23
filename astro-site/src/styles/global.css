@@ -1568,6 +1568,15 @@ a.content-card:hover {
   line-height: 1;
 }
 
+.paper-revision-label {
+  font-weight: 700;
+  text-transform: none;
+}
+
+.paper-revision-prefix {
+  font-weight: 400;
+}
+
 .status-pill {
   flex: 0 0 auto;
   border: 1px solid color-mix(in srgb, var(--gold) 56%, var(--line));
@@ -1585,6 +1594,10 @@ a.content-card:hover {
   color: var(--muted);
   font-style: italic;
   line-height: 1.2;
+}
+
+.project-card .authors {
+  color: var(--body);
 }
 
 .authors strong {

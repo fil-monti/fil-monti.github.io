@@ -18,6 +18,7 @@ const href = project ? `/publications/#paper-${slugify(project.title)}` : "/publ
 const statusesWithJournal = new Set(["In press", "Published"]);
 const visibleJournal =
   project?.journal && statusesWithJournal.has(project.status) ? project.journal : undefined;
+const revisionJournal = project?.status === "R&R" ? project.journal : undefined;
 const highlightedAuthor = "Monti, F.";
 const authorParts = project?.authors.split(highlightedAuthor) ?? [];
 ---
@@ -39,6 +40,11 @@ const authorParts = project?.authors.split(highlightedAuthor) ?? [];
           <span class="status-pill">{project.status}</span>
         </span>
         {visibleJournal && <span class="paper-venue-label citation-preview-venue">{visibleJournal}</span>}
+        {revisionJournal && (
+          <span class="paper-venue-label paper-revision-label citation-preview-venue">
+            <span class="paper-revision-prefix">Minor revision at</span> {revisionJournal}
+          </span>
+        )}
         <span class="citation-preview-title paper-title">{project.title}</span>
         <span class="authors citation-preview-authors">
           {authorParts.map((part, index) => (

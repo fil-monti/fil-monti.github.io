@@ -77,7 +77,8 @@ export const researchProjects: ResearchProject[] = [
     title: "Nonparametric Modeling of Continuous-Time Markov Chains with Scalable Exact and Approximate Gradients",
     authors: "Monti, F., Ji, X., Shao, Y., and Suchard, M. A.",
     year: "2026",
-    status: "Under review",
+    status: "R&R",
+    journal: "Journal of the Royal Statistical Society Series B",
     links: [
       { label: "arXiv", href: "https://arxiv.org/abs/2511.03954" },
       {
@@ -119,8 +120,9 @@ export const researchProjects: ResearchProject[] = [
     status: "In press",
     journal: "Proceedings of the National Academy of Sciences",
     links: [
-      { label: "DOI", href: "https://doi.org/10.64898/2026.01.07.26343606" },
-      { label: "Europe PMC", href: "https://europepmc.org/article/ppr/ppr1251646" }
+      // { label: "DOI", href: "https://doi.org/10.64898/2026.01.07.26343606" },
+      { label: "Europe PMC", href: "https://europepmc.org/article/ppr/ppr1251646" },
+      { label: "Code", href: "https://github.com/sdellicour/chikungunya_reunion"},
     ],
     topics: ["Viral evolution", "Phylogeography", "Phylodynamics"],
     abstract: [
@@ -134,7 +136,8 @@ export const researchProjects: ResearchProject[] = [
     authors:
       "Ji, X., Redelings, B., Su, S., Bao, H., Deng, W.-M., Monti, F., Hong, S. L., Baele, G., Lemey, P., and Suchard, M. A.",
     year: "2025",
-    status: "Under review",
+    status: "R&R",
+    journal: "Systematic Biology",
     links: [
       { label: "arXiv", href: "https://arxiv.org/abs/2507.08386" },
       // { label: "PDF", href: "https://arxiv.org/pdf/2507.08386" }
