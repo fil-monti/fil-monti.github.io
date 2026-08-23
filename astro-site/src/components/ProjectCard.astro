@@ -23,17 +23,18 @@ const statusesWithJournal = new Set(["In press", "Published"]);
 const visibleJournal = journal && statusesWithJournal.has(status) ? journal : undefined;
 const revisionJournal = status === "R&R" ? journal : undefined;
 const hasVenue = Boolean(visibleJournal || revisionJournal);
-const journalParts = visibleJournal
-  ? visibleJournal.split(/(\s+)/).map((part) => {
-      const initial = part[0];
-      const shouldEnlargeInitial =
-        initial && initial === initial.toUpperCase() && initial !== initial.toLowerCase();
+const formatVenueParts = (value: string) =>
+  value.split(/(\s+)/).map((part) => {
+    const initial = part[0];
+    const shouldEnlargeInitial =
+      initial && initial === initial.toUpperCase() && initial !== initial.toLowerCase();
 
-      return shouldEnlargeInitial
-        ? { initial: initial.toUpperCase(), rest: part.slice(1).toUpperCase() }
-        : { text: part.toUpperCase() };
-    })
-  : [];
+    return shouldEnlargeInitial
+      ? { initial: initial.toUpperCase(), rest: part.slice(1).toUpperCase() }
+      : { text: part.toUpperCase() };
+  });
+const journalParts = visibleJournal ? formatVenueParts(visibleJournal) : [];
+const revisionJournalParts = revisionJournal ? formatVenueParts(revisionJournal) : [];
 const highlightedAuthor = "Monti, F.";
 const authorParts = authors.split(highlightedAuthor);
 const escapeHtml = (value: string) =>
@@ -102,7 +103,19 @@ const renderInlineMath = (value: string) => {
       )}
       {revisionJournal && (
         <p class="paper-venue-label paper-revision-label">
-          <span class="paper-revision-prefix">Minor revision at</span> {revisionJournal}
+          <span class="paper-revision-prefix">Minor revision at</span>{"\u00a0\u00a0"}
+          <span class="paper-revision-journal">
+            {revisionJournalParts.map((part) =>
+              "initial" in part ? (
+                <>
+                  <span class="paper-venue-initial">{part.initial}</span>
+                  {part.rest}
+                </>
+              ) : (
+                part.text
+              )
+            )}
+          </span>
         </p>
       )}
       <h3 class="paper-title">{title}</h3>
